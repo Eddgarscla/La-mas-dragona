@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Más Draga</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff00cc, #6600ff);
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+  }header {
+display: flex;
+justify-content: flex-end;
+padding: 15px 30px;
+}
+
+.menuSelect {
+font-size: 1em;
+padding: 8px 12px;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+background: #ff69b4;
+color: white;
+box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
+transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menuSelect:hover {
+transform: scale(1.05);
+box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
+}
+
+h1 {
+font-size: 4em;
+margin-top: 80px;
+text-shadow: 2px 2px 15px #000;
+animation: fadeIn 2s ease-in-out;
+}
+
+h2 {
+font-size: 1.8em;
+margin-top: 10px;
+color: #ffd700;
+text-shadow: 1px 1px 8px #000;
+animation: fadeIn 3s ease-in-out;
+}
+
+button {
+font-size: 1.3em;
+padding: 12px 25px;
+margin: 20px;
+border: none;
+border-radius: 12px;
+cursor: pointer;
+background: #ff69b4;
+color: white;
+box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+transform: scale(1.05);
+box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
+}
+
+/* Selector de reinas (oculto por ahora) */
+#queenSelector {
+display: none;
+margin-top: 20px;
+}
+
+.queenCheckbox {
+margin: 5px;
+}
+
+@keyframes fadeIn {
+from {opacity: 0;}
+to {opacity: 1;}
+}
+
+</style>
+</head>
+<body><header>
+  <select class="menuSelect" id="seasonMenu">
+    <option value="1">Temporada 1</option>
+    <option value="2">Temporada 2</option>
+    <option value="3">Temporada 3</option>
+    <option value="4">Temporada 4</option>
+    <option value="5">Temporada 5</option>
+    <option value="6">Temporada 6</option>
+    <option value="solo">Solo Las Más</option>
+  </select>
+</header><h1>La Más Draga</h1>
+<h2>A hechizar mis feminosas</h2><button id="selectQueensBtn">Seleccionar reinas</button>
+
+<!-- Contenedor para selector de reinas --><div id="queenSelector">
+  <p>Elige tus reinas:</p>
+  <!-- Aquí añadiremos checkboxes de reinas dinámicamente -->
+</div><script>
+  const selectBtn = document.getElementById("selectQueensBtn");
+  const queenDiv = document.getElementById("queenSelector");
+
+  selectBtn.addEventListener("click", () => {
+    if (queenDiv.style.display === "none") {
+      queenDiv.style.display = "block";
+      // Aquí luego cargaremos las reinas de la temporada seleccionada
+    } else {
+      queenDiv.style.display = "none";
+    }
+  });
+
+  const seasonMenu = document.getElementById("seasonMenu");
+  seasonMenu.addEventListener("change", () => {
+    // Aquí luego podemos actualizar las reinas disponibles según la temporada
+    queenDiv.innerHTML = "<p>Elige tus reinas:</p>"; // reset temporal
+  });
+</script></body>
+                                   </html>
