@@ -52,7 +52,7 @@
   border-radius: 999px;
   border: 2px solid #ff69b4;
   background-color: #000000aa;
-  background-image: url('Img/ojo-temporadas.png'); /* 👈 CAMBIA si tu imagen tiene otro nombre */
+  background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 CAMBIA si tu imagen tiene otro nombre */
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -291,17 +291,26 @@
 <button id="selectQueensBtn">Seleccionar reinas</button>
 
 <script>
-  const selectBtn = document.getElementById("selectQueensBtn");
-  const seasonMenu = document.getElementById("seasonMenu");
+const selectBtn = document.getElementById("selectQueensBtn");
+  const seasonBtn = document.getElementById("seasonBtn");
+  const seasonDropdown = document.getElementById("seasonDropdown");
+  const seasonOptions = document.querySelectorAll(".seasonOption");
 
-  // De momento solo muestra un mensaje al iniciar
   selectBtn.addEventListener("click", () => {
     alert("Aquí empezará la simulación con las reinas que hayas elegido ✨");
   });
 
-  seasonMenu.addEventListener("change", () => {
-    // Más adelante: precargar el cast según temporada
-    console.log("Temporada seleccionada:", seasonMenu.value);
+  seasonBtn.addEventListener("click", () => {
+    const isOpen = seasonDropdown.style.display === "block";
+    seasonDropdown.style.display = isOpen ? "none" : "block";
+  });
+
+  seasonOptions.forEach(option => {
+    option.addEventListener("click", () => {
+      const season = option.dataset.season;
+      seasonDropdown.style.display = "none";
+      alert("Has elegido " + (season === "solo" ? "Solo Las Más" : "Temporada " + season));
+    });
   });
 </script>
 
