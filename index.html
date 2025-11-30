@@ -49,22 +49,21 @@
   z-index: 9999;
 }
 .seasonBtn {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 999px;
-  border: 2px solid #ff69b4;
-  background-color: #000000aa;
-  background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 CAMBIA este nombre por el de tu archivo PNG */
-  background-size: cover;
-  background-position: center;
+  border: 2px solid #ff4db8;
+  background: radial-gradient(circle, #ff69daaa 30%, #ff00998a 80%);
+  backdrop-filter: blur(4px);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 0 18px #ff00b5, 0 0 35px #ff00c8aa;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .seasonBtn:hover {
-  transform: scale(1.15) rotate(4deg);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+  transform: scale(1.2);
+  box-shadow: 0 0 30px #ff00ad, 0 0 55px #ff00c8;
 }
 .seasonDropdown {
   margin-top: 10px;
