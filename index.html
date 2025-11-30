@@ -5,90 +5,85 @@
 <title>La Más Draga</title>
 <style>
   body {
-    body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  min-height: 100vh;
-  background-image: url('img/fondo-lmd.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  color: white;
-  text-align: center;
-  overflow-x: hidden;
-    }
-  }header {
-display: flex;
-justify-content: flex-end;
-padding: 15px 30px;
-}
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    background-image: url('img/fondo-lmd.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center top;
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+  }
 
-.menuSelect {
-font-size: 1em;
-padding: 8px 12px;
-border-radius: 8px;
-border: none;
-cursor: pointer;
-background: #ff69b4;
-color: white;
-box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
-transition: transform 0.2s, box-shadow 0.2s;
-}
+  header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 30px;
+  }
 
-.menuSelect:hover {
-transform: scale(1.05);
-box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
-}
+  .menuSelect {
+    font-size: 1em;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #ff69b4;
+    color: white;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-h1 {
-font-size: 4em;
-margin-top: 80px;
-text-shadow: 2px 2px 15px #000;
-animation: fadeIn 2s ease-in-out;
-}
+  .menuSelect:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
+  }
 
-h2 {
-font-size: 1.8em;
-margin-top: 10px;
-color: #ffd700;
-text-shadow: 1px 1px 8px #000;
-animation: fadeIn 3s ease-in-out;
-}
+  h1 {
+    font-size: 4em;
+    margin-top: 80px;
+    text-shadow: 2px 2px 15px #000;
+    animation: fadeIn 2s ease-in-out;
+  }
 
-button {
-font-size: 1.3em;
-padding: 12px 25px;
-margin: 20px;
-border: none;
-border-radius: 12px;
-cursor: pointer;
-background: #ff69b4;
-color: white;
-box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
-transition: transform 0.2s, box-shadow 0.2s;
-}
+  h2 {
+    font-size: 1.8em;
+    margin-top: 10px;
+    color: #ffd700;
+    text-shadow: 1px 1px 8px #000;
+    animation: fadeIn 3s ease-in-out;
+  }
 
-button:hover {
-transform: scale(1.05);
-box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
-}
+  button {
+    font-size: 1.3em;
+    padding: 12px 25px;
+    margin: 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #ff69b4;
+    color: white;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-/* Selector de reinas (oculto por ahora) */
-#queenSelector {
-display: none;
-margin-top: 20px;
-}
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
+  }
 
-.queenCheckbox {
-margin: 5px;
-}
+  #queenSelector {
+    display: none;
+    margin-top: 20px;
+  }
 
-@keyframes fadeIn {
-from {opacity: 0;}
-to {opacity: 1;}
-}
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
 
-</style>
+    </style>
 </head>
 <body><header>
   <select class="menuSelect" id="seasonMenu">
