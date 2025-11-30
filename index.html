@@ -74,39 +74,44 @@ j<!DOCTYPE html>
     box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
   }
   #queenSelector {
-    display: none;
-    margin: 20px auto;
-    padding: 16px;
-    width: 90%;
-    max-width: 420px;
-    background: rgba(0,0,0,0.65);
-    border-radius: 16px;
-    text-align: left;
-  }
+  /* SIEMPRE visible */
+  display: block;
 
-  #searchQueens {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 999px;
-    border: none;
-    outline: none;
-    font-size: 1em;
-    text-align: center;
-    background: #ffffff;
-    color: #333;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    margin: 8px 0 14px;
-  }
+  margin: 40px auto 20px;
+  padding: 18px;
+  width: 90%;
+  max-width: 420px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 22px;
+  text-align: left;
+  backdrop-filter: blur(6px);
+}
 
-  #searchQueens::placeholder {
-    color: #999;
-  }
+/* Barra de búsqueda más glam */
+#searchQueens {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 2px solid #ff6fbf;
+  outline: none;
+  font-size: 1rem;
+  text-align: center;
+  background: #ffffff;
+  color: #333;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  margin: 10px 0 16px;
+}
 
-  #results {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-  }
+#searchQueens::placeholder {
+  color: #b4b4b4;
+}
+
+/* (esto ya lo tenías si copiaste antes, solo para que lo ubiques) */
+#results {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
 
   .queenCard {
     display: flex;
@@ -195,6 +200,10 @@ j<!DOCTYPE html>
     from {opacity: 0;}
     to {opacity: 1;}
   }
+  #selectQueensBtn {
+  margin-top: 10px;
+  margin-bottom: 40px;
+  }
 </style>
 </head>
 <body>
@@ -210,11 +219,13 @@ j<!DOCTYPE html>
     <option value="solo">Solo Las Más</option>
   </select>
 </header>
-<button id="selectQueensBtn">Seleccionar reinas</button>
 
 <div id="queenSelector">
-  <p>Elige tus reinas:</p>
+  ...
+</div>
 
+<button id="selectQueensBtn">Seleccionar reinas</button>
+  
   <!-- BARRA DE BÚSQUEDA -->
   <input
     type="text"
