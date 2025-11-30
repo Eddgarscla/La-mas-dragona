@@ -91,6 +91,24 @@
   .searchBar:focus {
     transform: scale(1.05);
   }
+  .searchBar {
+    width: 80%;
+    max-width: 350px;
+    padding: 12px 15px;
+    margin-top: 120px; /* si queda muy abajo/arriba lo ajustamos luego */
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    font-size: 1.1em;
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+  }
+
+  .searchBar:focus {
+    transform: scale(1.05);
+    }
   #queenSelector {
     display: none;
     margin-top: 20px;
