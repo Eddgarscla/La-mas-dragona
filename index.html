@@ -39,6 +39,50 @@
   .menuSelect:hover {
     transform: scale(1.05);
     box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
+    /* CONTROLES DE TEMPORADA (OJO) */
+.seasonControl {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.seasonBtn {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 2px solid #ff69b4;
+  background-color: #000000aa;
+  background-image: url('Img/ojo-temporadas.png'); /* 👈 CAMBIA si tu imagen tiene otro nombre */
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+}
+
+.seasonDropdown {
+  margin-top: 8px;
+  background: rgba(0,0,0,0.9);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 150px;
+  display: none;
+}
+
+.seasonOption {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.seasonOption:hover {
+  background: #ff69b4;
   }
 
   h1 {
@@ -207,17 +251,20 @@
 </style>
 </head>
 <body>
-
 <header>
-  <select class="menuSelect" id="seasonMenu">
-    <option value="1">Temporada 1</option>
-    <option value="2">Temporada 2</option>
-    <option value="3">Temporada 3</option>
-    <option value="4">Temporada 4</option>
-    <option value="5">Temporada 5</option>
-    <option value="6">Temporada 6</option>
-    <option value="solo">Solo Las Más</option>
-  </select>
+  <div class="seasonControl">
+    <button id="seasonBtn" class="seasonBtn" aria-label="Elegir temporada"></button>
+
+    <div id="seasonDropdown" class="seasonDropdown">
+      <button class="seasonOption" data-season="1">Temporada 1</button>
+      <button class="seasonOption" data-season="2">Temporada 2</button>
+      <button class="seasonOption" data-season="3">Temporada 3</button>
+      <button class="seasonOption" data-season="4">Temporada 4</button>
+      <button class="seasonOption" data-season="5">Temporada 5</button>
+      <button class="seasonOption" data-season="6">Temporada 6</button>
+      <button class="seasonOption" data-season="solo">Solo Las Más</button>
+    </div>
+  </div>
 </header>
 
 <!-- CAJA DE BÚSQUEDA, SIEMPRE VISIBLE -->
