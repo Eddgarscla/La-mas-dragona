@@ -52,48 +52,55 @@
   width: 52px;
   height: 52px;
   border-radius: 999px;
-  border: 2px solid #ff69b4;
-  background-color: #000000aa;
-  background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 CAMBIA este nombre por el de tu archivo PNG */
-  background-size: cover;
+  border: 2px solid rgba(255, 105, 180, 0.95); /* Rosa neón más vivo */
+  background-color: rgba(255, 105, 180, 0.25); /* Rosa TRANSPARENTE */
+  background-image: url('file_000000007c2471f5b05f212f78630771.png');
+  background-size: 68%;
   background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+  box-shadow: 0 0 12px rgba(255, 20, 147, 0.9); /* Halo glow */
+  backdrop-filter: blur(6px);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .seasonBtn:hover {
-  transform: scale(1.15) rotate(4deg);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+  transform: scale(1.18) rotate(6deg);
+  box-shadow: 0 0 24px rgba(255, 0, 180, 1);
 }
 .seasonDropdown {
   margin-top: 10px;
-  background: rgba(255, 105, 180, 0.92); /* 💖 ROSA */
-  border-radius: 14px;
+  background: rgba(255, 105, 180, 0.35); /* Rosa con mayor transparencia */
+  border: 2px solid rgba(255, 105, 180, 0.8);
+  border-radius: 18px;
   padding: 10px;
-  min-width: 160px;
+  min-width: 180px;
   display: none;
-  backdrop-filter: blur(6px);
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.5);
-  z-index: 99999; /* 🔥 siempre arriba */
+  backdrop-filter: blur(14px); /* Blur más glam */
+  box-shadow: 0 0 25px rgba(255, 20, 147, 0.8);
+  z-index: 99999;
 }
 
 .seasonOption {
   display: block;
   width: 100%;
   border: none;
-  background: transparent;
+  background: rgba(255, 105, 180, 0.20); /* Pills transparentes */
   color: white;
-  text-align: left;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 1rem;
+  text-align: center;
+  padding: 12px;
+  border-radius: 14px;
+  font-size: 1.05rem;
   cursor: pointer;
   font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 0, 150, 0.2);
+  margin-bottom: 10px;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .seasonOption:hover {
-  background: #ff008c;
+  background: rgba(255, 20, 147, 0.65);
+  transform: scale(1.08);
 }
 
   h1 {
