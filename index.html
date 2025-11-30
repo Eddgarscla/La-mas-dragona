@@ -9,7 +9,7 @@
     margin: 0;
     font-family: 'Arial', sans-serif;
     min-height: 100vh;
-    background-image: url('file_000000007fc472089ef5f78e89abaadd.png'); /* 👈 coincide con tu carpeta y archivo */
+    background-image: url('file_000000007fc472089ef5f78e89abaadd.png'); /* fondo */
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center top;
@@ -39,50 +39,52 @@
   .menuSelect:hover {
     transform: scale(1.05);
     box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
-    /* CONTROLES DE TEMPORADA (OJO) */
-.seasonControl {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-}
+  }
 
-.seasonBtn {
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  border: 2px solid #ff69b4;
-  background-color: #000000aa;
-  background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 CAMBIA si tu imagen tiene otro nombre */
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-}
+  /* CONTROLES DE TEMPORADA (OJO) */
+  .seasonControl {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+  }
 
-.seasonDropdown {
-  margin-top: 8px;
-  background: rgba(0,0,0,0.9);
-  border-radius: 12px;
-  padding: 6px;
-  min-width: 150px;
-  display: none;
-}
+  .seasonBtn {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 2px solid #ff69b4;
+    background-color: #000000aa;
+    background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 PON AQUÍ EL NOMBRE REAL DE TU PNG */
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+  }
 
-.seasonOption {
-  display: block;
-  width: 100%;
-  border: none;
-  background: transparent;
-  color: #fff;
-  text-align: left;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
+  .seasonDropdown {
+    margin-top: 8px;
+    background: rgba(0,0,0,0.9);
+    border-radius: 12px;
+    padding: 6px;
+    min-width: 150px;
+    display: none;
+  }
 
-.seasonOption:hover {
-  background: #ff69b4;
+  .seasonOption {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    text-align: left;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .seasonOption:hover {
+    background: #ff69b4;
   }
 
   h1 {
@@ -117,45 +119,51 @@
     transform: scale(1.05);
     box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
   }
+
   #queenSelector {
-  /* SIEMPRE visible */
-  display: block;
+    display: block;
+    margin: 40px auto 20px;
+    padding: 18px;
+    width: 90%;
+    max-width: 420px;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 22px;
+    text-align: left;
+    backdrop-filter: blur(6px);
+  }
 
-  margin: 40px auto 20px;
-  padding: 18px;
-  width: 90%;
-  max-width: 420px;
-  background: rgba(0, 0, 0, 0.65);
-  border-radius: 22px;
-  text-align: left;
-  backdrop-filter: blur(6px);
-}
+  .selectorTitle {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(0,0,0,0.7);
+  }
 
-/* Barra de búsqueda más glam */
-#searchQueens {
-  width: 100%;
-  padding: 12px 18px;
-  border-radius: 999px;
-  border: 2px solid #ff6fbf;
-  outline: none;
-  font-size: 1rem;
-  text-align: center;
-  background: #ffffff;
-  color: #333;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
-  margin: 10px 0 16px;
-}
+  /* Barra de búsqueda más glam */
+  #searchQueens {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 2px solid #ff6fbf;
+    outline: none;
+    font-size: 1rem;
+    text-align: center;
+    background: #ffffff;
+    color: #333;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+    margin: 10px 0 16px;
+  }
 
-#searchQueens::placeholder {
-  color: #b4b4b4;
-}
+  #searchQueens::placeholder {
+    color: #b4b4b4;
+  }
 
-/* (esto ya lo tenías si copiaste antes, solo para que lo ubiques) */
-#results {
-  max-height: 200px;
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
+  #results {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
 
   .queenCard {
     display: flex;
@@ -238,15 +246,16 @@
     cursor: pointer;
     font-size: 0.9rem;
     padding: 0;
-    }
+  }
+
+  #selectQueensBtn {
+    margin-top: 10px;
+    margin-bottom: 40px;
+  }
 
   @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity: 1;}
-  }
-  #selectQueensBtn {
-  margin-top: 10px;
-  margin-bottom: 40px;
   }
 </style>
 </head>
