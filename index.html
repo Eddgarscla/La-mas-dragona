@@ -43,49 +43,41 @@
 
   /* CONTROLES DE TEMPORADA (OJO) */
   .seasonControl {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-  }
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
 
-  .seasonBtn {
-    width: 52px;
-    height: 52px;
-    border-radius: 999px;
-    border: 2px solid #ff69b4;
-    background-color: #000000aa;
-    background-image: url('file_000000007c2471f5b05f212f78630771.png'); /* 👈 PON AQUÍ EL NOMBRE REAL DE TU PNG */
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-  }
+.seasonDropdown {
+  margin-top: 10px;
+  background: rgba(255, 105, 180, 0.92); /* 💖 ROSA */
+  border-radius: 14px;
+  padding: 10px;
+  min-width: 160px;
+  display: none;
+  backdrop-filter: blur(6px);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.5);
+  z-index: 99999; /* 🔥 siempre arriba */
+}
 
-  .seasonDropdown {
-    margin-top: 8px;
-    background: rgba(0,0,0,0.9);
-    border-radius: 12px;
-    padding: 6px;
-    min-width: 150px;
-    display: none;
-  }
+.seasonOption {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: white;
+  text-align: left;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-  .seasonOption {
-    display: block;
-    width: 100%;
-    border: none;
-    background: transparent;
-    color: #fff;
-    text-align: left;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .seasonOption:hover {
-    background: #ff69b4;
-  }
+.seasonOption:hover {
+  background: #ff008c;
+}
 
   h1 {
     font-size: 4em;
@@ -122,7 +114,7 @@
 
   #queenSelector {
     display: block;
-    margin: 40px auto 20px;
+    margin: 120px auto 60px;
     padding: 18px;
     width: 90%;
     max-width: 420px;
