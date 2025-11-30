@@ -284,6 +284,17 @@
     transform: translateY(0) scale(1);
   }
 }
+  /* Animación de salida */
+@keyframes dropdownOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.9);
+  }
+}
 
   @keyframes fadeIn {
     from {opacity: 0;}
@@ -346,12 +357,16 @@ seasonBtn.addEventListener("click", () => {
   const isOpen = seasonDropdown.style.display === "block";
 
   if (isOpen) {
-    seasonDropdown.style.display = "none";
+    // Animación de salida
+    seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
+    setTimeout(() => {
+      seasonDropdown.style.display = "none";
+    }, 220); // Espera a que termine la animación
   } else {
-    // mostrar y aplicar animación
+    // Mostrar con animación de entrada
     seasonDropdown.style.display = "block";
-    seasonDropdown.style.animation = "none";      // resetea animación
-    void seasonDropdown.offsetWidth;             // truco para reiniciar
+    seasonDropdown.style.animation = "none";
+    void seasonDropdown.offsetWidth;
     seasonDropdown.style.animation = "dropdownIn 0.28s ease-out";
   }
 });
