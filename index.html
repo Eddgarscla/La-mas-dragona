@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     margin: 0;
     font-family: 'Arial', sans-serif;
     min-height: 100vh;
-    background-image: url('Img/Fondo-lmd.jpg');
+    background-image: url('Img/Fondo-lmd.jpg'); /* 👈 coincide con tu carpeta y archivo */
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center top;
@@ -82,10 +83,11 @@
     from {opacity: 0;}
     to {opacity: 1;}
   }
-
-    </style>
+</style>
 </head>
-<body><header>
+<body>
+
+<header>
   <select class="menuSelect" id="seasonMenu">
     <option value="1">Temporada 1</option>
     <option value="2">Temporada 2</option>
@@ -95,29 +97,34 @@
     <option value="6">Temporada 6</option>
     <option value="solo">Solo Las Más</option>
   </select>
-</header><h1>La Más Draga</h1>
-<h2>A hechizar mis feminosas</h2><button id="selectQueensBtn">Seleccionar reinas</button>
+</header>
 
-<!-- Contenedor para selector de reinas --><div id="queenSelector">
+<h1>La Más Draga</h1>
+<h2>A hechizar mis feminosas</h2>
+
+<button id="selectQueensBtn">Seleccionar reinas</button>
+
+<div id="queenSelector">
   <p>Elige tus reinas:</p>
-  <!-- Aquí añadiremos checkboxes de reinas dinámicamente -->
-</div><script>
+</div>
+
+<script>
   const selectBtn = document.getElementById("selectQueensBtn");
   const queenDiv = document.getElementById("queenSelector");
+  const seasonMenu = document.getElementById("seasonMenu");
 
   selectBtn.addEventListener("click", () => {
-    if (queenDiv.style.display === "none") {
+    if (queenDiv.style.display === "none" || queenDiv.style.display === "") {
       queenDiv.style.display = "block";
-      // Aquí luego cargaremos las reinas de la temporada seleccionada
     } else {
       queenDiv.style.display = "none";
     }
   });
 
-  const seasonMenu = document.getElementById("seasonMenu");
   seasonMenu.addEventListener("change", () => {
-    // Aquí luego podemos actualizar las reinas disponibles según la temporada
-    queenDiv.innerHTML = "<p>Elige tus reinas:</p>"; // reset temporal
+    queenDiv.innerHTML = "<p>Elige tus reinas:</p>";
   });
-</script></body>
-                                   </html>
+</script>
+
+</body>
+</html>
