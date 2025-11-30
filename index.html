@@ -79,6 +79,7 @@
   backdrop-filter: blur(14px); /* Blur más glam */
   box-shadow: 0 0 25px rgba(255, 20, 147, 0.8);
   z-index: 99999;
+  transform-origin: top right;   /* 👈 añade esta línea */
 }
 
 .seasonOption {
@@ -268,6 +269,21 @@
     margin-top: 10px;
     margin-bottom: 40px;
   }
+  /* Animación de entrada del menú de temporadas */
+@keyframes dropdownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
   @keyframes fadeIn {
     from {opacity: 0;}
@@ -326,10 +342,19 @@ const selectBtn = document.getElementById("selectQueensBtn");
     alert("Aquí empezará la simulación con las reinas que hayas elegido ✨");
   });
 
-  seasonBtn.addEventListener("click", () => {
-    const isOpen = seasonDropdown.style.display === "block";
-    seasonDropdown.style.display = isOpen ? "none" : "block";
-  });
+seasonBtn.addEventListener("click", () => {
+  const isOpen = seasonDropdown.style.display === "block";
+
+  if (isOpen) {
+    seasonDropdown.style.display = "none";
+  } else {
+    // mostrar y aplicar animación
+    seasonDropdown.style.display = "block";
+    seasonDropdown.style.animation = "none";      // resetea animación
+    void seasonDropdown.offsetWidth;             // truco para reiniciar
+    seasonDropdown.style.animation = "dropdownIn 0.28s ease-out";
+  }
+});
 
   seasonOptions.forEach(option => {
     option.addEventListener("click", () => {
