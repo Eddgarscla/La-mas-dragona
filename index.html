@@ -1,4 +1,4 @@
-j<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -220,12 +220,10 @@ j<!DOCTYPE html>
   </select>
 </header>
 
+<!-- CAJA DE BÚSQUEDA, SIEMPRE VISIBLE -->
 <div id="queenSelector">
-  ...
-</div>
+  <p class="selectorTitle">Elige tus reinas para tu temporada mezcla:</p>
 
-<button id="selectQueensBtn">Seleccionar reinas</button>
-  
   <!-- BARRA DE BÚSQUEDA -->
   <input
     type="text"
@@ -242,19 +240,20 @@ j<!DOCTYPE html>
   <div id="selectedQueens"></div>
 </div>
 
+<!-- BOTÓN ABAJO -->
+<button id="selectQueensBtn">Seleccionar reinas</button>
+
 <script>
   const selectBtn = document.getElementById("selectQueensBtn");
-  const queenDiv = document.getElementById("queenSelector");
   const seasonMenu = document.getElementById("seasonMenu");
 
+  // De momento solo muestra un mensaje al iniciar
   selectBtn.addEventListener("click", () => {
-  // Más adelante aquí usaremos las reinas seleccionadas para iniciar la simulación.
-  alert("Aquí empezará la simulación con las reinas que hayas elegido ✨");
-});
+    alert("Aquí empezará la simulación con las reinas que hayas elegido ✨");
+  });
 
   seasonMenu.addEventListener("change", () => {
-    // Aquí más adelante cambiaremos las reinas según la temporada
-    // De momento no borramos nada.
+    // Más adelante: precargar el cast según temporada
     console.log("Temporada seleccionada:", seasonMenu.value);
   });
 </script>
