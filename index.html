@@ -233,37 +233,55 @@
   }
 
   #selectedQueens {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
   }
 
   .selectedPill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    background: #ff69b4;
-    border-radius: 999px;
-    font-size: 0.8rem;
-  }
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 90px;
+  background: transparent;
+  padding: 10px 0;
+  margin: 10px;
+}
 
-  .selectedPill .avatar {
-    width: 22px;
-    height: 22px;
-    font-size: 0.7rem;
-    background: #ffd2e4;
-    color: #3b0220;
-  }
+.selectedPill .avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 12px rgba(255, 20, 147, 0.7);
+}
 
-  .removeBtn {
-    border: none;
-    background: transparent;
-    color: #fff;
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0;
-  }
+.selectedPill span {
+  font-size: 0.75rem;
+  text-align: center;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 0 5px #000;
+}
+
+.removeBtn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff008c;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 8px rgba(255,0,150,0.7);
+}
 
   #selectQueensBtn {
     margin-top: 10px;
