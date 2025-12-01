@@ -344,7 +344,7 @@
     for (const season in challengesBySeason) {
       challengesBySeason[season].forEach((name, index) => {
         allChallenges.push({
-          id: T${season}-${index + 1},
+          id: `T${season}-${index + 1}`,
           name,
           season
         });
@@ -456,7 +456,7 @@
 
       currentEpisode.performances.forEach(item => {
         const row = document.createElement("div");
-        row.className = episodeRow perf-${item.type};
+row.className = `episodeRow perf-${item.type}`;   // ✅ corregido
 
         row.innerHTML = `
           <img src="${item.queen.image}" alt="${item.queen.name}">
