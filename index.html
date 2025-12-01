@@ -400,28 +400,15 @@
         image: "https://i.ibb.co/zhdr0wNN/IMG-1742.webp"
       }
     ],
-    "2": [
-      // aquí luego pondremos T2
-    ],
-    "3": [
-      // T3
-    ],
-    "4": [
-      // T4
-    ],
-    "5": [
-      // T5
-    ],
-    "6": [
-      // T6
-    ],
-    "7": [
-      // El Séptimo Sello (si luego la usamos)
-    ],
-    "solo": [
-      // Solo Las Más
-    ]
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "7": [],
+    "solo": []
   };
+
   // 🎨 Color por temporada
   const seasonColors = {
     "1": "#FFD700", // Dorado
@@ -443,17 +430,18 @@
   }
 
   // 🔗 Referencias al DOM
-  const searchInput = document.getElementById("searchQueens");
-  const resultsDiv = document.getElementById("results");
-  const selectedDiv = document.getElementById("selectedQueens");
-  const selectBtn = document.getElementById("selectQueensBtn");
-  const seasonBtn = document.getElementById("seasonBtn");
+  const searchInput   = document.getElementById("searchQueens");
+  const resultsDiv    = document.getElementById("results");
+  const selectedDiv   = document.getElementById("selectedQueens");
+  const selectBtn     = document.getElementById("selectQueensBtn");
+  const seasonBtn     = document.getElementById("seasonBtn");
   const seasonDropdown = document.getElementById("seasonDropdown");
   const seasonOptions = document.querySelectorAll(".seasonOption");
 
   // Estado de femininosas seleccionadas
   const selectedQueens = [];
-  let currentSeasonColor = "#ff69b4"; // color default si no hay temporada
+  const MAX_QUEENS = 20;
+  let currentSeasonColor = "#ff69b4"; // color por defecto
 
   // 🧩 Helpers
   function getInitials(name) {
@@ -465,14 +453,13 @@
       .join("");
   }
 
-    function avatarHTML(q) {
+  function avatarHTML(q) {
     if (q.image) {
       return `<img src="${q.image}" alt="${q.name}">`;
     }
     return getInitials(q.name);
   }
 
-  function renderSelected() {
   function renderSelected() {
     selectedDiv.innerHTML = "";
     selectedQueens.forEach(q => {
@@ -500,7 +487,8 @@
 
       selectedDiv.appendChild(pill);
     });
-    
+  }
+
   function renderResults(list) {
     resultsDiv.innerHTML = "";
     list.forEach(q => {
@@ -521,14 +509,18 @@
       card.addEventListener("click", () => addQueen(q));
       resultsDiv.appendChild(card);
     });
-    }
+  }
 
   function addQueen(q) {
-    if (selectedQueens.some(s => s.name === q.name)) return; // no duplicadas
-    if (selectedQueens.length >= 20) {
+    // no duplicadas
+    if (selectedQueens.some(s => s.name === q.name)) return;
+
+    // límite de 20
+    if (selectedQueens.length >= MAX_QUEENS) {
       alert("Solo puedes hechizar hasta 20 femininosas a la vez ✨");
       return;
     }
+
     selectedQueens.push(q);
     renderSelected();
   }
@@ -576,45 +568,39 @@
     }
   });
 
-  // 🧙‍♀️ Al elegir "milagro / camino / ojo / etc." autollenar cast
+  // 🧙‍♀️ Al elegir "milagro / camino / ojo / etc." autollenar cast y cambiar color del ojo
   seasonOptions.forEach(option => {
-  option.addEventListener("click", () => {
-    const season = option.dataset.season;
-    const list = queensBySeason[season];
+    option.addEventListener("click", () => {
+      const season = option.dataset.season;
+      const list = queensBySeason[season];
 
-    // 🟣 Cambia el color del ojito
-    currentSeasonColor = seasonColors[season] || "#ff69b4";
-    seasonBtn.style.borderColor = currentSeasonColor;
-    seasonBtn.style.boxShadow = 0 0 18px ${currentSeasonColor};
-    seasonBtn.style.backgroundColor = currentSeasonColor + "33"; // Transparente
-    seasonBtn.style.transform = "scale(1.1)";
-    setTimeout(() => seasonBtn.style.transform = "scale(1)", 200);
+      // Cambia el color del ojito
+      currentSeasonColor = seasonColors[season] || "#ff69b4";
+      seasonBtn.style.borderColor = currentSeasonColor;
+      seasonBtn.style.boxShadow = `0 0 18px ${currentSeasonColor}`;
+      seasonBtn.style.backgroundColor = currentSeasonColor + "33";
+      seasonBtn.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        seasonBtn.style.transform = "scale(1)";
+      }, 200);
 
-    if (list && list.length > 0) {
-      selectedQueens.length = 0;
-      list.forEach(q => {
-        selectedQueens.push({ ...q, season });
-      });
-      renderSelected();
-    } else {
-      alert("Todavía no hemos agregado las reinas de esta temporada ✨");
-    }
+      if (list && list.length > 0) {
+        selectedQueens.length = 0;
+        list.forEach(q => {
+          selectedQueens.push({ ...q, season });
+        });
+        renderSelected();
+      } else {
+        alert("Todavía no hemos agregado las reinas de esta temporada ✨");
+      }
 
-    seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
-    setTimeout(() => {
-      seasonDropdown.style.display = "none";
-    }, 220);
-  });
-});
-
-      // cerrar el menú bonito
       seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
       setTimeout(() => {
         seasonDropdown.style.display = "none";
       }, 220);
     });
   });
-    </script>
+</script>
 
 </body>
 </html>
