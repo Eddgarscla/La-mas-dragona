@@ -69,18 +69,26 @@
     }
 
     /* Fila genérica de episodio (reina + texto) */
-    .episodeRow {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      margin-bottom: 8px;
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 999px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 14px rgba(0,0,0,0.7);
-      border-left: 3px solid transparent;
-    }
+    /* Fila genérica de episodio (reina + texto) */
+.episodeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  margin-bottom: 4px;
+  background: transparent;          /* ❌ sin barra negra */
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+  border-left: none;
+}
+
+.perfGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
 
     .episodeRow img {
       width: 44px;
@@ -395,7 +403,9 @@
     };
 
     let currentEpisode = null;
-    let step = 0; // 0 -> lista completa, 1 -> top/bottom, 2 -> ganadora, 3 -> lip sync, 4 -> eliminación
+// -1 -> pantalla de suspense (solo botón)
+// 0 -> lista completa, 1 -> top/bottom, 2 -> ganadora, 3 -> lip sync, 4 -> eliminación
+let step = -1;
 
     function buildEpisode() {
       const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
@@ -448,27 +458,64 @@
     //   RENDER DE CADA FASE
     // =========================
     function renderPerformanceList() {
-      episodeContentEl.innerHTML = "";
-      const title = document.createElement("h2");
-      title.className = "sectionTitle";
-      title.textContent = "Desempeño del cast";
-      episodeContentEl.appendChild(title);
+  episodeContentEl.innerHTML = "";
 
-      currentEpisode.performances.forEach(item => {
-        const row = document.createElement("div");
-row.className = `episodeRow perf-${item.type}`;   // ✅ corregido
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Desempeño del cast";
+  episodeContentEl.appendChild(title);
 
-        row.innerHTML = `
-          <img src="${item.queen.image}" alt="${item.queen.name}">
-          <div class="episodeText">
-            <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
-            <span class="episodePerf">${item.text}</span>
-          </div>
-        `;
-        episodeContentEl.appendChild(row);
-      });
-    }
+  // Agrupamos por tipo de desempeño
+  const grouped = {
+    excellent: [],
+    good:      [],
+    bad:       [],
+    awful:     []
+  };
 
+  currentEpisode.performances.forEach(item => {
+    grouped[item.type].push(item);
+  });
+
+  const order = [
+    { key: "excellent", label: "Excelente desempeño" },
+    { key: "good",      label: "Buen desempeño" },
+    { key: "bad",       label: "Mal desempeño" },
+    { key: "awful",     label: "Pésimo desempeño" }
+  ];
+
+  order.forEach(({ key, label }) => {
+    const list = grouped[key];
+    if (!list.length) return;
+
+    // Título del grupo
+    const h3 = document.createElement("h3");
+    h3.className = "miniTitle";
+    h3.textContent = label;
+    episodeContentEl.appendChild(h3);
+
+    // Grupo de filas
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "perfGroup";
+
+    list.forEach(item => {
+      const row = document.createElement("div");
+      row.className = `episodeRow perf-${item.type}`;
+
+      row.innerHTML = `
+        <img src="${item.queen.image}" alt="${item.queen.name}">
+        <div class="episodeText">
+          <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
+          <span class="episodePerf">${item.text}</span>
+        </div>
+      `;
+      groupDiv.appendChild(row);
+    });
+
+    episodeContentEl.appendChild(groupDiv);
+  });
+}
+  
     function renderTopBottom() {
       episodeContentEl.innerHTML = "";
 
@@ -598,6 +645,12 @@ row.className = `episodeRow perf-${item.type}`;   // ✅ corregido
       const retoNombre = currentEpisode.challenge.name;
 
       switch (step) {
+          case -1:
+      episodeTitleEl.textContent = "La más…";
+      episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
+      nextBtn.textContent = "Revelar reto";
+      episodeContentEl.innerHTML = "";
+      break;
         case 0:
           episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "Desempeño del episodio";
