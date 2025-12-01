@@ -1108,32 +1108,19 @@ searchInput.addEventListener("input", () => {
   renderResults(unique);
 });
 
-  // 🚀 Botón "A Hechizar"
-  selectBtn.addEventListener("click", () => {
+  // 🚀 Botón "A Hechizar" → guardar datos e ir a la simulación
+selectBtn.addEventListener("click", () => {
   if (selectedQueens.length === 0) {
     alert("Primero elige al menos una draguinosa ✨");
     return;
   }
 
-  const resumen =
-    "Aquí empezará la simulación con " +
-    selectedQueens.length +
-    " femininosas seleccionadas.\n\n" +
-    "Temporada: " + (seasonConfig.seasonType === "regular" ? "Regular" : "Solo las más") + "\n" +
-    "Retorno: " + (
-      seasonConfig.returnType === "none" ? "Sin retorno" :
-      seasonConfig.returnType === "aleatorio" ? "Aleatorio" :
-      seasonConfig.returnType === "decide" ? "Tú decides" :
-      "Mega reto"
-    ) + "\n" +
-    "Final: " + seasonConfig.finalists + " finalistas\n" +
-    "Coronación: " + (
-      seasonConfig.coronation === "aleatorio" ? "Final aleatorio" :
-      seasonConfig.coronation === "decidir" ? "Decidir final" :
-      "Doblaje por la corona"
-    );
+  // Guardamos el cast y la configuración en localStorage
+  localStorage.setItem("lmd_selectedQueens", JSON.stringify(selectedQueens));
+  localStorage.setItem("lmd_seasonConfig", JSON.stringify(seasonConfig));
 
-  alert(resumen);
+  // Redirigimos a la página de simulación
+  window.location.href = "simulacion.html";
 });
   // 👁️ Botón del ojo (abrir/cerrar menú con animación)
   seasonBtn.addEventListener("click", () => {
