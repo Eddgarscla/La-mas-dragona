@@ -408,51 +408,106 @@
 let step = -1;
 
     function buildEpisode() {
-      const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
+  const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
 
-      // barajamos el cast
-      const shuffled = cast.slice().sort(() => Math.random() - 0.5);
+  // Barajamos el cast para que el orden de la lista también sea aleatorio
+  const shuffled = cast.slice().sort(() => Math.random() - 0.5);
+  const n = shuffled.length;
 
-      const performances = [];
+  if (n === 0) return;
 
-      shuffled.forEach((q, i) => {
-        let perfType;
-        if (i === 0) {
-          perfType = "excellent";      // la mejor
-        } else if (i > 0 && i < 3) {
-          perfType = "good";           // top
-        } else if (i >= shuffled.length - 2) {
-          perfType = "awful";          // peores (lip sync)
-        } else if (i >= shuffled.length - 5) {
-          perfType = "bad";            // low
-        } else {
-          perfType = "good";           // safe-ish
-        }
+  // --- Elegimos índices al azar para cada rol ---
+  const indexes = [...Array(n).keys()]; // [0,1,2,...]
 
-        performances.push({
-          queen: q,
-          type: perfType,
-          text: performanceLabels[perfType]
-        });
-      });
+  function drawIndex() {
+    const pos = Math.floor(Math.random() * indexes.length);
+    return indexes.splice(pos, 1)[0]; // quita y devuelve un índice
+  }
 
-      const tops    = shuffled.slice(0, 3);
-      const bottoms = shuffled.slice(-3);
-      const lipsyncPair = bottoms.slice(0, 2);
-      const eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
-      const safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
+  // Ganadora
+  const winnerIdx = drawIndex();
 
-      currentEpisode = {
-        challenge,
-        performances,
-        tops,
-        bottoms,
-        winner: shuffled[0],
-        lipsyncPair,
-        eliminated,
-        safeFromLipsync
-      };
+  // Dos tops adicionales (si hay suficiente cast)
+  const topIdxs = [];
+  if (n >= 4) topIdxs.push(drawIndex());
+  if (n >= 5) topIdxs.push(drawIndex());
+
+  // Dos para lip sync
+  const lipIdxs = [];
+  if (n >= 3) lipIdxs.push(drawIndex());
+  if (n >= 4) lipIdxs.push(drawIndex());
+
+  // Una extra para estar en las "menos" pero sin lip sync (si hay varias)
+  let extraBottomIdx = null;
+  if (n >= 6 && indexes.length > 0) {
+    extraBottomIdx = drawIndex();
+  }
+
+  // Un par de "low" (mal desempeño) si sobran reinas
+  const lowIdxs = [];
+  if (indexes.length > 0) {
+    const numLow = Math.min(2, indexes.length);
+    for (let i = 0; i < numLow; i++) {
+      lowIdxs.push(drawIndex());
     }
+  }
+  // Lo que quede en indexes se considerará "buen desempeño" normal
+
+  // --- Construimos la lista de performances ---
+  const performances = [];
+
+  for (let i = 0; i < n; i++) {
+    const q = shuffled[i];
+    let perfType = "good"; // por defecto
+
+    if (i === winnerIdx) {
+      perfType = "excellent";
+    } else if (topIdxs.includes(i)) {
+      perfType = "good"; // top pero buen desempeño
+    } else if (lipIdxs.includes(i)) {
+      perfType = "awful";
+    } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
+      perfType = "bad";
+    }
+
+    performances.push({
+      queen: q,
+      type: perfType,
+      text: performanceLabels[perfType]
+    });
+  }
+
+  // --- Tops y bottoms para las otras pantallas ---
+  const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
+  const bottoms = [...lipIdxs.map(i => shuffled[i])];
+  if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
+
+  const lipsyncPair = lipIdxs.map(i => shuffled[i]);
+  let eliminated, safeFromLipsync;
+
+  if (lipsyncPair.length === 2) {
+    eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
+    safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
+  } else if (lipsyncPair.length === 1) {
+    // por si hubiera cast muy pequeño
+    eliminated = lipsyncPair[0];
+    safeFromLipsync = null;
+  } else {
+    eliminated = null;
+    safeFromLipsync = null;
+  }
+
+  currentEpisode = {
+    challenge,
+    performances,
+    tops,
+    bottoms,
+    winner: shuffled[winnerIdx],
+    lipsyncPair,
+    eliminated,
+    safeFromLipsync
+  };
+}
 
     // =========================
     //   RENDER DE CADA FASE
