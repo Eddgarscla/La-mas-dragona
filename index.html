@@ -428,12 +428,12 @@
       .join("");
   }
 
-  function avatarHTML(q) {
-  if (q.image) {
-    return <img src="${q.image}" alt="${q.name}">;
+    function avatarHTML(q) {
+    if (q.image) {
+      return `<img src="${q.image}" alt="${q.name}">`;
+    }
+    return getInitials(q.name);
   }
-  return getInitials(q.name);
-      }
 
   function renderSelected() {
     selectedDiv.innerHTML = "";
