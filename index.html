@@ -892,10 +892,10 @@
   const seasonOptions = document.querySelectorAll(".seasonOption");
 
   // 🎛️ Selects de configuración de temporada
-const seasonTypeSelect   = document.getElementById("configSeasonType");
-const returnTypeSelect   = document.getElementById("configReturnType");
-const finalistsSelect    = document.getElementById("configFinalists");
-const coronationSelect   = document.getElementById("configCoronation");
+//const seasonTypeSelect   = document.getElementById("configSeasonType");
+//const returnTypeSelect   = document.getElementById("configReturnType");
+//const finalistsSelect    = document.getElementById("configFinalists");
+//const coronationSelect   = document.getElementById("configCoronation");
 
 // Estado de configuración de temporada
 const seasonConfig = {
@@ -1030,20 +1030,20 @@ searchInput.addEventListener("input", () => {
   renderResults(unique);
 });
   // Cuando el usuario cambia alguna opción, actualizamos el estado
-seasonTypeSelect.addEventListener("change", () => {
-  seasonConfig.seasonType = seasonTypeSelect.value;
+//seasonTypeSelect.addEventListener("change", () => {
+ // seasonConfig.seasonType = seasonTypeSelect.value;
 });
 
-returnTypeSelect.addEventListener("change", () => {
-  seasonConfig.returnType = returnTypeSelect.value;
+//returnTypeSelect.addEventListener("change", () => {
+ // seasonConfig.returnType = returnTypeSelect.value;
 });
 
-finalistsSelect.addEventListener("change", () => {
-  seasonConfig.finalists = finalistsSelect.value;
+//finalistsSelect.addEventListener("change", () => {
+  //seasonConfig.finalists = finalistsSelect.value;
 });
 
-coronationSelect.addEventListener("change", () => {
-  seasonConfig.coronation = coronationSelect.value;
+//coronationSelect.addEventListener("change", () => {
+ // seasonConfig.coronation = coronationSelect.value;
 });
 
   // 🚀 Botón "A Hechizar"
