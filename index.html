@@ -328,9 +328,47 @@
 }
 
   #selectQueensBtn {
-    margin-top: 10px;
-    margin-bottom: 40px;
+  font-size: 1.45em;
+  padding: 16px 28px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff37b3, #ff70d6);
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(255,255,255,0.8);
+  box-shadow: 0 0 18px rgba(255, 20, 147, 0.85),
+              0 0 38px rgba(255, 20, 147, 0.6);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(6px);
+  margin: 40px auto 60px;
+  display: block;
+  width: 70%;
+  max-width: 280px;
+  animation: pulseGlow 2.4s infinite ease-in-out;
+}
+
+#selectQueensBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 28px rgba(255, 20, 147, 1),
+              0 0 60px rgba(255, 20, 147, 0.8);
+}
+
+/* 💖 Animación suave para el aura */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 18px rgba(255, 20, 147, 0.85),
+                0 0 38px rgba(255, 20, 147, 0.6);
   }
+  50% {
+    box-shadow: 0 0 28px rgba(255, 20, 147, 1),
+                0 0 65px rgba(255, 20, 147, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 18px rgba(255, 20, 147, 0.85),
+                0 0 38px rgba(255, 20, 147, 0.6);
+  }
+}
   .seasonBtn {
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, transform 0.2s;
 }
@@ -903,17 +941,22 @@
   });
         }
   function addQueen(q) {
-    // no duplicadas
-    if (selectedQueens.some(s => s.name === q.name)) return;
+  // no duplicadas
+  if (selectedQueens.some(s => s.name === q.name)) return;
 
-    // límite de 20
-    if (selectedQueens.length >= MAX_QUEENS) {
-      alert("Solo puedes hechizar hasta 20 femininosas a la vez ✨");
-      return;
-    }
+  // límite de 20
+  if (selectedQueens.length >= 20) {
+    alert("Solo puedes hechizar hasta 20 femininosas a la vez ✨");
+    return;
+  }
 
-    selectedQueens.push(q);
-    renderSelected();
+  // añadir reina
+  selectedQueens.push(q);
+  renderSelected();
+
+  // 🧼 limpiar buscador y resultados
+  searchInput.value = "";
+  resultsDiv.innerHTML = "";
   }
 
   // 🔍 Buscador "Draguinosas" (sin repetir nombres)
