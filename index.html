@@ -344,41 +344,210 @@
 <button id="selectQueensBtn">A Hechizar</button>
 
 <script>
-const selectBtn = document.getElementById("selectQueensBtn");
+  // 🔮 Reinas por temporada (con imagen)
+  const queensBySeason = {
+    "1": [
+      {
+        name: "Barbara Durango",
+        image: "https://i.ibb.co/jPWQB7pR/IMG-1735.jpg"
+      },
+      {
+        name: "Cordelia Durango",
+        image: "https://i.ibb.co/Q3kP8qhb/IMG-1736.jpg"
+      },
+      {
+        name: "Debrah la grande",
+        image: "https://i.ibb.co/RkLfjCKG/IMG-1737.jpg"
+      },
+      {
+        name: "Debra men",
+        image: "https://i.ibb.co/B2dVMgKh/IMG-1738.jpg"
+      },
+      {
+        name: "Eva blunt",
+        image: "https://i.ibb.co/HTcJRGNf/IMG-1739.jpg"
+      },
+      {
+        name: "Margaret y Ya",
+        image: "https://i.ibb.co/8gVdfkhX/IMG-1741.jpg"
+      },
+      {
+        name: "Lana",
+        image: "https://i.ibb.co/zhdr0wNN/IMG-1742.webp"
+      }
+    ],
+    "2": [
+      // aquí luego pondremos T2
+    ],
+    "3": [
+      // T3
+    ],
+    "4": [
+      // T4
+    ],
+    "5": [
+      // T5
+    ],
+    "6": [
+      // T6
+    ],
+    "7": [
+      // El Séptimo Sello (si luego la usamos)
+    ],
+    "solo": [
+      // Solo Las Más
+    ]
+  };
+
+  // Construimos una lista global para el buscador mezcla
+  const allQueens = [];
+  for (const season in queensBySeason) {
+    queensBySeason[season].forEach(q => {
+      allQueens.push({ ...q, season });
+    });
+  }
+
+  // 🔗 Referencias al DOM
+  const searchInput = document.getElementById("searchQueens");
+  const resultsDiv = document.getElementById("results");
+  const selectedDiv = document.getElementById("selectedQueens");
+  const selectBtn = document.getElementById("selectQueensBtn");
   const seasonBtn = document.getElementById("seasonBtn");
   const seasonDropdown = document.getElementById("seasonDropdown");
   const seasonOptions = document.querySelectorAll(".seasonOption");
 
-  selectBtn.addEventListener("click", () => {
-    alert("Aquí empezará la simulación con las reinas que hayas elegido ✨");
+  // Estado de femininosas seleccionadas
+  const selectedQueens = [];
+
+  // 🧩 Helpers
+  function getInitials(name) {
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(p => p[0].toUpperCase())
+      .join("");
+  }
+
+  function avatarHTML(q) {
+    if (q.image) {
+      return <img src="${q.image}" alt="${q.name}" />;
+    }
+    return getInitials(q.name);
+  }
+
+  function renderSelected() {
+    selectedDiv.innerHTML = "";
+    selectedQueens.forEach(q => {
+      const pill = document.createElement("div");
+      pill.className = "selectedPill";
+      pill.innerHTML = `
+        <div class="avatar">${avatarHTML(q)}</div>
+        <span>${q.name} <span style="font-size:0.7rem;opacity:0.7;">(T${q.season})</span></span>
+        <button class="removeBtn" aria-label="Quitar reina">✕</button>
+      `;
+      pill.querySelector(".removeBtn").addEventListener("click", () => {
+        const index = selectedQueens.findIndex(s => s.name === q.name);
+        if (index !== -1) {
+          selectedQueens.splice(index, 1);
+          renderSelected();
+        }
+      });
+      selectedDiv.appendChild(pill);
+    });
+  }
+
+  function renderResults(list) {
+    resultsDiv.innerHTML = "";
+    list.forEach(q => {
+      const card = document.createElement("div");
+      card.className = "queenCard";
+      card.innerHTML = `
+        <div class="avatar">${avatarHTML(q)}</div>
+        <div class="queenName">
+          ${q.name}
+          <span style="font-size:0.75rem;opacity:0.7;">(T${q.season})</span>
+        </div>
+      `;
+      card.addEventListener("click", () => addQueen(q));
+      resultsDiv.appendChild(card);
+    });
+  }
+
+  function addQueen(q) {
+    if (selectedQueens.some(s => s.name === q.name)) return; // no duplicadas
+    selectedQueens.push(q);
+    renderSelected();
+  }
+
+  // 🔍 Buscador "Draguinosas"
+  searchInput.addEventListener("input", () => {
+    const term = searchInput.value.trim().toLowerCase();
+    if (term === "") {
+      resultsDiv.innerHTML = "";
+      return;
+    }
+    const filtered = allQueens.filter(q =>
+      q.name.toLowerCase().includes(term)
+    );
+    renderResults(filtered);
   });
 
-seasonBtn.addEventListener("click", () => {
-  const isOpen = seasonDropdown.style.display === "block";
+  // 🚀 Botón "A Hechizar"
+  selectBtn.addEventListener("click", () => {
+    if (selectedQueens.length === 0) {
+      alert("Primero elige al menos una draguinosa ✨");
+      return;
+    }
+    alert(
+      "Aquí empezará la simulación con " +
+        selectedQueens.length +
+        " femininosas seleccionadas."
+    );
+  });
 
-  if (isOpen) {
-    // Animación de salida
-    seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
-    setTimeout(() => {
-      seasonDropdown.style.display = "none";
-    }, 220); // Espera a que termine la animación
-  } else {
-    // Mostrar con animación de entrada
-    seasonDropdown.style.display = "block";
-    seasonDropdown.style.animation = "none";
-    void seasonDropdown.offsetWidth;
-    seasonDropdown.style.animation = "dropdownIn 0.28s ease-out";
-  }
-});
+  // 👁️ Botón del ojo (abrir/cerrar menú con animación)
+  seasonBtn.addEventListener("click", () => {
+    const isOpen = seasonDropdown.style.display === "block";
 
+    if (isOpen) {
+      seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
+      setTimeout(() => {
+        seasonDropdown.style.display = "none";
+      }, 220);
+    } else {
+      seasonDropdown.style.display = "block";
+      seasonDropdown.style.animation = "none";
+      void seasonDropdown.offsetWidth;
+      seasonDropdown.style.animation = "dropdownIn 0.28s ease-out";
+    }
+  });
+
+  // 🧙‍♀️ Al elegir "milagro / camino / ojo / etc." autollenar cast
   seasonOptions.forEach(option => {
     option.addEventListener("click", () => {
       const season = option.dataset.season;
-      seasonDropdown.style.display = "none";
-      alert("Has elegido " + (season === "solo" ? "Solo Las Más" : "Temporada " + season));
+      const list = queensBySeason[season];
+
+      if (list && list.length > 0) {
+        // vaciamos selección actual y cargamos esa temporada
+        selectedQueens.length = 0;
+        list.forEach(q => {
+          selectedQueens.push({ ...q, season });
+        });
+        renderSelected();
+      } else {
+        alert("Todavía no hemos agregado las reinas de esta temporada ✨");
+      }
+
+      // cerrar el menú bonito
+      seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
+      setTimeout(() => {
+        seasonDropdown.style.display = "none";
+      }, 220);
     });
   });
-</script>
+    </script>
 
 </body>
 </html>
