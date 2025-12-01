@@ -476,7 +476,45 @@
 
 <!-- BOTÓN ABAJO -->
 <button id="selectQueensBtn">A Hechizar</button>
+<!-- ⚙ CONFIGURACIÓN DE TEMPORADA -->
+<div id="seasonConfigPanel" class="configPanel">
+  <p class="configTitle">Configuración de Temporada</p>
 
+  <div class="configRow">
+    <span class="configLabel">Temporada:</span>
+    <select id="configSeasonType" class="configSelect">
+      <option value="regular">Regular</option>
+      <option value="solo">Solo las más</option>
+    </select>
+  </div>
+
+  <div class="configRow">
+    <span class="configLabel">Retorno:</span>
+    <select id="configReturnType" class="configSelect">
+      <option value="none">Sin retorno</option>
+      <option value="aleatorio">Aleatorio</option>
+      <option value="decide">Tú decides</option>
+      <option value="mega">Mega reto</option>
+    </select>
+  </div>
+
+  <div class="configRow">
+    <span class="configLabel">Final:</span>
+    <select id="configFinalists" class="configSelect">
+      <option value="4">4 Finalistas</option>
+      <option value="3">3 Finalistas</option>
+    </select>
+  </div>
+
+  <div class="configRow">
+    <span class="configLabel">Coronación:</span>
+    <select id="configCoronation" class="configSelect">
+      <option value="aleatorio">Aleatorio</option>
+      <option value="decidir">Decidir final</option>
+      <option value="lipSync">Doblaje por la corona</option>
+    </select>
+  </div>
+</div>
 <script>
   // 🔮 Reinas por temporada (con imagen)
   const queensBySeason = {
