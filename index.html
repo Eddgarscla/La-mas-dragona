@@ -137,21 +137,6 @@
     box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
   }
 
-  #queenSelector {
-  display: block;
-  margin: 120px auto 60px;
-  padding: 22px 18px 20px;
-  width: 90%;
-  max-width: 420px;
-  background: radial-gradient(circle at top,
-    rgba(255, 105, 180, 0.35),
-    rgba(0, 0, 0, 0.8));
-  border-radius: 26px;
-  text-align: left;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 28px rgba(0, 0, 0, 0.8);
-  }
   .selectorTitle {
   margin: 0 0 14px 0;
   font-size: 1.3rem;
@@ -325,6 +310,53 @@
   color: #fff;
   cursor: pointer;
   padding: 0;
+}
+  /* PANEL DE OPCIONES DE TEMPORADA */
+.configTitle {
+  margin: 14px 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  color: #ffe4ff;
+  text-shadow: 0 0 8px rgba(0,0,0,0.7);
+}
+
+.configPanel {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 14px rgba(0,0,0,0.6);
+}
+
+.configRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.configLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffeefc;
+}
+
+.configSelect {
+  border-radius: 999px;
+  border: 1px solid #ff69b4;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  background: rgba(255, 105, 180, 0.12);
+  color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.configSelect option {
+  color: #000;
 }
 
   #selectQueensBtn {
@@ -859,6 +891,19 @@
   const seasonDropdown = document.getElementById("seasonDropdown");
   const seasonOptions = document.querySelectorAll(".seasonOption");
 
+  // 🎛️ Selects de configuración de temporada
+const seasonTypeSelect   = document.getElementById("configSeasonType");
+const returnTypeSelect   = document.getElementById("configReturnType");
+const finalistsSelect    = document.getElementById("configFinalists");
+const coronationSelect   = document.getElementById("configCoronation");
+
+// Estado de configuración de temporada
+const seasonConfig = {
+  seasonType: "regular",
+  returnType: "none",
+  finalists: "4",
+  coronation: "aleatorio"
+};
   // Estado de femininosas seleccionadas
   const selectedQueens = [];
   const MAX_QUEENS = 20;
@@ -984,20 +1029,50 @@ searchInput.addEventListener("input", () => {
 
   renderResults(unique);
 });
+  // Cuando el usuario cambia alguna opción, actualizamos el estado
+seasonTypeSelect.addEventListener("change", () => {
+  seasonConfig.seasonType = seasonTypeSelect.value;
+});
+
+returnTypeSelect.addEventListener("change", () => {
+  seasonConfig.returnType = returnTypeSelect.value;
+});
+
+finalistsSelect.addEventListener("change", () => {
+  seasonConfig.finalists = finalistsSelect.value;
+});
+
+coronationSelect.addEventListener("change", () => {
+  seasonConfig.coronation = coronationSelect.value;
+});
 
   // 🚀 Botón "A Hechizar"
   selectBtn.addEventListener("click", () => {
-    if (selectedQueens.length === 0) {
-      alert("Primero elige al menos una draguinosa ✨");
-      return;
-    }
-    alert(
-      "Aquí empezará la simulación con " +
-        selectedQueens.length +
-        " femininosas seleccionadas."
-    );
-  });
+  if (selectedQueens.length === 0) {
+    alert("Primero elige al menos una draguinosa ✨");
+    return;
+  }
 
+  const resumen =
+    "Aquí empezará la simulación con " +
+    selectedQueens.length +
+    " femininosas seleccionadas.\n\n" +
+    "Temporada: " + (seasonConfig.seasonType === "regular" ? "Regular" : "Solo las más") + "\n" +
+    "Retorno: " + (
+      seasonConfig.returnType === "none" ? "Sin retorno" :
+      seasonConfig.returnType === "aleatorio" ? "Aleatorio" :
+      seasonConfig.returnType === "decide" ? "Tú decides" :
+      "Mega reto"
+    ) + "\n" +
+    "Final: " + seasonConfig.finalists + " finalistas\n" +
+    "Coronación: " + (
+      seasonConfig.coronation === "aleatorio" ? "Final aleatorio" :
+      seasonConfig.coronation === "decidir" ? "Decidir final" :
+      "Doblaje por la corona"
+    );
+
+  alert(resumen);
+});
   // 👁️ Botón del ojo (abrir/cerrar menú con animación)
   seasonBtn.addEventListener("click", () => {
     const isOpen = seasonDropdown.style.display === "block";
