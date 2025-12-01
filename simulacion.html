@@ -121,6 +121,63 @@
     .perf-good        { border-left-color: #5dd9ff; }
     .perf-bad         { border-left-color: #ffd54a; }
     .perf-awful       { border-left-color: #ff3b6b; }
+    }
+    /* Grupos de desempeño (bloques como en tu ejemplo) */
+.perfGroup {
+  margin-bottom: 18px;
+}
+
+.perfGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 12px;
+}
+
+.perfCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 8px 10px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 14px rgba(0,0,0,0.7);
+  max-width: 120px;
+}
+
+/* Foto dentro de la card */
+.perfCard img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 12px rgba(255,105,180,0.9);
+  margin-bottom: 4px;
+}
+
+/* Colores por desempeño (solo borde/brillo de la foto) */
+.perfCard.perf-excellent img {
+  border-color: #00ff9d;
+  box-shadow: 0 0 14px rgba(0,255,157,0.9);
+}
+
+.perfCard.perf-good img {
+  border-color: #5dd9ff;
+  box-shadow: 0 0 14px rgba(93,217,255,0.9);
+}
+
+.perfCard.perf-bad img {
+  border-color: #ffd54a;
+  box-shadow: 0 0 14px rgba(255,213,74,0.9);
+}
+
+.perfCard.perf-awful img {
+  border-color: #ff3b6b;
+  box-shadow: 0 0 14px rgba(255,59,107,0.9);
+}
 
     /* Ganadora del reto */
     .winnerCard {
