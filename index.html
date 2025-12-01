@@ -291,6 +291,9 @@
     margin-top: 10px;
     margin-bottom: 40px;
   }
+  .seasonBtn {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, transform 0.2s;
+}
   /* Animación de entrada del menú de temporadas */
 @keyframes dropdownIn {
   0% {
@@ -450,6 +453,7 @@
 
   // Estado de femininosas seleccionadas
   const selectedQueens = [];
+  let currentSeasonColor = "#ff69b4"; // color default si no hay temporada
 
   // 🧩 Helpers
   function getInitials(name) {
@@ -574,20 +578,34 @@
 
   // 🧙‍♀️ Al elegir "milagro / camino / ojo / etc." autollenar cast
   seasonOptions.forEach(option => {
-    option.addEventListener("click", () => {
-      const season = option.dataset.season;
-      const list = queensBySeason[season];
+  option.addEventListener("click", () => {
+    const season = option.dataset.season;
+    const list = queensBySeason[season];
 
-      if (list && list.length > 0) {
-        // vaciamos selección actual y cargamos esa temporada
-        selectedQueens.length = 0;
-        list.forEach(q => {
-          selectedQueens.push({ ...q, season });
-        });
-        renderSelected();
-      } else {
-        alert("Todavía no hemos agregado las reinas de esta temporada ✨");
-      }
+    // 🟣 Cambia el color del ojito
+    currentSeasonColor = seasonColors[season] || "#ff69b4";
+    seasonBtn.style.borderColor = currentSeasonColor;
+    seasonBtn.style.boxShadow = 0 0 18px ${currentSeasonColor};
+    seasonBtn.style.backgroundColor = currentSeasonColor + "33"; // Transparente
+    seasonBtn.style.transform = "scale(1.1)";
+    setTimeout(() => seasonBtn.style.transform = "scale(1)", 200);
+
+    if (list && list.length > 0) {
+      selectedQueens.length = 0;
+      list.forEach(q => {
+        selectedQueens.push({ ...q, season });
+      });
+      renderSelected();
+    } else {
+      alert("Todavía no hemos agregado las reinas de esta temporada ✨");
+    }
+
+    seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
+    setTimeout(() => {
+      seasonDropdown.style.display = "none";
+    }, 220);
+  });
+});
 
       // cerrar el menú bonito
       seasonDropdown.style.animation = "dropdownOut 0.25s ease-out";
