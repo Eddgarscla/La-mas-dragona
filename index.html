@@ -419,6 +419,17 @@
       // Solo Las Más
     ]
   };
+  // 🎨 Color por temporada
+  const seasonColors = {
+    "1": "#FFD700", // Dorado
+    "2": "#00A6FF", // Azul eléctrico
+    "3": "#FF2FB3", // Rosa magenta
+    "4": "#A100FF", // Morado
+    "5": "#00E5DA", // Agua
+    "6": "#00FF57", // Verde neón
+    "7": "#FF0037", // Rojo carmesí
+    "solo": "#C9C9C9" // Plateado
+  };
 
   // Construimos una lista global para el buscador mezcla
   const allQueens = [];
@@ -458,15 +469,23 @@
   }
 
   function renderSelected() {
+  function renderSelected() {
     selectedDiv.innerHTML = "";
     selectedQueens.forEach(q => {
       const pill = document.createElement("div");
       pill.className = "selectedPill";
+      const color = seasonColors[q.season] || "#ff69b4";
+
       pill.innerHTML = `
-        <div class="avatar">${avatarHTML(q)}</div>
-        <span>${q.name} <span style="font-size:0.7rem;opacity:0.7;">(T${q.season})</span></span>
+        <div class="avatar" style="border: 3px solid ${color}; box-shadow: 0 0 12px ${color}99;">
+          ${avatarHTML(q)}
+        </div>
+        <span style="color:${color};">
+          ${q.name} <span style="font-size:0.7rem;opacity:0.8;">(T${q.season})</span>
+        </span>
         <button class="removeBtn" aria-label="Quitar reina">✕</button>
       `;
+
       pill.querySelector(".removeBtn").addEventListener("click", () => {
         const index = selectedQueens.findIndex(s => s.name === q.name);
         if (index !== -1) {
@@ -474,29 +493,38 @@
           renderSelected();
         }
       });
+
       selectedDiv.appendChild(pill);
     });
-  }
-
+    
   function renderResults(list) {
     resultsDiv.innerHTML = "";
     list.forEach(q => {
       const card = document.createElement("div");
       card.className = "queenCard";
+      const color = seasonColors[q.season] || "#ff69b4";
+
       card.innerHTML = `
-        <div class="avatar">${avatarHTML(q)}</div>
-        <div class="queenName">
+        <div class="avatar" style="border: 3px solid ${color}; box-shadow: 0 0 10px ${color}88;">
+          ${avatarHTML(q)}
+        </div>
+        <div class="queenName" style="color:${color};">
           ${q.name}
-          <span style="font-size:0.75rem;opacity:0.7;">(T${q.season})</span>
+          <span style="font-size:0.75rem;opacity:0.8;">(T${q.season})</span>
         </div>
       `;
+
       card.addEventListener("click", () => addQueen(q));
       resultsDiv.appendChild(card);
     });
-  }
+    }
 
   function addQueen(q) {
     if (selectedQueens.some(s => s.name === q.name)) return; // no duplicadas
+    if (selectedQueens.length >= 20) {
+      alert("Solo puedes hechizar hasta 20 femininosas a la vez ✨");
+      return;
+    }
     selectedQueens.push(q);
     renderSelected();
   }
