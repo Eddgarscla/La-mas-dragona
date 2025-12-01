@@ -40,6 +40,140 @@
   <pre id="config"></pre>
 
   <script>
+    // 🔥 Retos por temporada
+const challengesBySeason = {
+  "1": [
+    "La más diva",
+    "La más quinceañera",
+    "La más Thalía",
+    "La más Alebrije",
+    "La más dramática"
+  ],
+  "2": [
+    "La más típica",
+    "La más religiosa",
+    "La más luchona",
+    "La más piñata",
+    "La más Juanga",
+    "La más independiente",
+    "La más villana"
+  ],
+  "3": [
+    "La más suertuda",
+    "La más prehispánica",
+    "La más fichera",
+    "La más Chespirito",
+    "La más famosa",
+    "La más legendaria",
+    "La más bella señorita México",
+    "La más buchona",
+    "La más antojable"
+  ],
+  "4": [
+    "La más folclórica",
+    "La más pintada",
+    "La más revolucionaria",
+    "La más mezclilla",
+    "La más cachuda",
+    "La más famosa",
+    "La más rosa mexicano",
+    "La más chola",
+    "La más Cri Cri",
+    "La más imperial"
+  ],
+  "5": [
+    "La más artesanal",
+    "La más a color",
+    "La más juguete",
+    "La más famosa",
+    "La más del Toro",
+    "La más tejocote",
+    "La más futurista",
+    "La más Lele",
+    "La más monja coronada"
+  ],
+  "6": [
+    "La más monumental",
+    "La más Frida",
+    "La más Pixar",
+    "La más recursiva",
+    "La más floral",
+    "La más nahual",
+    "La más azul peltre",
+    "La más animada",
+    "La más divina Infantita",
+    "La más galardonada"
+  ],
+  "7": [
+    "La más Guelaguetza",
+    "La más Silvia Pinal",
+    "La más dulce",
+    "La más recursiva",
+    "La más metrera",
+    "La más plicopúrpura",
+    "La más panzuda",
+    "La más maíz",
+    "La más Lupita"
+  ]
+};
+
+// 🕯️ Retos especiales (para cualquier temporada)
+const specialChallenges = {
+  reunion: "Día de Muertas",
+  final:   "La Gran Final"
+};
+    // 🧩 Lista global de retos con id y temporada
+const allChallenges = [];
+
+for (const season in challengesBySeason) {
+  challengesBySeason[season].forEach((name, index) => {
+    allChallenges.push({
+      id: T${season}-${index + 1}, // ejemplo: T3-4
+      name,
+      season
+    });
+  });
+}
+
+// También podemos meter los especiales aquí si hace falta
+allChallenges.push(
+  { id: "SPECIAL-reunion", name: specialChallenges.reunion, season: "all", type: "reunion" },
+  { id: "SPECIAL-final",   name: specialChallenges.final,   season: "all", type: "final" }
+);
+    // Guarda aquí los ids de retos que ya se usaron en esta simulación
+const usedChallengeIds = [];
+
+// 👉 Un reto aleatorio de TODAS las temporadas
+function getRandomChallenge() {
+  const disponibles = allChallenges.filter(ch => !usedChallengeIds.includes(ch.id));
+
+  if (disponibles.length === 0) {
+    return null; // ya no quedan retos libres
+  }
+
+  const randomIndex = Math.floor(Math.random() * disponibles.length);
+  const reto = disponibles[randomIndex];
+
+  usedChallengeIds.push(reto.id); // marcamos como usado
+  return reto;
+}
+
+// 👉 Un reto aleatorio pero solo de una temporada concreta (por ejemplo T7)
+function getRandomChallengeForSeason(season) {
+  const disponibles = allChallenges.filter(
+    ch => ch.season === String(season) && !usedChallengeIds.includes(ch.id)
+  );
+
+  if (disponibles.length === 0) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * disponibles.length);
+  const reto = disponibles[randomIndex];
+
+  usedChallengeIds.push(reto.id);
+  return reto;
+}
     const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
     const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
 
