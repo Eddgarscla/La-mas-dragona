@@ -721,18 +721,31 @@
     renderSelected();
   }
 
-  // 🔍 Buscador "Draguinosas"
-  searchInput.addEventListener("input", () => {
-    const term = searchInput.value.trim().toLowerCase();
-    if (term === "") {
-      resultsDiv.innerHTML = "";
-      return;
+  // 🔍 Buscador "Draguinosas" (sin repetir nombres)
+searchInput.addEventListener("input", () => {
+  const term = searchInput.value.trim().toLowerCase();
+  if (term === "") {
+    resultsDiv.innerHTML = "";
+    return;
+  }
+
+  const filtered = allQueens.filter(q =>
+    q.name.toLowerCase().includes(term)
+  );
+
+  // ❌ Evitar que el mismo nombre salga dos veces (Paper Cut, etc.)
+  const seen = new Set();
+  const unique = [];
+
+  filtered.forEach(q => {
+    if (!seen.has(q.name)) {
+      seen.add(q.name);
+      unique.push(q);
     }
-    const filtered = allQueens.filter(q =>
-      q.name.toLowerCase().includes(term)
-    );
-    renderResults(filtered);
   });
+
+  renderResults(unique);
+});
 
   // 🚀 Botón "A Hechizar"
   selectBtn.addEventListener("click", () => {
