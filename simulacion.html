@@ -2,193 +2,650 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Simulación - La Más Draga</title>
+  <title>Episodio - La Más Draga</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  min-height: 100vh;
-  background-image: url('WhatsApp Image 2025-12-01 at 07.24.11.jpeg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  color: white;
-  overflow-x: hidden;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      background-image: url('WhatsApp Image 2025-12-01 at 07.24.11.jpeg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center top;
+      color: white;
+      overflow-x: hidden;
+      padding: env(safe-area-inset-top) 10px 30px;
+      box-sizing: border-box;
     }
-    h1 { text-align: center; }
-    .queen {
+
+    /* Panel principal encima de la pasarela */
+    .sim-panel {
+      max-width: 430px;
+      margin: 70px auto 40px;
+      padding: 18px 18px 24px;
+      background: rgba(0, 0, 0, 0.40);
+      border-radius: 26px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2.0rem;
+      text-align: center;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: linear-gradient(90deg, #ffd700, #ff69b4, #7b5dff);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    }
+
+    #episodeSubtitle {
+      margin: 0 0 14px;
+      text-align: center;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    h2.sectionTitle {
+      margin: 14px 0 8px;
+      font-size: 1.15rem;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-shadow:
+        0 0 8px rgba(0,0,0,0.9),
+        0 0 16px rgba(255,105,180,0.9);
+    }
+
+    h3.miniTitle {
+      margin: 12px 0 6px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Fila genérica de episodio (reina + texto) */
+    .episodeRow {
       display: flex;
       align-items: center;
       gap: 10px;
+      padding: 8px 10px;
       margin-bottom: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 14px rgba(0,0,0,0.7);
+      border-left: 3px solid transparent;
     }
-    .queen img {
-      width: 50px;
-      height: 50px;
+
+    .episodeRow img {
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid rgba(255, 105, 180, 0.9);
+      box-shadow: 0 0 10px rgba(255,105,180,0.9);
+      flex-shrink: 0;
+    }
+
+    .episodeText {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .episodeName {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .episodePerf {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* Colores según desempeño */
+    .perf-excellent   { border-left-color: #00ff9d; }
+    .perf-good        { border-left-color: #5dd9ff; }
+    .perf-bad         { border-left-color: #ffd54a; }
+    .perf-awful       { border-left-color: #ff3b6b; }
+
+    /* Ganadora del reto */
+    .winnerCard {
+      text-align: center;
+      padding-top: 10px;
+    }
+
+    .winnerCard img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+      margin-bottom: 10px;
+    }
+
+    .winnerTitle {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    /* Lip sync */
+    .lipSyncGrid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .lipSyncRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 18px rgba(0,0,0,0.7);
+    }
+
+    .lipSyncRow img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 0 14px rgba(255,105,180,0.9);
+    }
+
+    /* Eliminada */
+    .eliminationWrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    .safeQueen, .outQueen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .safeQueen img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #00ff9d;
+      box-shadow: 0 0 18px rgba(0,255,157,0.9);
+    }
+
+    .outQueen img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ff0037;
+      box-shadow: 0 0 18px rgba(255,0,55,0.9);
+      filter: grayscale(100%);
+    }
+
+    .outLabel {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ff8fa8;
+    }
+
+    /* Botón siguiente */
+    #nextBtn {
+      font-size: 1.1em;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff37b3, #ff70d6);
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(255,255,255,0.8);
+      box-shadow: 0 0 18px rgba(255, 20, 147, 0.85),
+                  0 0 38px rgba(255, 20, 147, 0.6);
+      transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s;
+      backdrop-filter: blur(6px);
+      margin: 18px auto 0;
+      display: block;
+      width: 80%;
+      max-width: 260px;
+    }
+
+    #nextBtn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 28px rgba(255, 20, 147, 1),
+                  0 0 60px rgba(255, 20, 147, 0.8);
+    }
+
+    #nextBtn:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    #episodeContent {
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
-  <h1>Simulación en camino… ✨</h1>
-  <h2>Cast seleccionado</h2>
-  <div id="cast"></div>
+  <div class="sim-panel">
+    <h1 id="episodeTitle"></h1>
+    <p id="episodeSubtitle"></p>
 
-  <h2>Configuración</h2>
-  <pre id="config"></pre>
+    <div id="episodeContent"></div>
+
+    <button id="nextBtn">La más…</button>
+  </div>
 
   <script>
-    // 🔥 Retos por temporada
-const challengesBySeason = {
-  "1": [
-    "La más diva",
-    "La más quinceañera",
-    "La más Thalía",
-    "La más Alebrije",
-    "La más dramática"
-  ],
-  "2": [
-    "La más típica",
-    "La más religiosa",
-    "La más luchona",
-    "La más piñata",
-    "La más Juanga",
-    "La más independiente",
-    "La más villana"
-  ],
-  "3": [
-    "La más suertuda",
-    "La más prehispánica",
-    "La más fichera",
-    "La más Chespirito",
-    "La más famosa",
-    "La más legendaria",
-    "La más bella señorita México",
-    "La más buchona",
-    "La más antojable"
-  ],
-  "4": [
-    "La más folclórica",
-    "La más pintada",
-    "La más revolucionaria",
-    "La más mezclilla",
-    "La más cachuda",
-    "La más famosa",
-    "La más rosa mexicano",
-    "La más chola",
-    "La más Cri Cri",
-    "La más imperial"
-  ],
-  "5": [
-    "La más artesanal",
-    "La más a color",
-    "La más juguete",
-    "La más famosa",
-    "La más del Toro",
-    "La más tejocote",
-    "La más futurista",
-    "La más Lele",
-    "La más monja coronada"
-  ],
-  "6": [
-    "La más monumental",
-    "La más Frida",
-    "La más Pixar",
-    "La más recursiva",
-    "La más floral",
-    "La más nahual",
-    "La más azul peltre",
-    "La más animada",
-    "La más divina Infantita",
-    "La más galardonada"
-  ],
-  "7": [
-    "La más Guelaguetza",
-    "La más Silvia Pinal",
-    "La más dulce",
-    "La más recursiva",
-    "La más metrera",
-    "La más plicopúrpura",
-    "La más panzuda",
-    "La más maíz",
-    "La más Lupita"
-  ]
-};
+    // =========================
+    //   RETOS POR TEMPORADA
+    // =========================
+    const challengesBySeason = {
+      "1": [
+        "La más diva",
+        "La más quinceañera",
+        "La más Thalía",
+        "La más Alebrije",
+        "La más dramática"
+      ],
+      "2": [
+        "La más típica",
+        "La más religiosa",
+        "La más luchona",
+        "La más piñata",
+        "La más Juanga",
+        "La más independiente",
+        "La más villana"
+      ],
+      "3": [
+        "La más suertuda",
+        "La más prehispánica",
+        "La más fichera",
+        "La más Chespirito",
+        "La más famosa",
+        "La más legendaria",
+        "La más bella señorita México",
+        "La más buchona",
+        "La más antojable"
+      ],
+      "4": [
+        "La más folclórica",
+        "La más pintada",
+        "La más revolucionaria",
+        "La más mezclilla",
+        "La más cachuda",
+        "La más famosa",
+        "La más rosa mexicano",
+        "La más chola",
+        "La más Cri Cri",
+        "La más imperial"
+      ],
+      "5": [
+        "La más artesanal",
+        "La más a color",
+        "La más juguete",
+        "La más famosa",
+        "La más del Toro",
+        "La más tejocote",
+        "La más futurista",
+        "La más Lele",
+        "La más monja coronada"
+      ],
+      "6": [
+        "La más monumental",
+        "La más Frida",
+        "La más Pixar",
+        "La más recursiva",
+        "La más floral",
+        "La más nahual",
+        "La más azul peltre",
+        "La más animada",
+        "La más divina Infantita",
+        "La más galardonada"
+      ],
+      "7": [
+        "La más Guelaguetza",
+        "La más Silvia Pinal",
+        "La más dulce",
+        "La más recursiva",
+        "La más metrera",
+        "La más plicopúrpura",
+        "La más panzuda",
+        "La más maíz",
+        "La más Lupita"
+      ]
+    };
 
-// 🕯️ Retos especiales (para cualquier temporada)
-const specialChallenges = {
-  reunion: "Día de Muertas",
-  final:   "La Gran Final"
-};
-    // 🧩 Lista global de retos con id y temporada
-const allChallenges = [];
+    const specialChallenges = {
+      reunion: "Día de Muertas",
+      final:   "La Gran Final"
+    };
 
-for (const season in challengesBySeason) {
-  challengesBySeason[season].forEach((name, index) => {
-    allChallenges.push({
-      id: T${season}-${index + 1}, // ejemplo: T3-4
-      name,
-      season
-    });
-  });
-}
+    // Lista global de retos
+    const allChallenges = [];
+    for (const season in challengesBySeason) {
+      challengesBySeason[season].forEach((name, index) => {
+        allChallenges.push({
+          id: T${season}-${index + 1},
+          name,
+          season
+        });
+      });
+    }
+    allChallenges.push(
+      { id: "SPECIAL-reunion", name: specialChallenges.reunion, season: "all", type: "reunion" },
+      { id: "SPECIAL-final",   name: specialChallenges.final,   season: "all", type: "final" }
+    );
 
-// También podemos meter los especiales aquí si hace falta
-allChallenges.push(
-  { id: "SPECIAL-reunion", name: specialChallenges.reunion, season: "all", type: "reunion" },
-  { id: "SPECIAL-final",   name: specialChallenges.final,   season: "all", type: "final" }
-);
-    // Guarda aquí los ids de retos que ya se usaron en esta simulación
-const usedChallengeIds = [];
+    const usedChallengeIds = [];
 
-// 👉 Un reto aleatorio de TODAS las temporadas
-function getRandomChallenge() {
-  const disponibles = allChallenges.filter(ch => !usedChallengeIds.includes(ch.id));
+    function getRandomChallenge() {
+      const disponibles = allChallenges.filter(ch => !usedChallengeIds.includes(ch.id));
+      if (!disponibles.length) return null;
+      const randomIndex = Math.floor(Math.random() * disponibles.length);
+      const reto = disponibles[randomIndex];
+      usedChallengeIds.push(reto.id);
+      return reto;
+    }
 
-  if (disponibles.length === 0) {
-    return null; // ya no quedan retos libres
-  }
-
-  const randomIndex = Math.floor(Math.random() * disponibles.length);
-  const reto = disponibles[randomIndex];
-
-  usedChallengeIds.push(reto.id); // marcamos como usado
-  return reto;
-}
-
-// 👉 Un reto aleatorio pero solo de una temporada concreta (por ejemplo T7)
-function getRandomChallengeForSeason(season) {
-  const disponibles = allChallenges.filter(
-    ch => ch.season === String(season) && !usedChallengeIds.includes(ch.id)
-  );
-
-  if (disponibles.length === 0) {
-    return null;
-  }
-
-  const randomIndex = Math.floor(Math.random() * disponibles.length);
-  const reto = disponibles[randomIndex];
-
-  usedChallengeIds.push(reto.id);
-  return reto;
-}
+    // =========================
+    //   DATOS DEL CAST
+    // =========================
     const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
     const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
 
-    const castDiv = document.getElementById("cast");
-    cast.forEach(q => {
-      const div = document.createElement("div");
-      div.className = "queen";
-      div.innerHTML = `
-        <img src="${q.image}" alt="${q.name}">
-        <span>${q.name} (T${q.season})</span>
-      `;
-      castDiv.appendChild(div);
-    });
+    const episodeTitleEl    = document.getElementById("episodeTitle");
+    const episodeSubtitleEl = document.getElementById("episodeSubtitle");
+    const episodeContentEl  = document.getElementById("episodeContent");
+    const nextBtn           = document.getElementById("nextBtn");
 
-    document.getElementById("config").textContent = JSON.stringify(config, null, 2);
+    if (!cast.length) {
+      episodeTitleEl.textContent = "No hay cast cargado";
+      episodeSubtitleEl.textContent = "Vuelve a la pantalla inicial y selecciona tus femininosas ✨";
+      episodeContentEl.textContent = "";
+      nextBtn.disabled = true;
+    }
+
+    // =========================
+    //   EPISODIO 1 ALEATORIO
+    // =========================
+    const performanceLabels = {
+      excellent: "tuvo un excelente desempeño",
+      good:      "tuvo un buen desempeño",
+      bad:       "tuvo un mal desempeño",
+      awful:     "tuvo un pésimo desempeño"
+    };
+
+    let currentEpisode = null;
+    let step = 0; // 0 -> lista completa, 1 -> top/bottom, 2 -> ganadora, 3 -> lip sync, 4 -> eliminación
+
+    function buildEpisode() {
+      const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
+
+      // barajamos el cast
+      const shuffled = cast.slice().sort(() => Math.random() - 0.5);
+
+      const performances = [];
+
+      shuffled.forEach((q, i) => {
+        let perfType;
+        if (i === 0) {
+          perfType = "excellent";      // la mejor
+        } else if (i > 0 && i < 3) {
+          perfType = "good";           // top
+        } else if (i >= shuffled.length - 2) {
+          perfType = "awful";          // peores (lip sync)
+        } else if (i >= shuffled.length - 5) {
+          perfType = "bad";            // low
+        } else {
+          perfType = "good";           // safe-ish
+        }
+
+        performances.push({
+          queen: q,
+          type: perfType,
+          text: performanceLabels[perfType]
+        });
+      });
+
+      const tops    = shuffled.slice(0, 3);
+      const bottoms = shuffled.slice(-3);
+      const lipsyncPair = bottoms.slice(0, 2);
+      const eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
+      const safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
+
+      currentEpisode = {
+        challenge,
+        performances,
+        tops,
+        bottoms,
+        winner: shuffled[0],
+        lipsyncPair,
+        eliminated,
+        safeFromLipsync
+      };
+    }
+
+    // =========================
+    //   RENDER DE CADA FASE
+    // =========================
+    function renderPerformanceList() {
+      episodeContentEl.innerHTML = "";
+      const title = document.createElement("h2");
+      title.className = "sectionTitle";
+      title.textContent = "Desempeño del cast";
+      episodeContentEl.appendChild(title);
+
+      currentEpisode.performances.forEach(item => {
+        const row = document.createElement("div");
+        row.className = episodeRow perf-${item.type};
+
+        row.innerHTML = `
+          <img src="${item.queen.image}" alt="${item.queen.name}">
+          <div class="episodeText">
+            <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
+            <span class="episodePerf">${item.text}</span>
+          </div>
+        `;
+        episodeContentEl.appendChild(row);
+      });
+    }
+
+    function renderTopBottom() {
+      episodeContentEl.innerHTML = "";
+
+      const topTitle = document.createElement("h2");
+      topTitle.className = "sectionTitle";
+      topTitle.textContent = "Las más";
+      episodeContentEl.appendChild(topTitle);
+
+      currentEpisode.tops.forEach(q => {
+        const row = document.createElement("div");
+        row.className = "episodeRow perf-excellent";
+        row.innerHTML = `
+          <img src="${q.image}" alt="${q.name}">
+          <div class="episodeText">
+            <span class="episodeName">${q.name} (T${q.season})</span>
+            <span class="episodePerf">Entre las mejores del episodio</span>
+          </div>
+        `;
+        episodeContentEl.appendChild(row);
+      });
+
+      const lowTitle = document.createElement("h2");
+      lowTitle.className = "sectionTitle";
+      lowTitle.textContent = "Las menos";
+      episodeContentEl.appendChild(lowTitle);
+
+      currentEpisode.bottoms.forEach(q => {
+        const row = document.createElement("div");
+        row.className = "episodeRow perf-awful";
+        row.innerHTML = `
+          <img src="${q.image}" alt="${q.name}">
+          <div class="episodeText">
+            <span class="episodeName">${q.name} (T${q.season})</span>
+            <span class="episodePerf">Entre las peores del episodio</span>
+          </div>
+        `;
+        episodeContentEl.appendChild(row);
+      });
+    }
+
+    function renderWinner() {
+      episodeContentEl.innerHTML = "";
+
+      const card = document.createElement("div");
+      card.className = "winnerCard";
+
+      const retoNombre = currentEpisode.challenge.name;
+      let clean = retoNombre.replace(/^La más\s*/i, "");
+      if (!clean) clean = retoNombre;
+
+      card.innerHTML = `
+        <div class="winnerTitle">La más ${clean} es…</div>
+        <img src="${currentEpisode.winner.image}" alt="${currentEpisode.winner.name}">
+        <div class="episodeName">${currentEpisode.winner.name} (T${currentEpisode.winner.season})</div>
+      `;
+
+      episodeContentEl.appendChild(card);
+    }
+
+    function renderLipsync() {
+      episodeContentEl.innerHTML = "";
+
+      const title = document.createElement("h2");
+      title.className = "sectionTitle";
+      title.textContent = "Doblaje por la corona";
+      episodeContentEl.appendChild(title);
+
+      const info = document.createElement("p");
+      info.textContent = "Las menos se enfrentan en un lip sync por su vida.";
+      info.style.margin = "0 0 8px";
+      episodeContentEl.appendChild(info);
+
+      const grid = document.createElement("div");
+      grid.className = "lipSyncGrid";
+
+      currentEpisode.lipsyncPair.forEach(q => {
+        const row = document.createElement("div");
+        row.className = "lipSyncRow";
+        row.innerHTML = `
+          <img src="${q.image}" alt="${q.name}">
+          <div class="episodeText">
+            <span class="episodeName">${q.name} (T${q.season})</span>
+            <span class="episodePerf">Doblaje de eliminación</span>
+          </div>
+        `;
+        grid.appendChild(row);
+      });
+
+      episodeContentEl.appendChild(grid);
+    }
+
+    function renderElimination() {
+      episodeContentEl.innerHTML = "";
+
+      const title = document.createElement("h2");
+      title.className = "sectionTitle";
+      title.textContent = "Resultado del doblaje";
+      episodeContentEl.appendChild(title);
+
+      const wrap = document.createElement("div");
+      wrap.className = "eliminationWrapper";
+
+      const safe = document.createElement("div");
+      safe.className = "safeQueen";
+      safe.innerHTML = `
+        <img src="${currentEpisode.safeFromLipsync.image}" alt="${currentEpisode.safeFromLipsync.name}">
+        <div class="episodeName">${currentEpisode.safeFromLipsync.name} (T${currentEpisode.safeFromLipsync.season})</div>
+        <div class="episodePerf">Sigue en la competencia</div>
+      `;
+
+      const out = document.createElement("div");
+      out.className = "outQueen";
+      out.innerHTML = `
+        <img src="${currentEpisode.eliminated.image}" alt="${currentEpisode.eliminated.name}">
+        <div class="outLabel">Abandona la competencia</div>
+        <div class="episodeName">${currentEpisode.eliminated.name} (T${currentEpisode.eliminated.season})</div>
+      `;
+
+      wrap.appendChild(safe);
+      wrap.appendChild(out);
+      episodeContentEl.appendChild(wrap);
+    }
+
+    function renderStep() {
+      if (!currentEpisode) return;
+
+      const retoNombre = currentEpisode.challenge.name;
+
+      switch (step) {
+        case 0:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Desempeño del episodio";
+          nextBtn.textContent = "La más y las menos";
+          renderPerformanceList();
+          break;
+        case 1:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Las más y las menos del reto";
+          nextBtn.textContent = "Revelar a la más…";
+          renderTopBottom();
+          break;
+        case 2:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "";
+          nextBtn.textContent = "Ver lip sync";
+          renderWinner();
+          break;
+        case 3:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Doblaje por su vida";
+          nextBtn.textContent = "Resultado del doblaje";
+          renderLipsync();
+          break;
+        case 4:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "";
+          nextBtn.textContent = "Fin del episodio";
+          renderElimination();
+          break;
+        default:
+          nextBtn.disabled = true;
+          nextBtn.textContent = "Fin del episodio";
+      }
+    }
+
+    // Inicializamos episodio + eventos
+    if (cast.length) {
+      buildEpisode();
+      renderStep();
+
+      nextBtn.addEventListener("click", () => {
+        if (step < 4) {
+          step++;
+          renderStep();
+        }
+      });
+    }
   </script>
 </body>
-</html>
+  </html>
