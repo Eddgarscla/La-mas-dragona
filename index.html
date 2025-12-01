@@ -138,23 +138,31 @@
   }
 
   #queenSelector {
-    display: block;
-    margin: 120px auto 60px;
-    padding: 18px;
-    width: 90%;
-    max-width: 420px;
-    background: rgba(0, 0, 0, 0.65);
-    border-radius: 22px;
-    text-align: left;
-    backdrop-filter: blur(6px);
+  display: block;
+  margin: 120px auto 60px;
+  padding: 22px 18px 20px;
+  width: 90%;
+  max-width: 420px;
+  background: radial-gradient(circle at top,
+    rgba(255, 105, 180, 0.35),
+    rgba(0, 0, 0, 0.8));
+  border-radius: 26px;
+  text-align: left;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.8);
   }
-
   .selectorTitle {
-    margin: 0 0 10px 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-align: center;
-    text-shadow: 0 0 8px rgba(0,0,0,0.7);
+  margin: 0 0 14px 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffd700, #ff69b4, #7b5dff);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
   }
 
   /* Barra de búsqueda más glam */
@@ -174,9 +182,29 @@
   text-align: left;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
   }
-  #searchQueens::placeholder {
-  color: rgba(255, 255, 255, 0.55);
-  }
+  #searchQueens {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 2px solid #ff6fbf;
+  outline: none;
+  font-size: 1rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+  margin: 10px 0 18px;
+  backdrop-filter: blur(6px);
+}
+
+#searchQueens::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+#searchQueens:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 26px rgba(255, 215, 0, 0.9);
+}
 
   #results {
     max-height: 200px;
@@ -232,9 +260,16 @@
   }
 
   .selectedTitle {
-    font-weight: 600;
-    margin: 6px 0 4px;
-    color: #ffddee;
+  font-weight: 700;
+  margin: 10px 0 8px;
+  text-align: left;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 0.9),
+    0 0 14px rgba(255, 105, 180, 0.9);
   }
 
   #selectedQueens {
@@ -844,16 +879,20 @@
     card.className = "queenCard";
     const color = seasonColors[q.season] || "#ff69b4";
 
-    // 🎨 Fondo según temporada
-    card.style.background = color + "22";   
-    card.style.border = "1px solid " + color + "66";
-    card.style.boxShadow = "0 0 18px " + color + "55";
+    // 🎨 Estilo de la tarjeta según temporada
+    card.style.background = "rgba(0, 0, 0, 0.35)";          // fondo oscuro translúcido
+    card.style.backdropFilter = "blur(8px)";
+    card.style.border = "1px solid " + color + "66";        // borde con el color de la temporada
+    card.style.boxShadow = "0 0 18px " + color + "55";      // glow con el color de la temporada;
 
     card.innerHTML = `
-      <div class="avatar" style="border: 3px solid ${color}; box-shadow: 0 0 10px ${color}99;">
+      <div class="avatar"
+           style="border: 3px solid ${color};
+                  box-shadow: 0 0 10px ${color}99;">
         ${avatarHTML(q)}
       </div>
-      <div class="queenName" style="color:${color}; font-weight:700;">
+      <div class="queenName"
+           style="color:${color}; font-weight:700;">
         ${q.name}
         <span style="font-size:0.75rem;opacity:0.8;">(T${q.season})</span>
       </div>
@@ -862,8 +901,7 @@
     card.addEventListener("click", () => addQueen(q));
     resultsDiv.appendChild(card);
   });
-}
-
+        }
   function addQueen(q) {
     // no duplicadas
     if (selectedQueens.some(s => s.name === q.name)) return;
