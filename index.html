@@ -158,22 +158,24 @@
   }
 
   /* Barra de búsqueda más glam */
-  #searchQueens {
-    width: 100%;
-    padding: 12px 18px;
-    border-radius: 999px;
-    border: 2px solid #ff6fbf;
-    outline: none;
-    font-size: 1rem;
-    text-align: center;
-    background: #ffffff;
-    color: #333;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.45);
-    margin: 10px 0 16px;
-  }
+  #queenSelector {
+  display: block;
+  margin: 120px auto 60px;
+  padding: 20px 18px 24px;
+  width: 90%;
+  max-width: 420px;
 
+  /* Caja más ligera y transparente */
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+
+  text-align: left;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+  }
   #searchQueens::placeholder {
-    color: #b4b4b4;
+  color: rgba(255, 255, 255, 0.55);
   }
 
   #results {
@@ -182,23 +184,26 @@
     margin-bottom: 10px;
   }
 
-  .queenCard {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #ffe7f0;
-    padding: 8px 10px;
-    border-radius: 12px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
-  }
+.queenCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-  .queenCard:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    background: #ffd2e4;
-  }
+  /* Sin rosa fijo, base transparente y oscura */
+  background: rgba(0, 0, 0, 0.35);
+  padding: 8px 12px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+}
+
+.queenCard:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.7);
+}
 
   .avatar {
     width: 34px;
@@ -833,26 +838,31 @@
   }
 
   function renderResults(list) {
-    resultsDiv.innerHTML = "";
-    list.forEach(q => {
-      const card = document.createElement("div");
-      card.className = "queenCard";
-      const color = seasonColors[q.season] || "#ff69b4";
+  resultsDiv.innerHTML = "";
+  list.forEach(q => {
+    const card = document.createElement("div");
+    card.className = "queenCard";
+    const color = seasonColors[q.season] || "#ff69b4";
 
-      card.innerHTML = `
-        <div class="avatar" style="border: 3px solid ${color}; box-shadow: 0 0 10px ${color}88;">
-          ${avatarHTML(q)}
-        </div>
-        <div class="queenName" style="color:${color};">
-          ${q.name}
-          <span style="font-size:0.75rem;opacity:0.8;">(T${q.season})</span>
-        </div>
-      `;
+    // 🎨 Fondo según temporada
+    card.style.background = color + "22";   
+    card.style.border = "1px solid " + color + "66";
+    card.style.boxShadow = "0 0 18px " + color + "55";
 
-      card.addEventListener("click", () => addQueen(q));
-      resultsDiv.appendChild(card);
-    });
-  }
+    card.innerHTML = `
+      <div class="avatar" style="border: 3px solid ${color}; box-shadow: 0 0 10px ${color}99;">
+        ${avatarHTML(q)}
+      </div>
+      <div class="queenName" style="color:${color}; font-weight:700;">
+        ${q.name}
+        <span style="font-size:0.75rem;opacity:0.8;">(T${q.season})</span>
+      </div>
+    `;
+
+    card.addEventListener("click", () => addQueen(q));
+    resultsDiv.appendChild(card);
+  });
+}
 
   function addQueen(q) {
     // no duplicadas
