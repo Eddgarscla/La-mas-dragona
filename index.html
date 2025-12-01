@@ -247,9 +247,9 @@
   gap: 6px;
   width: 90px;
   background: transparent;
-  padding: 10px 0;
-  margin: 10px;
-}
+  padding: 16px 0 10px;  /* 👈 más espacio arriba para que la X no pise la foto */
+  margin: 4px;
+  }
 
 .selectedPill .avatar {
   width: 70px;
@@ -270,17 +270,21 @@
 
 .removeBtn {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 2px;          /* 👈 se queda arriba de la tarjeta */
+  right: 2px;        /* 👈 pegadita a la esquina */
   background: #ff008c;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
+  width: 18px;       /* 👈 más pequeña */
+  height: 18px;
+  font-size: 0.7rem; /* 👈 texto más pequeño */
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 8px rgba(255,0,150,0.7);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
 }
 
   #selectQueensBtn {
