@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulación - La Más Draga</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #050010;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .queen {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .queen img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulación en camino… ✨</h1>
+  <h2>Cast seleccionado</h2>
+  <div id="cast"></div>
+
+  <h2>Configuración</h2>
+  <pre id="config"></pre>
+
+  <script>
+    const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
+    const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
+
+    const castDiv = document.getElementById("cast");
+    cast.forEach(q => {
+      const div = document.createElement("div");
+      div.className = "queen";
+      div.innerHTML = `
+        <img src="${q.image}" alt="${q.name}">
+        <span>${q.name} (T${q.season})</span>
+      `;
+      castDiv.appendChild(div);
+    });
+
+    document.getElementById("config").textContent = JSON.stringify(config, null, 2);
+  </script>
+</body>
+</html>
