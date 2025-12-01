@@ -458,6 +458,9 @@
       bad:       "tuvo un mal desempeño",
       awful:     "tuvo un pésimo desempeño"
     };
+    // Track record por reina (La +, La casi +, Salvada, La casi -, La -)
+const trackRecord = {};   // { "Nombre de reina": ["La +", "Salvada", ...] }
+let episodeNumber = 1;    // Por ahora solo usamos 1 episodio
 
     let currentEpisode = null;
 // -1 -> pantalla de suspense (solo botón)
@@ -510,28 +513,44 @@ let step = -1;
   }
   // Lo que quede en indexes se considerará "buen desempeño" normal
 
-  // --- Construimos la lista de performances ---
+   // --- Construimos la lista de performances ---
   const performances = [];
 
   for (let i = 0; i < n; i++) {
     const q = shuffled[i];
     let perfType = "good"; // por defecto
+    let trackMark = "Salvada"; // marca para el track record
 
     if (i === winnerIdx) {
-      perfType = "excellent";
+      perfType  = "excellent";
+      trackMark = "La +";
     } else if (topIdxs.includes(i)) {
-      perfType = "good"; // top pero buen desempeño
+      perfType  = "good";
+      trackMark = "La casi +";
     } else if (lipIdxs.includes(i)) {
-      perfType = "awful";
+      perfType  = "awful";
+      trackMark = "La -";
     } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
-      perfType = "bad";
+      perfType  = "bad";
+      trackMark = "La casi -";
+    } else {
+      // ni top ni bottom: salvada
+      perfType  = "good";
+      trackMark = "Salvada";
     }
 
     performances.push({
       queen: q,
       type: perfType,
-      text: performanceLabels[perfType]
+      text: performanceLabels[perfType],
+      track: trackMark
     });
+
+    // Guardar en trackRecord (por ahora solo un episodio)
+    if (!trackRecord[q.name]) {
+      trackRecord[q.name] = [];
+    }
+    trackRecord[q.name].push(trackMark);
   }
 
   // --- Tops y bottoms para las otras pantallas ---
@@ -750,6 +769,59 @@ let step = -1;
       wrap.appendChild(out);
       episodeContentEl.appendChild(wrap);
     }
+        // =========================
+    //   TRACK RECORD
+    // =========================
+    function renderTrackRecord() {
+      episodeContentEl.innerHTML = "";
+
+      const title = document.createElement("h2");
+      title.className = "sectionTitle";
+      title.textContent = "Track record de la temporada";
+      episodeContentEl.appendChild(title);
+
+      const table = document.createElement("div");
+      table.style.display = "flex";
+      table.style.flexDirection = "column";
+      table.style.gap = "6px";
+
+      cast.forEach(q => {
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.alignItems = "center";
+        row.style.gap = "8px";
+
+        const marks = trackRecord[q.name] || [];
+        // De momento solo mostramos el primer episodio → marks[0]
+        const mark = marks[0] || "—";
+
+        row.innerHTML = `
+          <img src="${q.image}" alt="${q.name}" style="
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff69b4;
+            box-shadow: 0 0 8px rgba(255,105,180,0.8);
+          ">
+          <span style="flex:1;font-size:0.85rem;">${q.name}</span>
+          <span style="
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.55);
+            box-shadow: 0 0 10px rgba(0,0,0,0.7);
+          ">
+            ${mark}
+          </span>
+        `;
+        table.appendChild(row);
+      });
+
+      episodeContentEl.appendChild(table);
+    }
 
     function renderStep() {
       if (!currentEpisode) return;
@@ -796,6 +868,12 @@ let step = -1;
         default:
           nextBtn.disabled = true;
           nextBtn.textContent = "Fin del episodio";
+                  case 5:
+          episodeTitleEl.textContent = "Track record";
+          episodeSubtitleEl.textContent = "Resumen hasta este episodio";
+          nextBtn.textContent = "Fin de la simulación";
+          renderTrackRecord();
+          break;
       }
     }
 
@@ -805,7 +883,7 @@ let step = -1;
       renderStep();
 
       nextBtn.addEventListener("click", () => {
-        if (step < 4) {
+        if (step < 5) {
           step++;
           renderStep();
         }
