@@ -464,13 +464,37 @@ let episodeNumber = 1;
       bad:       "tuvo un mal desempeño",
       awful:     "tuvo un pésimo desempeño"
     };
-    // Track record por reina (La +, La casi +, Salvada, La casi -, La -)
-const trackRecord = {};   // { "Nombre de reina": ["La +", "Salvada", ...] }
-let episodeNumber = 1;    // Por ahora solo usamos 1 episodio
+    // Reinas que siguen en competencia
+let aliveQueens = cast.slice();
 
-    let currentEpisode = null;
-// -1 -> pantalla de suspense (solo botón)
-// 0 -> lista completa, 1 -> top/bottom, 2 -> ganadora, 3 -> lip sync, 4 -> eliminación
+// Track record: { nombre: ["La +", "Salvada", ...] }
+const trackRecord = {};
+let episodeNumber = 1;
+
+const episodeTitleEl    = document.getElementById("episodeTitle");
+const episodeSubtitleEl = document.getElementById("episodeSubtitle");
+const episodeContentEl  = document.getElementById("episodeContent");
+const nextBtn           = document.getElementById("nextBtn");
+
+if (!cast.length) {
+  episodeTitleEl.textContent = "No hay cast cargado";
+  episodeSubtitleEl.textContent = "Vuelve a la pantalla inicial y selecciona tus femininosas ✨";
+  episodeContentEl.textContent = "";
+  nextBtn.disabled = true;
+}
+
+// =========================
+//   EPISODIO ALEATORIO
+// =========================
+const performanceLabels = {
+  excellent: "tuvo un excelente desempeño",
+  good:      "tuvo un buen desempeño",
+  bad:       "tuvo un mal desempeño",
+  awful:     "tuvo un pésimo desempeño"
+};
+
+// -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track
+let currentEpisode = null;
 let step = -1;
 
     function buildEpisode() {
