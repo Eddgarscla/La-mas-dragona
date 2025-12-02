@@ -840,8 +840,7 @@ let step = -1;
 
       episodeContentEl.appendChild(table);
     }
-
-    function renderStep() {
+function renderStep() {
   if (!currentEpisode) return;
 
   const retoNombre = currentEpisode.challenge.name;
@@ -857,7 +856,7 @@ let step = -1;
     case 0:
       episodeTitleEl.textContent = retoNombre;
       episodeSubtitleEl.textContent = "Desempeño del episodio";
-      nextBtn.textContent = "La más y las menos";
+      nextBtn.textContent = "Las más y las menos";
       renderPerformanceList();
       break;
 
@@ -894,13 +893,42 @@ let step = -1;
       episodeSubtitleEl.textContent = "Resumen hasta este episodio";
       nextBtn.textContent = aliveQueens.length > 4
         ? "Siguiente episodio"
-        : "Fin de la simulación";
+        : "Ir a la Gran Final";
       renderTrackRecord();
+      break;
+
+    case 6:
+      // Aquí, al tener 4 queens, iniciaremos la FINAL (Paso 2 😈)
+      startFinale();
       break;
   }
 }
-    }
 
+nextBtn.addEventListener("click", () => {
+  if (!cast.length) return;
+
+  if (step === 4 && currentEpisode.eliminated) {
+    aliveQueens = aliveQueens.filter(q => q.name !== currentEpisode.eliminated.name);
+  }
+
+  if (step === 5) {
+    if (aliveQueens.length > 4) {
+      episodeNumber++;
+      buildEpisode();
+      step = -1;
+      renderStep();
+      return;
+    } else {
+      step = 6; // Pasamos a la final
+      renderStep();
+      return;
+    }
+  }
+
+  step++;
+  renderStep();
+});
+    
     // Inicializamos episodio + eventos
     if (cast.length) {
       buildEpisode();
