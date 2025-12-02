@@ -19,7 +19,6 @@
       box-sizing: border-box;
     }
 
-    /* Panel principal encima de la pasarela */
     .sim-panel {
       max-width: 430px;
       margin: 70px auto 40px;
@@ -68,27 +67,25 @@
       letter-spacing: 0.04em;
     }
 
-    /* Fila genérica de episodio (reina + texto) */
-    /* Fila genérica de episodio (reina + texto) */
-.episodeRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  margin-bottom: 4px;
-  background: transparent;          /* ❌ sin barra negra */
-  border-radius: 0;
-  backdrop-filter: none;
-  box-shadow: none;
-  border-left: none;
-}
+    .episodeRow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      margin-bottom: 4px;
+      background: transparent;
+      border-radius: 0;
+      backdrop-filter: none;
+      box-shadow: none;
+      border-left: none;
+    }
 
-.perfGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 10px;
-}
+    .perfGroup {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
 
     .episodeRow img {
       width: 44px;
@@ -116,70 +113,61 @@
       opacity: 0.9;
     }
 
-    /* Colores según desempeño */
     .perf-excellent   { border-left-color: #00ff9d; }
     .perf-good        { border-left-color: #5dd9ff; }
     .perf-bad         { border-left-color: #ffd54a; }
     .perf-awful       { border-left-color: #ff3b6b; }
+
+    .perfGrid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px 12px;
     }
-    /* Grupos de desempeño (bloques como en tu ejemplo) */
-.perfGroup {
-  margin-bottom: 18px;
-}
 
-.perfGrid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px 12px;
-}
+    .perfCard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 8px 8px 10px;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 14px rgba(0,0,0,0.7);
+      max-width: 120px;
+    }
 
-.perfCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 8px 8px 10px;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 14px rgba(0,0,0,0.7);
-  max-width: 120px;
-}
+    .perfCard img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 0 12px rgba(255,105,180,0.9);
+      margin-bottom: 4px;
+    }
 
-/* Foto dentro de la card */
-.perfCard img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #ff69b4;
-  box-shadow: 0 0 12px rgba(255,105,180,0.9);
-  margin-bottom: 4px;
-}
+    .perfCard.perf-excellent img {
+      border-color: #00ff9d;
+      box-shadow: 0 0 14px rgba(0,255,157,0.9);
+    }
 
-/* Colores por desempeño (solo borde/brillo de la foto) */
-.perfCard.perf-excellent img {
-  border-color: #00ff9d;
-  box-shadow: 0 0 14px rgba(0,255,157,0.9);
-}
+    .perfCard.perf-good img {
+      border-color: #5dd9ff;
+      box-shadow: 0 0 14px rgba(93,217,255,0.9);
+    }
 
-.perfCard.perf-good img {
-  border-color: #5dd9ff;
-  box-shadow: 0 0 14px rgba(93,217,255,0.9);
-}
+    .perfCard.perf-bad img {
+      border-color: #ffd54a;
+      box-shadow: 0 0 14px rgba(255,213,74,0.9);
+    }
 
-.perfCard.perf-bad img {
-  border-color: #ffd54a;
-  box-shadow: 0 0 14px rgba(255,213,74,0.9);
-}
+    .perfCard.perf-awful img {
+      border-color: #ff3b6b;
+      box-shadow: 0 0 14px rgba(255,59,107,0.9);
+    }
 
-.perfCard.perf-awful img {
-  border-color: #ff3b6b;
-  box-shadow: 0 0 14px rgba(255,59,107,0.9);
-}
-
-    /* Ganadora del reto */
     .winnerCard {
       text-align: center;
       padding-top: 10px;
@@ -202,7 +190,6 @@
       margin-bottom: 4px;
     }
 
-    /* Lip sync */
     .lipSyncGrid {
       display: flex;
       flex-direction: column;
@@ -230,7 +217,6 @@
       box-shadow: 0 0 14px rgba(255,105,180,0.9);
     }
 
-    /* Eliminada */
     .eliminationWrapper {
       display: flex;
       flex-direction: column;
@@ -271,7 +257,6 @@
       color: #ff8fa8;
     }
 
-    /* Botón siguiente */
     #nextBtn {
       font-size: 1.1em;
       padding: 12px 20px;
@@ -324,79 +309,13 @@
     //   RETOS POR TEMPORADA
     // =========================
     const challengesBySeason = {
-      "1": [
-        "La más diva",
-        "La más quinceañera",
-        "La más Thalía",
-        "La más Alebrije",
-        "La más dramática"
-      ],
-      "2": [
-        "La más típica",
-        "La más religiosa",
-        "La más luchona",
-        "La más piñata",
-        "La más Juanga",
-        "La más independiente",
-        "La más villana"
-      ],
-      "3": [
-        "La más suertuda",
-        "La más prehispánica",
-        "La más fichera",
-        "La más Chespirito",
-        "La más famosa",
-        "La más legendaria",
-        "La más bella señorita México",
-        "La más buchona",
-        "La más antojable"
-      ],
-      "4": [
-        "La más folclórica",
-        "La más pintada",
-        "La más revolucionaria",
-        "La más mezclilla",
-        "La más cachuda",
-        "La más famosa",
-        "La más rosa mexicano",
-        "La más chola",
-        "La más Cri Cri",
-        "La más imperial"
-      ],
-      "5": [
-        "La más artesanal",
-        "La más a color",
-        "La más juguete",
-        "La más famosa",
-        "La más del Toro",
-        "La más tejocote",
-        "La más futurista",
-        "La más Lele",
-        "La más monja coronada"
-      ],
-      "6": [
-        "La más monumental",
-        "La más Frida",
-        "La más Pixar",
-        "La más recursiva",
-        "La más floral",
-        "La más nahual",
-        "La más azul peltre",
-        "La más animada",
-        "La más divina Infantita",
-        "La más galardonada"
-      ],
-      "7": [
-        "La más Guelaguetza",
-        "La más Silvia Pinal",
-        "La más dulce",
-        "La más recursiva",
-        "La más metrera",
-        "La más plicopúrpura",
-        "La más panzuda",
-        "La más maíz",
-        "La más Lupita"
-      ]
+      "1": ["La más diva","La más quinceañera","La más Thalía","La más Alebrije","La más dramática"],
+      "2": ["La más típica","La más religiosa","La más luchona","La más piñata","La más Juanga","La más independiente","La más villana"],
+      "3": ["La más suertuda","La más prehispánica","La más fichera","La más Chespirito","La más famosa","La más legendaria","La más bella señorita México","La más buchona","La más antojable"],
+      "4": ["La más folclórica","La más pintada","La más revolucionaria","La más mezclilla","La más cachuda","La más famosa","La más rosa mexicano","La más chola","La más Cri Cri","La más imperial"],
+      "5": ["La más artesanal","La más a color","La más juguete","La más famosa","La más del Toro","La más tejocote","La más futurista","La más Lele","La más monja coronada"],
+      "6": ["La más monumental","La más Frida","La más Pixar","La más recursiva","La más floral","La más nahual","La más azul peltre","La más animada","La más divina Infantita","La más galardonada"],
+      "7": ["La más Guelaguetza","La más Silvia Pinal","La más dulce","La más recursiva","La más metrera","La más plicopúrpura","La más panzuda","La más maíz","La más Lupita"]
     };
 
     const specialChallenges = {
@@ -404,7 +323,6 @@
       final:   "La Gran Final"
     };
 
-    // Lista global de retos
     const allChallenges = [];
     for (const season in challengesBySeason) {
       challengesBySeason[season].forEach((name, index) => {
@@ -436,12 +354,10 @@
     // =========================
     const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
     const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
-    // Reinas que siguen en competencia
-let aliveQueens = cast.slice();
 
-// Track record: { nombre: ["La +", "Salvada", ...] }
-const trackRecord = {};
-let episodeNumber = 1;
+    let aliveQueens = cast.slice();
+    const trackRecord = {};
+    let episodeNumber = 1;
 
     const episodeTitleEl    = document.getElementById("episodeTitle");
     const episodeSubtitleEl = document.getElementById("episodeSubtitle");
@@ -455,226 +371,180 @@ let episodeNumber = 1;
       nextBtn.disabled = true;
     }
 
-    // =========================
-    //   EPISODIO 1 ALEATORIO
-    // =========================
     const performanceLabels = {
       excellent: "tuvo un excelente desempeño",
       good:      "tuvo un buen desempeño",
       bad:       "tuvo un mal desempeño",
       awful:     "tuvo un pésimo desempeño"
     };
-    // Reinas que siguen en competencia
-let aliveQueens = cast.slice();
 
-// Track record: { nombre: ["La +", "Salvada", ...] }
-const trackRecord = {};
-let episodeNumber = 1;
-
-const episodeTitleEl    = document.getElementById("episodeTitle");
-const episodeSubtitleEl = document.getElementById("episodeSubtitle");
-const episodeContentEl  = document.getElementById("episodeContent");
-const nextBtn           = document.getElementById("nextBtn");
-
-if (!cast.length) {
-  episodeTitleEl.textContent = "No hay cast cargado";
-  episodeSubtitleEl.textContent = "Vuelve a la pantalla inicial y selecciona tus femininosas ✨";
-  episodeContentEl.textContent = "";
-  nextBtn.disabled = true;
-}
-
-// =========================
-//   EPISODIO ALEATORIO
-// =========================
-const performanceLabels = {
-  excellent: "tuvo un excelente desempeño",
-  good:      "tuvo un buen desempeño",
-  bad:       "tuvo un mal desempeño",
-  awful:     "tuvo un pésimo desempeño"
-};
-
-// -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track
-let currentEpisode = null;
-let step = -1;
-
-    function buildEpisode() {
-  const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
-
-    // Barajamos solo a las que siguen en competencia
-  const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
-  const n = shuffled.length;
-
-  if (n === 0) return;
-
-  // --- Elegimos índices al azar para cada rol ---
-  const indexes = [...Array(n).keys()]; // [0,1,2,...]
-
-  function drawIndex() {
-    const pos = Math.floor(Math.random() * indexes.length);
-    return indexes.splice(pos, 1)[0]; // quita y devuelve un índice
-  }
-
-  // Ganadora
-  const winnerIdx = drawIndex();
-
-  // Dos tops adicionales (si hay suficiente cast)
-  const topIdxs = [];
-  if (n >= 4) topIdxs.push(drawIndex());
-  if (n >= 5) topIdxs.push(drawIndex());
-
-  // Dos para lip sync
-  const lipIdxs = [];
-  if (n >= 3) lipIdxs.push(drawIndex());
-  if (n >= 4) lipIdxs.push(drawIndex());
-
-  // Una extra para estar en las "menos" pero sin lip sync (si hay varias)
-  let extraBottomIdx = null;
-  if (n >= 6 && indexes.length > 0) {
-    extraBottomIdx = drawIndex();
-  }
-
-  // Un par de "low" (mal desempeño) si sobran reinas
-  const lowIdxs = [];
-  if (indexes.length > 0) {
-    const numLow = Math.min(2, indexes.length);
-    for (let i = 0; i < numLow; i++) {
-      lowIdxs.push(drawIndex());
-    }
-  }
-  // Lo que quede en indexes se considerará "buen desempeño" normal
-
-    // --- Construimos la lista de performances ---
-  const performances = [];
-
-  for (let i = 0; i < n; i++) {
-    const q = shuffled[i];
-    let perfType = "good";      // tipo para la pantalla del episodio
-    let trackMark = "Salvada";  // marca para el track record
-
-    if (i === winnerIdx) {
-      perfType  = "excellent";
-      trackMark = "La +";
-    } else if (topIdxs.includes(i)) {
-      perfType  = "good";
-      trackMark = "La casi +";
-    } else if (lipIdxs.includes(i)) {
-      perfType  = "awful";
-      trackMark = "La -";
-    } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
-      perfType  = "bad";
-      trackMark = "La casi -";
-    } else {
-      perfType  = "good";
-      trackMark = "Salvada";
-    }
-
-    performances.push({
-      queen: q,
-      type: perfType,
-      text: performanceLabels[perfType],
-      track: trackMark
-    });
-
-    // Guardar en trackRecord (una casilla por episodio)
-    if (!trackRecord[q.name]) {
-      trackRecord[q.name] = [];
-    }
-    trackRecord[q.name].push(trackMark);
-  }
-  // --- Tops y bottoms para las otras pantallas ---
-  const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
-  const bottoms = [...lipIdxs.map(i => shuffled[i])];
-  if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
-
-  const lipsyncPair = lipIdxs.map(i => shuffled[i]);
-  let eliminated, safeFromLipsync;
-
-  if (lipsyncPair.length === 2) {
-    eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
-    safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
-  } else if (lipsyncPair.length === 1) {
-    // por si hubiera cast muy pequeño
-    eliminated = lipsyncPair[0];
-    safeFromLipsync = null;
-  } else {
-    eliminated = null;
-    safeFromLipsync = null;
-  }
-
-  currentEpisode = {
-    challenge,
-    performances,
-    tops,
-    bottoms,
-    winner: shuffled[winnerIdx],
-    lipsyncPair,
-    eliminated,
-    safeFromLipsync
-  };
-}
+    let currentEpisode = null;
+    // -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track / 6 -> final
+    let step = -1;
 
     // =========================
-    //   RENDER DE CADA FASE
+    //   CONSTRUIR EPISODIO
+    // =========================
+    function buildEpisode() {
+      const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
+
+      const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
+      const n = shuffled.length;
+      if (n === 0) return;
+
+      const indexes = [...Array(n).keys()];
+
+      function drawIndex() {
+        const pos = Math.floor(Math.random() * indexes.length);
+        return indexes.splice(pos, 1)[0];
+      }
+
+      const winnerIdx = drawIndex();
+
+      const topIdxs = [];
+      if (n >= 4) topIdxs.push(drawIndex());
+      if (n >= 5) topIdxs.push(drawIndex());
+
+      const lipIdxs = [];
+      if (n >= 3) lipIdxs.push(drawIndex());
+      if (n >= 4) lipIdxs.push(drawIndex());
+
+      let extraBottomIdx = null;
+      if (n >= 6 && indexes.length > 0) {
+        extraBottomIdx = drawIndex();
+      }
+
+      const lowIdxs = [];
+      if (indexes.length > 0) {
+        const numLow = Math.min(2, indexes.length);
+        for (let i = 0; i < numLow; i++) {
+          lowIdxs.push(drawIndex());
+        }
+      }
+
+      const performances = [];
+
+      for (let i = 0; i < n; i++) {
+        const q = shuffled[i];
+        let perfType = "good";
+        let trackMark = "Salvada";
+
+        if (i === winnerIdx) {
+          perfType  = "excellent";
+          trackMark = "La +";
+        } else if (topIdxs.includes(i)) {
+          perfType  = "good";
+          trackMark = "La casi +";
+        } else if (lipIdxs.includes(i)) {
+          perfType  = "awful";
+          trackMark = "La -";
+        } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
+          perfType  = "bad";
+          trackMark = "La casi -";
+        } else {
+          perfType  = "good";
+          trackMark = "Salvada";
+        }
+
+        performances.push({
+          queen: q,
+          type: perfType,
+          text: performanceLabels[perfType],
+          track: trackMark
+        });
+
+        if (!trackRecord[q.name]) {
+          trackRecord[q.name] = [];
+        }
+        trackRecord[q.name].push(trackMark);
+      }
+
+      const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
+      const bottoms = [...lipIdxs.map(i => shuffled[i])];
+      if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
+
+      const lipsyncPair = lipIdxs.map(i => shuffled[i]);
+      let eliminated = null, safeFromLipsync = null;
+
+      if (lipsyncPair.length === 2) {
+        eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
+        safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
+      } else if (lipsyncPair.length === 1) {
+        eliminated = lipsyncPair[0];
+        safeFromLipsync = null;
+      }
+
+      currentEpisode = {
+        challenge,
+        performances,
+        tops,
+        bottoms,
+        winner: shuffled[winnerIdx],
+        lipsyncPair,
+        eliminated,
+        safeFromLipsync
+      };
+    }
+
+    // =========================
+    //   RENDERS
     // =========================
     function renderPerformanceList() {
-  episodeContentEl.innerHTML = "";
+      episodeContentEl.innerHTML = "";
 
-  const title = document.createElement("h2");
-  title.className = "sectionTitle";
-  title.textContent = "Desempeño del cast";
-  episodeContentEl.appendChild(title);
+      const title = document.createElement("h2");
+      title.className = "sectionTitle";
+      title.textContent = "Desempeño del cast";
+      episodeContentEl.appendChild(title);
 
-  // Agrupamos por tipo de desempeño
-  const grouped = {
-    excellent: [],
-    good:      [],
-    bad:       [],
-    awful:     []
-  };
+      const grouped = {
+        excellent: [],
+        good:      [],
+        bad:       [],
+        awful:     []
+      };
 
-  currentEpisode.performances.forEach(item => {
-    grouped[item.type].push(item);
-  });
+      currentEpisode.performances.forEach(item => {
+        grouped[item.type].push(item);
+      });
 
-  const order = [
-    { key: "excellent", label: "Excelente desempeño" },
-    { key: "good",      label: "Buen desempeño" },
-    { key: "bad",       label: "Mal desempeño" },
-    { key: "awful",     label: "Pésimo desempeño" }
-  ];
+      const order = [
+        { key: "excellent", label: "Excelente desempeño" },
+        { key: "good",      label: "Buen desempeño" },
+        { key: "bad",       label: "Mal desempeño" },
+        { key: "awful",     label: "Pésimo desempeño" }
+      ];
 
-  order.forEach(({ key, label }) => {
-    const list = grouped[key];
-    if (!list.length) return;
+      order.forEach(({ key, label }) => {
+        const list = grouped[key];
+        if (!list.length) return;
 
-    // Título del grupo
-    const h3 = document.createElement("h3");
-    h3.className = "miniTitle";
-    h3.textContent = label;
-    episodeContentEl.appendChild(h3);
+        const h3 = document.createElement("h3");
+        h3.className = "miniTitle";
+        h3.textContent = label;
+        episodeContentEl.appendChild(h3);
 
-    // Grupo de filas
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "perfGroup";
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "perfGroup";
 
-    list.forEach(item => {
-      const row = document.createElement("div");
-      row.className = `episodeRow perf-${item.type}`;
+        list.forEach(item => {
+          const row = document.createElement("div");
+          row.className = `episodeRow perf-${item.type}`;
 
-      row.innerHTML = `
-        <img src="${item.queen.image}" alt="${item.queen.name}">
-        <div class="episodeText">
-          <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
-          <span class="episodePerf">${item.text}</span>
-        </div>
-      `;
-      groupDiv.appendChild(row);
-    });
+          row.innerHTML = `
+            <img src="${item.queen.image}" alt="${item.queen.name}">
+            <div class="episodeText">
+              <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
+              <span class="episodePerf">${item.text}</span>
+            </div>
+          `;
+          groupDiv.appendChild(row);
+        });
 
-    episodeContentEl.appendChild(groupDiv);
-  });
-}
-  
+        episodeContentEl.appendChild(groupDiv);
+      });
+    }
+
     function renderTopBottom() {
       episodeContentEl.innerHTML = "";
 
@@ -797,9 +667,7 @@ let step = -1;
       wrap.appendChild(out);
       episodeContentEl.appendChild(wrap);
     }
-            // =========================
-    //   TRACK RECORD
-    // =========================
+
     function renderTrackRecord() {
       episodeContentEl.innerHTML = "";
 
@@ -808,7 +676,6 @@ let step = -1;
       title.textContent = "Track record de la temporada";
       episodeContentEl.appendChild(title);
 
-      // Encabezado tipo tabla
       const header = document.createElement("div");
       header.style.display = "flex";
       header.style.alignItems = "center";
@@ -827,7 +694,6 @@ let step = -1;
       table.style.flexDirection = "column";
       table.style.gap = "6px";
 
-      // Mostramos TODAS las reinas (aunque ya estén eliminadas)
       cast.forEach(q => {
         const row = document.createElement("div");
         row.style.display = "flex";
@@ -864,94 +730,143 @@ let step = -1;
 
       episodeContentEl.appendChild(table);
     }
-function renderStep() {
-  if (!currentEpisode) return;
 
-  const retoNombre = currentEpisode.challenge.name;
+    // =========================
+    //   FINAL
+    // =========================
+    function startFinale() {
+      episodeTitleEl.textContent = "La Gran Final";
+      episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
-  switch (step) {
-    case -1:
-      episodeTitleEl.textContent = "La más…";
-      episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
-      nextBtn.textContent = "Revelar reto";
-      episodeContentEl.innerHTML = "";
-      break;
+      const finalists = aliveQueens.slice();
+      const winner = finalists[Math.floor(Math.random() * finalists.length)];
 
-    case 0:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "Desempeño del episodio";
-      nextBtn.textContent = "Las más y las menos";
-      renderPerformanceList();
-      break;
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name} (T${winner.season})</div>
+        </div>
+      `;
 
-    case 1:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "Las más y las menos del reto";
-      nextBtn.textContent = "Revelar a la más…";
-      renderTopBottom();
-      break;
-
-    case 2:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "";
-      nextBtn.textContent = "Ver lip sync";
-      renderWinner();
-      break;
-
-    case 3:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "Doblaje por su vida";
-      nextBtn.textContent = "Resultado del doblaje";
-      renderLipsync();
-      break;
-
-    case 4:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "";
-      nextBtn.textContent = "Track record";
-      renderElimination();
-      break;
-
-    case 5:
-      episodeTitleEl.textContent = "Track record de la temporada";
-      episodeSubtitleEl.textContent = "Resumen hasta este episodio";
-      nextBtn.textContent = aliveQueens.length > 4
-        ? "Siguiente episodio"
-        : "Ir a la Gran Final";
-      renderTrackRecord();
-      break;
-
-    case 6:
-      // Aquí, al tener 4 queens, iniciaremos la FINAL (Paso 2 😈)
-      startFinale();
-      break;
-  }
-}
-
-nextBtn.addEventListener("click", () => {
-  if (!cast.length) return;
-
-  if (step === 4 && currentEpisode.eliminated) {
-    aliveQueens = aliveQueens.filter(q => q.name !== currentEpisode.eliminated.name);
-  }
-
-  if (step === 5) {
-    if (aliveQueens.length > 4) {
-      episodeNumber++;
-      buildEpisode();
-      step = -1;
-      renderStep();
-      return;
-    } else {
-      step = 6; // Pasamos a la final
-      renderStep();
-      return;
+      nextBtn.textContent = "Fin de la simulación";
+      nextBtn.disabled = true;
     }
-  }
 
-  step++;
-  renderStep();
-});
- </script>
+    // =========================
+    //   CONTROL DE PASOS
+    // =========================
+    function renderStep() {
+      // Pantalla inicial de suspense NO necesita currentEpisode
+      if (step === -1) {
+        episodeTitleEl.textContent = "La más…";
+        episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
+        nextBtn.textContent = "Revelar reto";
+        episodeContentEl.innerHTML = "";
+        return;
+      }
+
+      if (!currentEpisode) return;
+
+      const retoNombre = currentEpisode.challenge.name;
+
+      switch (step) {
+        case 0:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Desempeño del episodio";
+          nextBtn.textContent = "Las más y las menos";
+          renderPerformanceList();
+          break;
+
+        case 1:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Las más y las menos del reto";
+          nextBtn.textContent = "Revelar a la más…";
+          renderTopBottom();
+          break;
+
+        case 2:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "";
+          nextBtn.textContent = "Ver lip sync";
+          renderWinner();
+          break;
+
+        case 3:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "Doblaje por su vida";
+          nextBtn.textContent = "Resultado del doblaje";
+          renderLipsync();
+          break;
+
+        case 4:
+          episodeTitleEl.textContent = retoNombre;
+          episodeSubtitleEl.textContent = "";
+          nextBtn.textContent = "Track record";
+          renderElimination();
+          break;
+
+        case 5:
+          episodeTitleEl.textContent = "Track record de la temporada";
+          episodeSubtitleEl.textContent = "Resumen hasta este episodio";
+          nextBtn.textContent = aliveQueens.length > 4
+            ? "Siguiente episodio"
+            : "Ir a la Gran Final";
+          renderTrackRecord();
+          break;
+
+        case 6:
+          startFinale();
+          break;
+      }
+    }
+
+    // =========================
+    //   CLICK DEL BOTÓN
+    // =========================
+    nextBtn.addEventListener("click", () => {
+      if (!cast.length) return;
+      if (nextBtn.disabled) return;
+
+      // Primer click: construir episodio
+      if (step === -1) {
+        buildEpisode();
+        step = 0;
+        renderStep();
+        return;
+      }
+
+      // Después de eliminación: sacar a la eliminada de aliveQueens
+      if (step === 4 && currentEpisode && currentEpisode.eliminated) {
+        aliveQueens = aliveQueens.filter(q => q.name !== currentEpisode.eliminated.name);
+      }
+
+      // Después del track record
+      if (step === 5) {
+        if (aliveQueens.length > 4) {
+          episodeNumber++;
+          buildEpisode();
+          step = -1;
+          renderStep();
+          return;
+        } else {
+          step = 6; // Final
+          renderStep();
+          return;
+        }
+      }
+
+      // Flujo normal (0 → 5)
+      if (step >= 0 && step < 5) {
+        step++;
+        renderStep();
+      }
+    });
+
+    // Mostrar pantalla inicial
+    if (cast.length) {
+      renderStep();
+    }
+  </script>
 </body>
-  </html>
+</html>
