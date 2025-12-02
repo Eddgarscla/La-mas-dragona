@@ -436,6 +436,12 @@
     // =========================
     const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
     const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
+    // Reinas que siguen en competencia
+let aliveQueens = cast.slice();
+
+// Track record: { nombre: ["La +", "Salvada", ...] }
+const trackRecord = {};
+let episodeNumber = 1;
 
     const episodeTitleEl    = document.getElementById("episodeTitle");
     const episodeSubtitleEl = document.getElementById("episodeSubtitle");
@@ -470,8 +476,8 @@ let step = -1;
     function buildEpisode() {
   const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
 
-  // Barajamos el cast para que el orden de la lista también sea aleatorio
-  const shuffled = cast.slice().sort(() => Math.random() - 0.5);
+    // Barajamos solo a las que siguen en competencia
+  const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
   const n = shuffled.length;
 
   if (n === 0) return;
@@ -513,13 +519,13 @@ let step = -1;
   }
   // Lo que quede en indexes se considerará "buen desempeño" normal
 
-   // --- Construimos la lista de performances ---
+    // --- Construimos la lista de performances ---
   const performances = [];
 
   for (let i = 0; i < n; i++) {
     const q = shuffled[i];
-    let perfType = "good"; // por defecto
-    let trackMark = "Salvada"; // marca para el track record
+    let perfType = "good";      // tipo para la pantalla del episodio
+    let trackMark = "Salvada";  // marca para el track record
 
     if (i === winnerIdx) {
       perfType  = "excellent";
@@ -534,7 +540,6 @@ let step = -1;
       perfType  = "bad";
       trackMark = "La casi -";
     } else {
-      // ni top ni bottom: salvada
       perfType  = "good";
       trackMark = "Salvada";
     }
@@ -546,13 +551,12 @@ let step = -1;
       track: trackMark
     });
 
-    // Guardar en trackRecord (por ahora solo un episodio)
+    // Guardar en trackRecord (una casilla por episodio)
     if (!trackRecord[q.name]) {
       trackRecord[q.name] = [];
     }
     trackRecord[q.name].push(trackMark);
   }
-
   // --- Tops y bottoms para las otras pantallas ---
   const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
   const bottoms = [...lipIdxs.map(i => shuffled[i])];
@@ -769,7 +773,7 @@ let step = -1;
       wrap.appendChild(out);
       episodeContentEl.appendChild(wrap);
     }
-        // =========================
+            // =========================
     //   TRACK RECORD
     // =========================
     function renderTrackRecord() {
@@ -780,11 +784,26 @@ let step = -1;
       title.textContent = "Track record de la temporada";
       episodeContentEl.appendChild(title);
 
+      // Encabezado tipo tabla
+      const header = document.createElement("div");
+      header.style.display = "flex";
+      header.style.alignItems = "center";
+      header.style.justifyContent = "space-between";
+      header.style.fontSize = "0.8rem";
+      header.style.opacity = "0.9";
+      header.style.marginBottom = "6px";
+      header.innerHTML = `
+        <span>Feminosa</span>
+        <span>Episodio ${episodeNumber}</span>
+      `;
+      episodeContentEl.appendChild(header);
+
       const table = document.createElement("div");
       table.style.display = "flex";
       table.style.flexDirection = "column";
       table.style.gap = "6px";
 
+      // Mostramos TODAS las reinas (aunque ya estén eliminadas)
       cast.forEach(q => {
         const row = document.createElement("div");
         row.style.display = "flex";
@@ -792,8 +811,7 @@ let step = -1;
         row.style.gap = "8px";
 
         const marks = trackRecord[q.name] || [];
-        // De momento solo mostramos el primer episodio → marks[0]
-        const mark = marks[0] || "—";
+        const mark = marks[episodeNumber - 1] || "—";
 
         row.innerHTML = `
           <img src="${q.image}" alt="${q.name}" style="
@@ -806,7 +824,7 @@ let step = -1;
           ">
           <span style="flex:1;font-size:0.85rem;">${q.name}</span>
           <span style="
-            min-width: 80px;
+            min-width: 90px;
             text-align: center;
             font-size: 0.8rem;
             padding: 4px 10px;
@@ -868,13 +886,14 @@ let step = -1;
         default:
           nextBtn.disabled = true;
           nextBtn.textContent = "Fin del episodio";
-                  case 5:
-          episodeTitleEl.textContent = "Track record";
+                          case 5:
+          episodeTitleEl.textContent = "Track record de la temporada";
           episodeSubtitleEl.textContent = "Resumen hasta este episodio";
-          nextBtn.textContent = "Fin de la simulación";
+          nextBtn.textContent = aliveQueens.length > 4
+            ? "Siguiente episodio"
+            : "Fin de la simulación";
           renderTrackRecord();
           break;
-      }
     }
 
     // Inicializamos episodio + eventos
@@ -882,13 +901,36 @@ let step = -1;
       buildEpisode();
       renderStep();
 
-      nextBtn.addEventListener("click", () => {
+            nextBtn.addEventListener("click", () => {
+        if (!cast.length) return;
+
+        // Al pasar de eliminación → track record, sacamos a la eliminada
+        if (step === 4 && currentEpisode && currentEpisode.eliminated) {
+          aliveQueens = aliveQueens.filter(
+            q => q.name !== currentEpisode.eliminated.name
+          );
+        }
+        // Al salir del track record, arrancamos nuevo episodio (si quedan varias)
+        else if (step === 5) {
+          if (aliveQueens.length > 4) {
+            episodeNumber++;      // siguiente episodio
+            buildEpisode();       // nuevo reto y nuevo reparto
+            step = -1;            // volvemos a la pantalla "La más…"
+            renderStep();
+            return;
+          } else {
+            // Ya no hay suficientes para otro episodio
+            nextBtn.disabled = true;
+            nextBtn.textContent = "Fin de la simulación";
+            return;
+          }
+        }
+
         if (step < 5) {
           step++;
           renderStep();
         }
       });
-    }
   </script>
 </body>
   </html>
