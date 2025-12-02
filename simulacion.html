@@ -952,37 +952,6 @@ nextBtn.addEventListener("click", () => {
   step++;
   renderStep();
 });
-    
-            nextBtn.addEventListener("click", () => {
-        if (!cast.length) return;
-
-        // Al pasar de eliminación → track record, sacamos a la eliminada
-        if (step === 4 && currentEpisode && currentEpisode.eliminated) {
-          aliveQueens = aliveQueens.filter(
-            q => q.name !== currentEpisode.eliminated.name
-          );
-        }
-        // Al salir del track record, arrancamos nuevo episodio (si quedan varias)
-        else if (step === 5) {
-          if (aliveQueens.length > 4) {
-            episodeNumber++;      // siguiente episodio
-            buildEpisode();       // nuevo reto y nuevo reparto
-            step = -1;            // volvemos a la pantalla "La más…"
-            renderStep();
-            return;
-          } else {
-            // Ya no hay suficientes para otro episodio
-            nextBtn.disabled = true;
-            nextBtn.textContent = "Fin de la simulación";
-            return;
-          }
-        }
-
-        if (step < 5) {
-          step++;
-          renderStep();
-        }
-      });
-  </script>
+ </script>
 </body>
   </html>
