@@ -842,58 +842,63 @@ let step = -1;
     }
 
     function renderStep() {
-      if (!currentEpisode) return;
+  if (!currentEpisode) return;
 
-      const retoNombre = currentEpisode.challenge.name;
+  const retoNombre = currentEpisode.challenge.name;
 
-      switch (step) {
-          case -1:
+  switch (step) {
+    case -1:
       episodeTitleEl.textContent = "La más…";
       episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
       nextBtn.textContent = "Revelar reto";
       episodeContentEl.innerHTML = "";
       break;
-        case 0:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "Desempeño del episodio";
-          nextBtn.textContent = "La más y las menos";
-          renderPerformanceList();
-          break;
-        case 1:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "Las más y las menos del reto";
-          nextBtn.textContent = "Revelar a la más…";
-          renderTopBottom();
-          break;
-        case 2:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "";
-          nextBtn.textContent = "Ver lip sync";
-          renderWinner();
-          break;
-        case 3:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "Doblaje por su vida";
-          nextBtn.textContent = "Resultado del doblaje";
-          renderLipsync();
-          break;
-        case 4:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "";
-          nextBtn.textContent = "Fin del episodio";
-          renderElimination();
-          break;
-        default:
-          nextBtn.disabled = true;
-          nextBtn.textContent = "Fin del episodio";
-                          case 5:
-          episodeTitleEl.textContent = "Track record de la temporada";
-          episodeSubtitleEl.textContent = "Resumen hasta este episodio";
-          nextBtn.textContent = aliveQueens.length > 4
-            ? "Siguiente episodio"
-            : "Fin de la simulación";
-          renderTrackRecord();
-          break;
+
+    case 0:
+      episodeTitleEl.textContent = retoNombre;
+      episodeSubtitleEl.textContent = "Desempeño del episodio";
+      nextBtn.textContent = "La más y las menos";
+      renderPerformanceList();
+      break;
+
+    case 1:
+      episodeTitleEl.textContent = retoNombre;
+      episodeSubtitleEl.textContent = "Las más y las menos del reto";
+      nextBtn.textContent = "Revelar a la más…";
+      renderTopBottom();
+      break;
+
+    case 2:
+      episodeTitleEl.textContent = retoNombre;
+      episodeSubtitleEl.textContent = "";
+      nextBtn.textContent = "Ver lip sync";
+      renderWinner();
+      break;
+
+    case 3:
+      episodeTitleEl.textContent = retoNombre;
+      episodeSubtitleEl.textContent = "Doblaje por su vida";
+      nextBtn.textContent = "Resultado del doblaje";
+      renderLipsync();
+      break;
+
+    case 4:
+      episodeTitleEl.textContent = retoNombre;
+      episodeSubtitleEl.textContent = "";
+      nextBtn.textContent = "Track record";
+      renderElimination();
+      break;
+
+    case 5:
+      episodeTitleEl.textContent = "Track record de la temporada";
+      episodeSubtitleEl.textContent = "Resumen hasta este episodio";
+      nextBtn.textContent = aliveQueens.length > 4
+        ? "Siguiente episodio"
+        : "Fin de la simulación";
+      renderTrackRecord();
+      break;
+  }
+}
     }
 
     // Inicializamos episodio + eventos
