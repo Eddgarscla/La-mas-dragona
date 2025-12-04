@@ -538,11 +538,7 @@
 .hof-name {
   font-weight: 600;
 }
-
-.hof-meta {
-  font-size: 0.65rem;
-  opacity: 0.8;
-}
+  
   .hofGrid {
   display: flex;
   flex-wrap: wrap;
@@ -1368,16 +1364,6 @@ function renderHallOfFame() {
         </div>
       </div>
       <div class="hofName">${entry.name}</div>
-      <div class="hofMeta">
-        Modo: ${
-          entry.crownMode === "lipsync" 
-          ? "Doblaje" 
-          : entry.crownMode === "user" 
-          ? "Tú decides" 
-          : "Aleatorio"
-        }<br>
-        ${dateText}
-      </div>
     `;
 
     grid.appendChild(card);
