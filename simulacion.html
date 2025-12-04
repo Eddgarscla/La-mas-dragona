@@ -724,6 +724,102 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
   border-color: #ffd700;
   box-shadow: 0 0 20px rgba(255,215,0,0.95);
 }
+    /* Panel de retorno abajo */
+.comebackPanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 16px 20px;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.8);
+  border-radius: 24px 24px 0 0;
+  display: none;
+  z-index: 999;
+}
+
+.comebackTitle {
+  text-align: center;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.comebackList {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+
+.comebackCard {
+  flex: 0 0 auto;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.comebackCard img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 14px rgba(255,105,180,0.8);
+  margin-bottom: 4px;
+}
+
+.comebackCard span {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.comebackCard.selected {
+  opacity: 1;
+  transform: translateY(-3px) scale(1.05);
+}
+
+#comebackConfirmBtn {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: linear-gradient(135deg,#ff37b3,#ff70d6);
+  color:#fff;
+  box-shadow: 0 0 18px rgba(255,20,147,0.9);
+  cursor:pointer;
+}
+
+#comebackConfirmBtn:disabled {
+  opacity: 0.5;
+  box-shadow:none;
+  cursor: default;
+}
+
+/* Final: selección de ganadora manual */
+.finalistSelectable {
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.finalistSelectable.selected img {
+  border: 4px solid #ffd700;
+  box-shadow: 0 0 20px rgba(255,215,0,0.95);
+}
+
+.finalistSelectable.selected .topBottomName {
+  color:#ffe88a;
+}
   </style>
 </head>
 <body>
@@ -734,6 +830,12 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     <div id="episodeContent"></div>
 
     <button id="nextBtn">La más…</button>
+  </div>
+    <!-- Panel de retorno -->
+  <div id="comebackPanel" class="comebackPanel">
+    <div class="comebackTitle">¿Quién regresa a la competencia?</div>
+    <div id="comebackList" class="comebackList"></div>
+    <button id="comebackConfirmBtn" disabled>Confirmar regreso</button>
   </div>
 
   <script>
@@ -829,7 +931,14 @@ let eliminatedQueens = [];
     const episodeSubtitleEl = document.getElementById("episodeSubtitle");
     const episodeContentEl  = document.getElementById("episodeContent");
     const nextBtn           = document.getElementById("nextBtn");
+// Panel de retorno
+const comebackPanel      = document.getElementById("comebackPanel");
+const comebackListEl     = document.getElementById("comebackList");
+const comebackConfirmBtn = document.getElementById("comebackConfirmBtn");
+let selectedComebackQueen = null;
 
+// Final manual
+let selectedFinalWinner = null;
     if (!cast.length) {
       episodeTitleEl.textContent = "No hay cast cargado";
       episodeSubtitleEl.textContent = "Vuelve a la pantalla inicial y selecciona tus femininosas ✨";
@@ -869,6 +978,60 @@ let comebackEpisode = null;
     minEpisode;
 })();
 
+    // =========================
+//   PANEL DE RETORNO
+// =========================
+function openComebackPanel() {
+  if (!eliminatedQueens.length) return;
+
+  selectedComebackQueen = null;
+  comebackConfirmBtn.disabled = true;
+  comebackListEl.innerHTML = "";
+
+  eliminatedQueens.forEach(q => {
+    const card = document.createElement("div");
+    card.className = "comebackCard";
+    card.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <span>${q.name}</span>
+    `;
+    card.addEventListener("click", () => {
+      document
+        .querySelectorAll(".comebackCard")
+        .forEach(c => c.classList.remove("selected"));
+
+      card.classList.add("selected");
+      selectedComebackQueen = q;
+      comebackConfirmBtn.disabled = false;
+    });
+
+    comebackListEl.appendChild(card);
+  });
+
+  comebackPanel.style.display = "block";
+  nextBtn.disabled = true; // mientras decides, el botón principal se bloquea
+}
+
+// Cuando pulsas "Confirmar regreso"
+comebackConfirmBtn.addEventListener("click", () => {
+  if (!selectedComebackQueen) return;
+
+  const index = eliminatedQueens.findIndex(
+    q => q.name === selectedComebackQueen.name
+  );
+  if (index !== -1) {
+    const returning = eliminatedQueens.splice(index, 1)[0];
+    aliveQueens.push(returning);
+    alert(`✨ ${returning.name} regresa a la competencia`);
+  }
+
+  comebackPanel.style.display = "none";
+  nextBtn.disabled = false;
+
+  // Después del retorno, arrancamos el siguiente episodio
+  startNextEpisodeAfterTrack();
+});
+    
     // =========================
 //   SALÓN DE LA FAMA
 // =========================
@@ -1351,7 +1514,7 @@ function getMarkClass(mark) {
     // =========================
 //   FINAL
 // =========================
-function startFinale() {
+function startFinale(manualWinner) {
   const finalists = aliveQueens.slice();
 
   if (!finalists.length) {
@@ -1368,6 +1531,21 @@ function startFinale() {
   episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
   let winner = null;
+
+    // Si vienes del modo "Tú decides" con ganadora seleccionada
+  if (crownMode === "user" && manualWinner) {
+    winner = manualWinner;
+
+    episodeSubtitleEl.textContent = "Decisión de la jueza suprema (tú) 💅";
+
+    episodeContentEl.innerHTML = `
+      <div class="winnerCard">
+        <div class="winnerTitle">¡La más ganadora es…!</div>
+        <img src="${winner.image}" alt="${winner.name}">
+        <div class="episodeName">${winner.name}</div>
+      </div>
+    `;
+  }
 
   // 🔹 MODO 1: CORONA ALEATORIA
   if (crownMode === "random") {
@@ -1465,7 +1643,7 @@ function startFinale() {
   const grid = document.createElement("div");
   grid.className = "topBottomGrid"; // reutilizamos el estilo de tarjetas redondas
 
-  aliveQueens.forEach(q => {
+          aliveQueens.forEach(q => {
     const card = document.createElement("div");
     card.className = "topBottomCard";
 
@@ -1474,11 +1652,21 @@ function startFinale() {
       <div class="topBottomName">${q.name}</div>
     `;
 
+    if (crownMode === "user") {
+      card.classList.add("finalistSelectable");
+      card.addEventListener("click", () => {
+        document
+          .querySelectorAll(".finalistSelectable")
+          .forEach(c => c.classList.remove("selected"));
+
+        card.classList.add("selected");
+        selectedFinalWinner = q;
+      });
+    }
+
     grid.appendChild(card);
   });
-
-  episodeContentEl.appendChild(grid);
-}
+  
    // =========================
 //   CONTROL DE PASOS
 // =========================
@@ -1566,7 +1754,7 @@ function renderStep() {
       if (crownMode === "lipsync") {
         nextBtn.textContent = "Doblaje por la corona";
       } else if (crownMode === "user") {
-        nextBtn.textContent = "Elegir ganadora";
+        nextBtn.textContent = "Toca la feminosa que quieres coronar";
       } else {
         nextBtn.textContent = "Coronar al azar";
       }
@@ -1574,6 +1762,14 @@ function renderStep() {
       renderFinalists();
       break;
   }
+}
+        
+        function startNextEpisodeAfterTrack() {
+  hasShownPerformance = false;
+  episodeNumber++;
+  buildEpisode();
+  step = -1;
+  renderStep();
 }
 
 // =========================
@@ -1611,7 +1807,7 @@ nextBtn.addEventListener("click", () => {
     }
   }
 
-    // Después del track record
+     // Después del track record
   if (step === 5) {
     if (aliveQueens.length > finalistsNum) {
 
@@ -1620,40 +1816,30 @@ nextBtn.addEventListener("click", () => {
         !comebackDone &&
         comebackEpisode &&
         eliminatedQueens.length &&
-        episodeNumber + 1 === comebackEpisode
+        episodeNumber + 1 === comebackEpisode &&
+        returnMode !== "none"
       ) {
         comebackDone = true;
 
-        // Modo retorno aleatorio / mega
+        // Modo retorno aleatorio / mega → inmediato
         if (returnMode === "aleatorio" || returnMode === "mega") {
           const idx = Math.floor(Math.random() * eliminatedQueens.length);
           const returning = eliminatedQueens.splice(idx, 1)[0];
           aliveQueens.push(returning);
           alert(`✨ ${returning.name} regresa a la competencia`);
+          startNextEpisodeAfterTrack();
+          return;
         }
-        // Modo "tú decides quién regresa"
-        else if (returnMode === "decide") {
-          const namesList = eliminatedQueens
-            .map((q, i) => `${i + 1}. ${q.name}`)
-            .join("\n");
 
-          const choice = prompt("¿Quién regresa a la competencia?\n" + namesList);
-          const index = Number(choice) - 1;
-
-          if (!Number.isNaN(index) && index >= 0 && index < eliminatedQueens.length) {
-            const returning = eliminatedQueens.splice(index, 1)[0];
-            aliveQueens.push(returning);
-            alert(`✨ ${returning.name} regresa a la competencia`);
-          }
+        // Modo "decide" → abrimos panel glam abajo
+        if (returnMode === "decide") {
+          openComebackPanel();
+          return; // esperamos a que pulses "Confirmar regreso"
         }
       }
 
-      // Nuevo episodio
-      hasShownPerformance = false;
-      episodeNumber++;
-      buildEpisode();
-      step = -1;
-      renderStep();
+      // Sin retorno en este episodio → continuar normal
+      startNextEpisodeAfterTrack();
       return;
     } else {
       // Ya estamos en las finalistas → Gran final
@@ -1665,8 +1851,17 @@ nextBtn.addEventListener("click", () => {
 
     // Gran final: ya vimos las finalistas, ahora coronamos
   if (step === 6) {
-    startFinale();  // aquí se hace el lipsync / random / etc
-    step = 7;       // estado final para que no vuelva a entrar
+    if (crownMode === "user") {
+      if (!selectedFinalWinner) {
+        alert("Toca la feminosa que quieres coronar antes de continuar ✨");
+        return;
+      }
+      startFinale(selectedFinalWinner);
+    } else {
+      startFinale(null);
+    }
+
+    step = 7; // estado final
     return;
   }
 
