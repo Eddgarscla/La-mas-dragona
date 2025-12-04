@@ -969,18 +969,18 @@
   const seasonDropdown = document.getElementById("seasonDropdown");
   const seasonOptions = document.querySelectorAll(".seasonOption");
 
-  // 🎛️ Selects de configuración de temporada
-//const seasonTypeSelect   = document.getElementById("configSeasonType");
-//const returnTypeSelect   = document.getElementById("configReturnType");
-//const finalistsSelect    = document.getElementById("configFinalists");
-//const coronationSelect   = document.getElementById("configCoronation");
+ // 🎛️ Selects de configuración de temporada
+const seasonTypeSelect   = document.getElementById("configSeasonType");
+const returnTypeSelect   = document.getElementById("configReturnType");
+const finalistsSelect    = document.getElementById("configFinalists");
+const coronationSelect   = document.getElementById("configCoronation");
 
 // Estado de configuración de temporada
 const seasonConfig = {
-  seasonType: "regular",
-  returnType: "none",
-  finalists: "4",
-  coronation: "aleatorio"
+  seasonType:   "regular",   // "regular" o "solo"
+  returnMode:   "none",      // "none", "aleatorio", "decide", "mega"
+  finalistsNum: 4,           // 3 o 4
+  crownMode:    "aleatorio"  // "aleatorio", "decidir", "lipSync"
 };
   // Estado de femininosas seleccionadas
   const selectedQueens = [];
@@ -1115,19 +1115,18 @@ selectBtn.addEventListener("click", () => {
     return;
   }
 
-  // Guardamos el cast y la configuración en localStorage
+  // 1️⃣ Actualizamos seasonConfig con lo que haya elegido el usuario
+  seasonConfig.seasonType   = seasonTypeSelect.value;          // "regular" o "solo"
+  seasonConfig.returnMode   = returnTypeSelect.value;          // "none", "aleatorio", "decide", "mega"
+  seasonConfig.finalistsNum = Number(finalistsSelect.value);   // 3 o 4
+  seasonConfig.crownMode    = coronationSelect.value;          // "aleatorio", "decidir", "lipSync"
+
+  // 2️⃣ Guardamos el cast y la configuración en localStorage
   localStorage.setItem("lmd_selectedQueens", JSON.stringify(selectedQueens));
   localStorage.setItem("lmd_seasonConfig", JSON.stringify(seasonConfig));
 
-  // Redirigimos a la página de simulación
+  // 3️⃣ Redirigimos a la página de simulación
   window.location.href = "simulacion.html";
-  
-  localStorage.setItem("lmd_seasonConfig", JSON.stringify({
-  seasonType:  "regular",      // o "solo_las_mas"
-  returnMode:  "none",         // o "one_return"
-  finalistsNum: 4,             // 2, 3, 4...
-  crownMode:   "random"        // "user" o "lipsync"
-}));
 });
   // 👁️ Botón del ojo (abrir/cerrar menú con animación)
   seasonBtn.addEventListener("click", () => {
