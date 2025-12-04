@@ -483,6 +483,83 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
   0% { opacity: 0.9; filter: brightness(1.1); }
   100% { opacity: 1; filter: brightness(1.35); }
 }
+    /* Título glam para LAS MENOS DEL RETO SON: */
+.lipTitle {
+  margin: 12px 0 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffdd55, #ff6bd5, #55e0ff);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 0 10px rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(255, 105, 180, 0.9);
+}
+    /* Nombre en el paso de doblaje */
+.lipQueenName {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Texto tipo "Doblaje de eliminación" / "Está salvada" */
+.lipStatus {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: #ffe6ff;
+  font-weight: 500;
+  text-shadow:
+    0 0 6px rgba(255, 20, 147, 0.9),
+    0 0 12px rgba(255, 255, 255, 0.7);
+}
+    .lipTitle {
+  margin: 12px 0 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffdd55, #ff6bd5, #55e0ff);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 12px rgba(0,0,0,0.9);
+}
+
+.lipCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.lipCard img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ff69b4;
+  box-shadow: 0 0 18px rgba(255,105,180,0.9);
+}
+
+.lipQueenName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.lipStatus {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: -3px;
+  color: #ffe6ff;
+  text-shadow: 
+    0 0 6px rgba(255, 20, 147, 0.9),
+    0 0 12px rgba(255, 255, 255, 0.7);
+}
   </style>
 </head>
 <body>
@@ -845,7 +922,7 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 
   // Título dentro del panel
   const title = document.createElement("h2");
-  title.className = "sectionTitle";
+  title.className = "lipTitle";
   title.textContent = "Las menos del reto son:";
   episodeContentEl.appendChild(title);
 
@@ -864,19 +941,18 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
   });
 
   bottoms.forEach(q => {
-    const isLip = currentEpisode.lipsyncPair.some(l => l.name === q.name);
-
-    const row = document.createElement("div");
-    row.className = "lipSyncRow";
-    row.innerHTML = `
-      <img src="${q.image}" alt="${q.name}">
-      <div class="episodeName">${q.name}</div>
-      <div class="episodePerf">
-        ${isLip ? "Doblaje de eliminación" : "Está salvada"}
-      </div>
-    `;
-    grid.appendChild(row);
-  });
+    currentEpisode.lipsyncPair.forEach(q => {
+  const card = document.createElement("div");
+  card.className = "lipCard";
+  
+  card.innerHTML = `
+    <img src="${q.image}" alt="${q.name}">
+    <div class="lipQueenName">${q.name}</div>
+    <div class="lipStatus">Doblaje de eliminación</div>
+  `;
+  
+  grid.appendChild(card);
+});
 
   episodeContentEl.appendChild(grid);
 }
@@ -1052,7 +1128,7 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 
         case 3:
   episodeTitleEl.textContent = retoNombre;
-  episodeSubtitleEl.textContent = "Reto de doblaje";
+  episodeSubtitleEl.textContent = "";
   nextBtn.textContent = "Resultado del doblaje";
 
   document.querySelector(".sim-panel").classList.remove("top-align");
