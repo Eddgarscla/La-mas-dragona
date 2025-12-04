@@ -120,6 +120,40 @@
       box-shadow: 0 0 10px rgba(255,105,180,0.9);
       flex-shrink: 0;
     }
+    .bigPerfList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.bigPerfCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px 0 4px;
+}
+
+.bigPerfCard img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 14px rgba(255,105,180,0.9);
+}
+
+.bigPerfName {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.bigPerfText {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
 
     .episodeText {
       display: flex;
@@ -518,60 +552,32 @@
     //   RENDERS
     // =========================
     function renderPerformanceList() {
-      episodeContentEl.innerHTML = "";
+  episodeContentEl.innerHTML = "";
 
-      const title = document.createElement("h2");
-      title.className = "sectionTitle";
-      title.textContent = "Desempeño del cast";
-      episodeContentEl.appendChild(title);
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Desempeño del cast";
+  episodeContentEl.appendChild(title);
 
-      const grouped = {
-        excellent: [],
-        good:      [],
-        bad:       [],
-        awful:     []
-      };
+  // Contenedor de todas las feminosas
+  const list = document.createElement("div");
+  list.className = "bigPerfList";
 
-      currentEpisode.performances.forEach(item => {
-        grouped[item.type].push(item);
-      });
+  currentEpisode.performances.forEach(item => {
+    const card = document.createElement("div");
+    card.className = `bigPerfCard perf-${item.type}`;
 
-      const order = [
-        { key: "excellent", label: "Excelente desempeño" },
-        { key: "good",      label: "Buen desempeño" },
-        { key: "bad",       label: "Mal desempeño" },
-        { key: "awful",     label: "Pésimo desempeño" }
-      ];
+    card.innerHTML = `
+      <img src="${item.queen.image}" alt="${item.queen.name}">
+      <div class="bigPerfName">${item.queen.name}</div>
+      <div class="bigPerfText">${item.text}</div>
+    `;
 
-      order.forEach(({ key, label }) => {
-        const list = grouped[key];
-        if (!list.length) return;
+    list.appendChild(card);
+  });
 
-        const h3 = document.createElement("h3");
-        h3.className = "miniTitle";
-        h3.textContent = label;
-        episodeContentEl.appendChild(h3);
-
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "perfGroup";
-
-        list.forEach(item => {
-          const row = document.createElement("div");
-          row.className = `episodeRow perf-${item.type}`;
-
-          row.innerHTML = `
-            <img src="${item.queen.image}" alt="${item.queen.name}">
-            <div class="episodeText">
-              <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
-              <span class="episodePerf">${item.text}</span>
-            </div>
-          `;
-          groupDiv.appendChild(row);
-        });
-
-        episodeContentEl.appendChild(groupDiv);
-      });
-    }
+  episodeContentEl.appendChild(list);
+}
 
     function renderTopBottom() {
       episodeContentEl.innerHTML = "";
