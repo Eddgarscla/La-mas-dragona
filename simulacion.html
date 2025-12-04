@@ -287,12 +287,6 @@
   align-items: center;
   text-align: center;
 }
-    .safeText {
-  margin-top: 10px;
-  text-align: center;
-  font-size: 0.85rem;
-  opacity: 0.9;
-}
 
 .topBottomCard img {
   width: 80px;
@@ -641,24 +635,7 @@
 
     function renderTopBottom() {
   episodeContentEl.innerHTML = "";
-      
-        // ===== LISTA DE SALVADAS =====
-  const topNames = new Set(currentEpisode.tops.map(q => q.name));
-  const bottomNames = new Set(currentEpisode.bottoms.map(q => q.name));
-
-  const safeQueens = aliveQueens.filter(q => 
-    !topNames.has(q.name) && !bottomNames.has(q.name)
-  );
-
-  if (safeQueens.length > 0) {
-    const p = document.createElement("p");
-    p.className = "safeText";
-
-    const nombres = safeQueens.map(q => q.name).join(", ");
-    p.textContent = `${nombres} están salvadas`;
-
-    episodeContentEl.appendChild(p);
-  }
+     
 
   // Título general
   const title = document.createElement("h2");
@@ -714,6 +691,25 @@
   });
 
   episodeContentEl.appendChild(grid);
+
+        // ➤ Mostrar salvadas con estilo glam ✨
+  const saved = aliveQueens.filter(q =>
+    !selected.some(s => s.name === q.name)
+  );
+
+  if (saved.length > 0) {
+    const savedDiv = document.createElement("div");
+    savedDiv.className = "savedQueensMessage";
+
+    const names = saved.map(q => q.name).join(" · ");
+
+    savedDiv.innerHTML = `
+      <p><strong>${names}</strong></p>
+      <p class="savedSubtitle">están salvadas</p>
+    `;
+    
+    episodeContentEl.appendChild(savedDiv);
+  }
 }
 
     function renderWinner() {
