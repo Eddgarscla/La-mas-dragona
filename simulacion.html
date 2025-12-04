@@ -20,6 +20,28 @@
       padding: env(safe-area-inset-top) 10px 30px;
       box-sizing: border-box;
     }
+   @keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.challengeText {
+  text-align: center;
+  margin: 4px 0;
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.challengeName {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
 
     .sim-panel {
       max-width: 430px;
@@ -383,6 +405,7 @@
     let currentEpisode = null;
     // -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track / 6 -> final
     let step = -1;
+   let hasShownPerformance = false; // controla si ya mostramos el desempeño
 
     // =========================
     //   CONSTRUIR EPISODIO
@@ -774,11 +797,24 @@
 
       switch (step) {
         case 0:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "Desempeño del episodio";
-          nextBtn.textContent = "Las más y las menos";
-          renderPerformanceList();
-          break;
+  episodeTitleEl.textContent = retoNombre;
+
+  if (!hasShownPerformance) {
+    // PRIMERA VEZ EN EL PASO 0: mostrar solo el reto
+    episodeSubtitleEl.textContent = "Reto del episodio";
+    nextBtn.textContent = "Mostrar desempeño";
+
+    episodeContentEl.innerHTML = `
+      <p class="challengeText">Las feminosás se enfrentan al reto:</p>
+      <p class="challengeText challengeName">${retoNombre}</p>
+    `;
+  } else {
+    // SEGUNDA VEZ EN EL PASO 0: mostrar el desempeño como antes
+    episodeSubtitleEl.textContent = "Desempeño del episodio";
+    nextBtn.textContent = "Las más y las menos";
+    renderPerformanceList();
+  }
+  break;
 
         case 1:
           episodeTitleEl.textContent = retoNombre;
@@ -831,12 +867,13 @@
       if (nextBtn.disabled) return;
 
       // Primer click: construir episodio
-      if (step === -1) {
-        buildEpisode();
-        step = 0;
-        renderStep();
-        return;
-      }
+if (step === -1) {
+  hasShownPerformance = false; // siempre empezar desde el reto
+  buildEpisode();
+  step = 0;
+  renderStep();
+  return;
+}
 
       // Después de eliminación: sacar a la eliminada de aliveQueens
       if (step === 4 && currentEpisode && currentEpisode.eliminated) {
@@ -844,27 +881,35 @@
       }
 
       // Después del track record
-      if (step === 5) {
-        if (aliveQueens.length > 4) {
-          episodeNumber++;
-          buildEpisode();
-          step = -1;
-          renderStep();
-          return;
-        } else {
-          step = 6; // Final
-          renderStep();
-          return;
-        }
-      }
+if (step === 5) {
+  if (aliveQueens.length > 4) {
+    hasShownPerformance = false; // reset para el nuevo episodio
+    episodeNumber++;
+    buildEpisode();
+    step = -1;
+    renderStep();
+    return;
+  } else {
+    step = 6; // Final
+    renderStep();
+    return;
+  }
+}
 
-      // Flujo normal (0 → 5)
-      if (step >= 0 && step < 5) {
-        step++;
-        renderStep();
-      }
-    });
+     // Flujo normal (0 → 5)
+if (step >= 0 && step < 5) {
 
+  // En el paso 0, primero mostramos SOLO el reto
+  // y en el siguiente click mostramos el desempeño
+  if (step === 0 && !hasShownPerformance) {
+    hasShownPerformance = true;
+    renderStep(); // actualiza la vista sin cambiar de paso
+    return;
+  }
+
+  step++;
+  renderStep();
+}
     // Mostrar pantalla inicial
     if (cast.length) {
       renderStep();
