@@ -1467,15 +1467,11 @@ function getMarkClass(mark) {
         case 5:
   episodeTitleEl.textContent = "Track record de la temporada";
   episodeSubtitleEl.textContent = "Resumen hasta este episodio";
-
-  const finalistsLimit = config.finalistsNum || 4; // por si no hubiera config
-
   nextBtn.textContent = aliveQueens.length > finalistsLimit
     ? "Siguiente episodio"
     : "Ir a la Gran Final";
-
   renderTrackRecord();
-  break;
+  break;  // 👈 ESTE break arregla el avance
 }
     // =========================
     //   CLICK DEL BOTÓN
