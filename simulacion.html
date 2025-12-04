@@ -1160,12 +1160,29 @@ function saveWinnerToHallOfFame(winner) {
       let safeFromLipsync = null;
 
       if (lipsyncPair.length === 2) {
-        eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
-        safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
-      } else if (lipsyncPair.length === 1) {
-        eliminated = lipsyncPair[0];
-        safeFromLipsync = null;
-      }
+  const q1 = lipsyncPair[0];
+  const q2 = lipsyncPair[1];
+
+  const s1 = getTrackScore(q1.name);
+  const s2 = getTrackScore(q2.name);
+
+  if (s1 === s2) {
+    // Si están empatadas, que decida el destino 💅
+    eliminated = Math.random() < 0.5 ? q1 : q2;
+  } else if (s1 < s2) {
+    // Menos puntos de temporada = se va
+    eliminated = q1;
+  } else {
+    eliminated = q2;
+  }
+
+  safeFromLipsync = (eliminated === q1) ? q2 : q1;
+
+} else if (lipsyncPair.length === 1) {
+  // Caso raro: solo una en el lipsync
+  eliminated = lipsyncPair[0];
+  safeFromLipsync = null;
+}
 
             currentEpisode = {
         challenge,
@@ -1518,7 +1535,40 @@ function getMarkClass(mark) {
     default:          return "cell-blank";
   }
 }
+// =========================
+//   PUNTOS DE TRACK RECORD
+// =========================
+function getTrackScore(name) {
+  const marks = trackRecord[name] || [];
+  let score = 0;
 
+  for (const m of marks) {
+    switch (m) {
+      case "La +":        // ganó el reto
+        score += 4;
+        break;
+      case "La casi +":   // top del reto
+        score += 3;
+        break;
+      case "Salvada":     // safe
+        score += 2;
+        break;
+      case "La casi -":   // casi en el fondo
+        score += 1;
+        break;
+      case "La -":        // bottom / doblaje
+        score += 0;
+        break;
+      case "Eliminada":   // por si vuelve en un retorno
+        score -= 1;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return score;
+}
    // =========================
 //   FINAL
 // =========================
