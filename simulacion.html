@@ -1569,10 +1569,7 @@ function getTrackScore(name) {
 
   return score;
 }
-   // =========================
-//   FINAL
-// =========================
-function startFinale(manualWinner) {
+  function startFinale(manualWinner) {
   const finalists = aliveQueens.slice();
 
   if (!finalists.length) {
@@ -1604,10 +1601,10 @@ function startFinale(manualWinner) {
         </div>
       `;
     } else {
-      // Por si acaso se llama sin elección (fallback aleatorio)
+      // Fallback aleatorio si por algún motivo no hay seleccionada
       winner = finalists[Math.floor(Math.random() * finalists.length)];
       episodeSubtitleEl.textContent =
-        "Modo 'Tú decides' (por ahora, coronación aleatoria)";
+        "Modo 'Tú decides' (coronación automática por ahora)";
 
       episodeContentEl.innerHTML = `
         <div class="winnerCard">
@@ -1615,13 +1612,10 @@ function startFinale(manualWinner) {
           <img src="${winner.image}" alt="${winner.name}">
           <div class="episodeName">${winner.name}</div>
         </div>
-        <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.9;">
-          Próximamente podrás elegir tú misma quién se lleva la corona ✨
-        </p>
       `;
     }
 
-   // 🔹 MODO 2: DOBLAJE POR LA CORONA
+  // 🔹 MODO 2: DOBLAJE POR LA CORONA (AQUÍ USAMOS TRACK RECORD)
   } else if (crownMode === "lipsync") {
     const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
 
@@ -1638,11 +1632,11 @@ function startFinale(manualWinner) {
       `;
     }
 
-    // 2 finalistas → tu lógica de antes (un solo doblaje)
+    // 2 finalistas → 1 doblaje, gana la que tenga mejor trackrecord
     else if (shuffled.length === 2) {
-      const pair = shuffled;
-      winner = pair[Math.floor(Math.random() * pair.length)];
-      const loser = winner === pair[0] ? pair[1] : pair[0];
+      const [q1, q2] = shuffled;
+      winner = pickByTrackRecord(q1, q2);
+      const loser = winner === q1 ? q2 : q1;
 
       episodeSubtitleEl.textContent = "Doblaje por la corona";
 
@@ -1673,15 +1667,15 @@ function startFinale(manualWinner) {
     else if (shuffled.length >= 4) {
       const [a, b, c, d] = shuffled;
 
-      // Ronda 1
-      const r1Winner1 = Math.random() < 0.5 ? a : b;
+      // Ronda 1 (se quedan las que tengan mejor track record)
+      const r1Winner1 = pickByTrackRecord(a, b);
       const r1Loser1  = r1Winner1 === a ? b : a;
 
-      const r1Winner2 = Math.random() < 0.5 ? c : d;
+      const r1Winner2 = pickByTrackRecord(c, d);
       const r1Loser2  = r1Winner2 === c ? d : c;
 
-      // Ronda 2 (final por la corona)
-      winner = Math.random() < 0.5 ? r1Winner1 : r1Winner2;
+      // Ronda 2 (final por la corona, usando trackrecord otra vez)
+      winner = pickByTrackRecord(r1Winner1, r1Winner2);
       const finalLoser = winner === r1Winner1 ? r1Winner2 : r1Winner1;
 
       episodeSubtitleEl.textContent = "Doblaje por la corona";
@@ -1714,11 +1708,11 @@ function startFinale(manualWinner) {
       `;
     }
 
-    // Caso raro: 3 finalistas → usamos 2 al azar para el último doblaje
+    // Caso raro: 3 finalistas → cogemos 2 y decide el trackrecord
     else {
-      const pair = shuffled.slice(0, 2);
-      winner = pair[Math.floor(Math.random() * pair.length)];
-      const loser = winner === pair[0] ? pair[1] : pair[0];
+      const [q1, q2] = shuffled.slice(0, 2);
+      winner = pickByTrackRecord(q1, q2);
+      const loser = winner === q1 ? q2 : q1;
 
       episodeSubtitleEl.textContent = "Doblaje por la corona";
 
@@ -1744,9 +1738,8 @@ function startFinale(manualWinner) {
         </div>
       `;
     }
-  }
 
-  // 🔹 MODO 1: CORONA ALEATORIA
+  // 🔹 MODO 1: CORONA ALEATORIA (sigue siendo aleatorio)
   } else {
     winner = finalists[Math.floor(Math.random() * finalists.length)];
 
