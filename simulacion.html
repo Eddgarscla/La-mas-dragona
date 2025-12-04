@@ -1,3 +1,5 @@
+ Este es el código que me acabas de dar
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -77,7 +79,7 @@
       border-radius: 0;
       backdrop-filter: none;
       box-shadow: none;
-      border-left: 3px solid transparent; /* para que se vea el color por desempeño */
+      border-left: none;
     }
 
     .perfGroup {
@@ -292,26 +294,6 @@
     #episodeContent {
       margin-top: 4px;
     }
-
-    /* Animación para revelar el reto */
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .challengeReveal {
-      margin-top: 10px;
-      text-align: center;
-      animation: fadeUp 0.5s ease-out;
-      font-size: 0.95rem;
-      opacity: 0.95;
-    }
   </style>
 </head>
 <body>
@@ -399,7 +381,7 @@
     };
 
     let currentEpisode = null;
-    // -1 -> suspense / 0 -> muestra reto / 1 -> desempeño / 2 -> top&bottom / 3 -> winner / 4 -> lipsync / 5 -> eliminación / 6 -> track / 7 -> final
+    // -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track / 6 -> final
     let step = -1;
 
     // =========================
@@ -552,10 +534,10 @@
           row.className = `episodeRow perf-${item.type}`;
 
           row.innerHTML = `
-            <img src="\${item.queen.image}" alt="\${item.queen.name}">
+            <img src="${item.queen.image}" alt="${item.queen.name}">
             <div class="episodeText">
-              <span class="episodeName">\${item.queen.name} (T\${item.queen.season})</span>
-              <span class="episodePerf">\${item.text}</span>
+              <span class="episodeName">${item.queen.name} (T${item.queen.season})</span>
+              <span class="episodePerf">${item.text}</span>
             </div>
           `;
           groupDiv.appendChild(row);
@@ -577,9 +559,9 @@
         const row = document.createElement("div");
         row.className = "episodeRow perf-excellent";
         row.innerHTML = `
-          <img src="\${q.image}" alt="\${q.name}">
+          <img src="${q.image}" alt="${q.name}">
           <div class="episodeText">
-            <span class="episodeName">\${q.name} (T\${q.season})</span>
+            <span class="episodeName">${q.name} (T${q.season})</span>
             <span class="episodePerf">Entre las mejores del episodio</span>
           </div>
         `;
@@ -595,9 +577,9 @@
         const row = document.createElement("div");
         row.className = "episodeRow perf-awful";
         row.innerHTML = `
-          <img src="\${q.image}" alt="\${q.name}">
+          <img src="${q.image}" alt="${q.name}">
           <div class="episodeText">
-            <span class="episodeName">\${q.name} (T\${q.season})</span>
+            <span class="episodeName">${q.name} (T${q.season})</span>
             <span class="episodePerf">Entre las peores del episodio</span>
           </div>
         `;
@@ -612,13 +594,13 @@
       card.className = "winnerCard";
 
       const retoNombre = currentEpisode.challenge.name;
-      let clean = retoNombre.replace(/^La más\\s*/i, "");
+      let clean = retoNombre.replace(/^La más\s*/i, "");
       if (!clean) clean = retoNombre;
 
       card.innerHTML = `
-        <div class="winnerTitle">La más \${clean} es…</div>
-        <img src="\${currentEpisode.winner.image}" alt="\${currentEpisode.winner.name}">
-        <div class="episodeName">\${currentEpisode.winner.name} (T\${currentEpisode.winner.season})</div>
+        <div class="winnerTitle">La más ${clean} es…</div>
+        <img src="${currentEpisode.winner.image}" alt="${currentEpisode.winner.name}">
+        <div class="episodeName">${currentEpisode.winner.name} (T${currentEpisode.winner.season})</div>
       `;
 
       episodeContentEl.appendChild(card);
@@ -644,9 +626,9 @@
         const row = document.createElement("div");
         row.className = "lipSyncRow";
         row.innerHTML = `
-          <img src="\${q.image}" alt="\${q.name}">
+          <img src="${q.image}" alt="${q.name}">
           <div class="episodeText">
-            <span class="episodeName">\${q.name} (T\${q.season})</span>
+            <span class="episodeName">${q.name} (T${q.season})</span>
             <span class="episodePerf">Doblaje de eliminación</span>
           </div>
         `;
@@ -670,17 +652,17 @@
       const safe = document.createElement("div");
       safe.className = "safeQueen";
       safe.innerHTML = `
-        <img src="\${currentEpisode.safeFromLipsync.image}" alt="\${currentEpisode.safeFromLipsync.name}">
-        <div class="episodeName">\${currentEpisode.safeFromLipsync.name} (T\${currentEpisode.safeFromLipsync.season})</div>
+        <img src="${currentEpisode.safeFromLipsync.image}" alt="${currentEpisode.safeFromLipsync.name}">
+        <div class="episodeName">${currentEpisode.safeFromLipsync.name} (T${currentEpisode.safeFromLipsync.season})</div>
         <div class="episodePerf">Sigue en la competencia</div>
       `;
 
       const out = document.createElement("div");
       out.className = "outQueen";
       out.innerHTML = `
-        <img src="\${currentEpisode.eliminated.image}" alt="\${currentEpisode.eliminated.name}">
+        <img src="${currentEpisode.eliminated.image}" alt="${currentEpisode.eliminated.name}">
         <div class="outLabel">Abandona la competencia</div>
-        <div class="episodeName">\${currentEpisode.eliminated.name} (T\${currentEpisode.eliminated.season})</div>
+        <div class="episodeName">${currentEpisode.eliminated.name} (T${currentEpisode.eliminated.season})</div>
       `;
 
       wrap.appendChild(safe);
@@ -705,7 +687,7 @@
       header.style.marginBottom = "6px";
       header.innerHTML = `
         <span>Feminosa</span>
-        <span>Episodio \${episodeNumber}</span>
+        <span>Episodio ${episodeNumber}</span>
       `;
       episodeContentEl.appendChild(header);
 
@@ -724,7 +706,7 @@
         const mark = marks[episodeNumber - 1] || "—";
 
         row.innerHTML = `
-          <img src="\${q.image}" alt="\${q.name}" style="
+          <img src="${q.image}" alt="${q.name}" style="
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -732,7 +714,7 @@
             border: 2px solid #ff69b4;
             box-shadow: 0 0 8px rgba(255,105,180,0.8);
           ">
-          <span style="flex:1;font-size:0.85rem;">\${q.name}</span>
+          <span style="flex:1;font-size:0.85rem;">${q.name}</span>
           <span style="
             min-width: 90px;
             text-align: center;
@@ -742,7 +724,7 @@
             background: rgba(0,0,0,0.55);
             box-shadow: 0 0 10px rgba(0,0,0,0.7);
           ">
-            \${mark}
+            ${mark}
           </span>
         `;
         table.appendChild(row);
@@ -764,8 +746,8 @@
       episodeContentEl.innerHTML = `
         <div class="winnerCard">
           <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="\${winner.image}" alt="\${winner.name}">
-          <div class="episodeName">\${winner.name} (T\${winner.season})</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name} (T${winner.season})</div>
         </div>
       `;
 
@@ -777,25 +759,12 @@
     //   CONTROL DE PASOS
     // =========================
     function renderStep() {
-      // Pantalla inicial de suspense
+      // Pantalla inicial de suspense NO necesita currentEpisode
       if (step === -1) {
-        episodeTitleEl.textContent = "LA MÁS…";
+        episodeTitleEl.textContent = "La más…";
         episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
         nextBtn.textContent = "Revelar reto";
         episodeContentEl.innerHTML = "";
-        return;
-      }
-
-      if (step === 0 && currentEpisode) {
-        const retoNombre = currentEpisode.challenge.name;
-        episodeTitleEl.textContent = retoNombre.toUpperCase();
-        episodeSubtitleEl.textContent = "Reto del episodio";
-        nextBtn.textContent = "Mostrar desempeño";
-        episodeContentEl.innerHTML = `
-          <div class="challengeReveal">
-            Las feminosas se enfrentan al reto: <br><strong>\${retoNombre}</strong>
-          </div>
-        `;
         return;
       }
 
@@ -804,43 +773,43 @@
       const retoNombre = currentEpisode.challenge.name;
 
       switch (step) {
-        case 1:
-          episodeTitleEl.textContent = retoNombre.toUpperCase();
+        case 0:
+          episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "Desempeño del episodio";
           nextBtn.textContent = "Las más y las menos";
           renderPerformanceList();
           break;
 
-        case 2:
-          episodeTitleEl.textContent = retoNombre.toUpperCase();
+        case 1:
+          episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "Las más y las menos del reto";
           nextBtn.textContent = "Revelar a la más…";
           renderTopBottom();
           break;
 
-        case 3:
-          episodeTitleEl.textContent = retoNombre.toUpperCase();
+        case 2:
+          episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "";
           nextBtn.textContent = "Ver lip sync";
           renderWinner();
           break;
 
-        case 4:
-          episodeTitleEl.textContent = retoNombre.toUpperCase();
+        case 3:
+          episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "Doblaje por su vida";
           nextBtn.textContent = "Resultado del doblaje";
           renderLipsync();
           break;
 
-        case 5:
-          episodeTitleEl.textContent = retoNombre.toUpperCase();
+        case 4:
+          episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "";
           nextBtn.textContent = "Track record";
           renderElimination();
           break;
 
-        case 6:
-          episodeTitleEl.textContent = "Track record de la temporada".toUpperCase();
+        case 5:
+          episodeTitleEl.textContent = "Track record de la temporada";
           episodeSubtitleEl.textContent = "Resumen hasta este episodio";
           nextBtn.textContent = aliveQueens.length > 4
             ? "Siguiente episodio"
@@ -848,7 +817,7 @@
           renderTrackRecord();
           break;
 
-        case 7:
+        case 6:
           startFinale();
           break;
       }
@@ -861,7 +830,7 @@
       if (!cast.length) return;
       if (nextBtn.disabled) return;
 
-      // Primer click: construir episodio y mostrar SOLO el reto
+      // Primer click: construir episodio
       if (step === -1) {
         buildEpisode();
         step = 0;
@@ -869,13 +838,13 @@
         return;
       }
 
-      // Después de mostrar resultado del lipsync (paso 5): eliminar
-      if (step === 5 && currentEpisode && currentEpisode.eliminated) {
+      // Después de eliminación: sacar a la eliminada de aliveQueens
+      if (step === 4 && currentEpisode && currentEpisode.eliminated) {
         aliveQueens = aliveQueens.filter(q => q.name !== currentEpisode.eliminated.name);
       }
 
-      // Después de track record
-      if (step === 6) {
+      // Después del track record
+      if (step === 5) {
         if (aliveQueens.length > 4) {
           episodeNumber++;
           buildEpisode();
@@ -883,14 +852,14 @@
           renderStep();
           return;
         } else {
-          step = 7; // Final
+          step = 6; // Final
           renderStep();
           return;
         }
       }
 
-      // Flujo normal: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
-      if (step >= 0 && step < 6) {
+      // Flujo normal (0 → 5)
+      if (step >= 0 && step < 5) {
         step++;
         renderStep();
       }
@@ -903,3 +872,5 @@
   </script>
 </body>
 </html>
+
+Con esto ya debería funcionar?
