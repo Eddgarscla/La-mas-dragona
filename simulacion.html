@@ -248,6 +248,44 @@
       margin-bottom: 4px;
     }
 
+    .runnerUpsWrapper {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.runnerUpsTitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.runnerUpsGrid {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.runnerUpCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.runnerUpCard img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 12px rgba(255,215,0,0.8);
+}
+
+.runnerUpName {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
     .lipSyncGrid {
       display: flex;
       flex-direction: column;
@@ -713,23 +751,58 @@
 }
 
     function renderWinner() {
-      episodeContentEl.innerHTML = "";
+  episodeContentEl.innerHTML = "";
 
-      const card = document.createElement("div");
-      card.className = "winnerCard";
+  const retoNombre = currentEpisode.challenge.name;
+  let clean = retoNombre.replace(/^La más\s*/i, "");
+  if (!clean) clean = retoNombre;
 
-      const retoNombre = currentEpisode.challenge.name;
-      let clean = retoNombre.replace(/^La más\s*/i, "");
-      if (!clean) clean = retoNombre;
+  // Título grande arriba con "es:"
+  episodeTitleEl.textContent = `La más ${clean} es:`;
+  episodeSubtitleEl.textContent = "";
 
-      card.innerHTML = `
-        <div class="winnerTitle">La más ${clean} es…</div>
-        <img src="${currentEpisode.winner.image}" alt="${currentEpisode.winner.name}">
-        <div class="episodeName">${currentEpisode.winner.name} (T${currentEpisode.winner.season})</div>
+  // Tarjeta de la ganadora del episodio
+  const card = document.createElement("div");
+  card.className = "winnerCard";
+
+  card.innerHTML = `
+    <img src="${currentEpisode.winner.image}" alt="${currentEpisode.winner.name}">
+    <div class="episodeName">${currentEpisode.winner.name}</div>
+  `; // 👈 sin (T2)
+
+  episodeContentEl.appendChild(card);
+
+  // ===== Casi la más (top 2 sin la ganadora) =====
+  const runnerUps = currentEpisode.tops
+    .filter(q => q.name !== currentEpisode.winner.name)
+    .slice(0, 2); // solo dos
+
+  if (runnerUps.length > 0) {
+    const wrap = document.createElement("div");
+    wrap.className = "runnerUpsWrapper";
+
+    const title = document.createElement("div");
+    title.className = "runnerUpsTitle";
+    title.textContent = "Casi la más…";
+    wrap.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "runnerUpsGrid";
+
+    runnerUps.forEach(q => {
+      const c = document.createElement("div");
+      c.className = "runnerUpCard";
+      c.innerHTML = `
+        <img src="${q.image}" alt="${q.name}">
+        <div class="runnerUpName">${q.name}</div>
       `;
+      grid.appendChild(c);
+    });
 
-      episodeContentEl.appendChild(card);
-    }
+    wrap.appendChild(grid);
+    episodeContentEl.appendChild(wrap);
+  }
+}
 
     function renderLipsync() {
       episodeContentEl.innerHTML = "";
@@ -928,8 +1001,6 @@
           break;
 
         case 2:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "";
           nextBtn.textContent = "Ver lip sync";
           renderWinner();
           break;
