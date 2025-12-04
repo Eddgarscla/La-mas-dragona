@@ -1329,9 +1329,9 @@ function getMarkClass(mark) {
 }
 
     // =========================
-    //   FINAL
-    // =========================
-    function startFinale() {
+//   FINAL
+// =========================
+function startFinale() {
   const finalists = aliveQueens.slice();
 
   if (!finalists.length) {
@@ -1339,11 +1339,11 @@ function getMarkClass(mark) {
     episodeSubtitleEl.textContent = "No hay finalistas cargadas 😅";
     episodeContentEl.innerHTML = "";
     nextBtn.textContent = "Fin de la simulación";
-    nextBtn.disabled = false;  // o simplemente borra esta línea
+    nextBtn.disabled = false;
     return;
   }
 
-  // Por defecto
+  // Texto base
   episodeTitleEl.textContent = "La Gran Final";
   episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
@@ -1366,8 +1366,8 @@ function getMarkClass(mark) {
     const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
     const pair = shuffled.slice(0, 2);
 
-    // Si solo hay una, se corona directamente
     if (pair.length < 2) {
+      // Solo hay una → se corona directa
       winner = pair[0];
       episodeContentEl.innerHTML = `
         <div class="winnerCard">
@@ -1378,7 +1378,7 @@ function getMarkClass(mark) {
       `;
     } else {
       winner = pair[Math.floor(Math.random() * pair.length)];
-      const loser  = pair[0].name === winner.name ? pair[1] : pair[0];
+      const loser = pair[0].name === winner.name ? pair[1] : pair[0];
 
       episodeSubtitleEl.textContent = "Doblaje por la corona";
 
@@ -1405,11 +1405,12 @@ function getMarkClass(mark) {
       `;
     }
 
-  // 🔹 MODO 3: "TÚ DECIDES" (por ahora también aleatorio, luego haremos pantalla)
+  // 🔹 MODO 3: "TÚ DECIDES" (por ahora aleatorio)
   } else if (crownMode === "user") {
     winner = finalists[Math.floor(Math.random() * finalists.length)];
 
-    episodeSubtitleEl.textContent = "Modo 'Tú decides' (por ahora, coronación aleatoria)";
+    episodeSubtitleEl.textContent =
+      "Modo 'Tú decides' (por ahora, coronación aleatoria)";
 
     episodeContentEl.innerHTML = `
       <div class="winnerCard">
@@ -1423,16 +1424,14 @@ function getMarkClass(mark) {
     `;
   }
 
-  nextBtn.textContent = "Fin de la simulación";
-  nextBtn.disabled = true;
-}
-      // 🔹 Al final de startFinale()
+  // 👉 Guardar en el Salón de la Fama
   if (winner) {
     saveWinnerToHallOfFame(winner);
   }
 
+  // 👉 Botón listo para volver al inicio en el siguiente click (step === 7)
   nextBtn.textContent = "Fin de la simulación";
-  nextBtn.disabled = false;   // déjalo habilitado para que pueda volver al inicio
+  nextBtn.disabled = false;
 }
 
       function renderFinalists() {
