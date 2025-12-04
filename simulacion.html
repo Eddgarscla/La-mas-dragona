@@ -274,6 +274,39 @@
       border: 3px solid #ff69b4;
       box-shadow: 0 0 14px rgba(255,105,180,0.9);
     }
+    .topBottomGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 arriba, 3 abajo */
+  gap: 16px 10px;
+  margin-top: 10px;
+}
+
+.topBottomCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.topBottomCard img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 14px rgba(255,105,180,0.9);
+}
+
+.topBottomName {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.topBottomTag {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
 
     .eliminationWrapper {
       display: flex;
@@ -396,7 +429,6 @@
     }
     allChallenges.push(
       { id: "SPECIAL-reunion", name: specialChallenges.reunion, season: "all", type: "reunion" },
-      { id: "SPECIAL-final",   name: specialChallenges.final,   season: "all", type: "final" }
     );
 
     const usedChallengeIds = [];
@@ -580,44 +612,64 @@
 }
 
     function renderTopBottom() {
-      episodeContentEl.innerHTML = "";
+  episodeContentEl.innerHTML = "";
 
-      const topTitle = document.createElement("h2");
-      topTitle.className = "sectionTitle";
-      topTitle.textContent = "Las más";
-      episodeContentEl.appendChild(topTitle);
+  // Título general
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Las más y las menos";
+  episodeContentEl.appendChild(title);
 
-      currentEpisode.tops.forEach(q => {
-        const row = document.createElement("div");
-        row.className = "episodeRow perf-excellent";
-        row.innerHTML = `
-          <img src="${q.image}" alt="${q.name}">
-          <div class="episodeText">
-            <span class="episodeName">${q.name} (T${q.season})</span>
-            <span class="episodePerf">Entre las mejores del episodio</span>
-          </div>
-        `;
-        episodeContentEl.appendChild(row);
-      });
+  const grid = document.createElement("div");
+  grid.className = "topBottomGrid";
 
-      const lowTitle = document.createElement("h2");
-      lowTitle.className = "sectionTitle";
-      lowTitle.textContent = "Las menos";
-      episodeContentEl.appendChild(lowTitle);
+  // Juntamos tops y bottoms y los mezclamos para el drama
+  const combined = [...currentEpisode.tops, ...currentEpisode.bottoms];
 
-      currentEpisode.bottoms.forEach(q => {
-        const row = document.createElement("div");
-        row.className = "episodeRow perf-awful";
-        row.innerHTML = `
-          <img src="${q.image}" alt="${q.name}">
-          <div class="episodeText">
-            <span class="episodeName">${q.name} (T${q.season})</span>
-            <span class="episodePerf">Entre las peores del episodio</span>
-          </div>
-        `;
-        episodeContentEl.appendChild(row);
-      });
+  // Quitamos duplicados por nombre (por si alguna está en ambos arrays)
+  const seen = new Set();
+  const unique = [];
+  combined.forEach(q => {
+    if (!seen.has(q.name)) {
+      seen.add(q.name);
+      unique.push(q);
     }
+  });
+
+  // Mezclar aleatoriamente
+  unique.sort(() => Math.random() - 0.5);
+
+  // Nos quedamos con máximo 6
+  const selected = unique.slice(0, Math.min(6, unique.length));
+
+  selected.forEach(q => {
+    const card = document.createElement("div");
+    card.className = "topBottomCard";
+
+    // Para el texto de debajo (mejores / peores) según de dónde venga
+    const isTop = currentEpisode.tops.some(t => t.name === q.name);
+    const isBottom = currentEpisode.bottoms.some(b => b.name === q.name);
+
+    let tag = "";
+    if (isTop && isBottom) {
+      tag = "Drama total del episodio";
+    } else if (isTop) {
+      tag = "Entre las mejores del episodio";
+    } else if (isBottom) {
+      tag = "Entre las peores del episodio";
+    }
+
+    card.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <div class="topBottomName">${q.name}</div>
+      <div class="topBottomTag">${tag}</div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  episodeContentEl.appendChild(grid);
+}
 
     function renderWinner() {
       episodeContentEl.innerHTML = "";
