@@ -1541,12 +1541,17 @@ nextBtn.addEventListener("click", () => {
     return;
   }
 
-  // Después de eliminación: guardar eliminada y sacarla del cast activo
   if (step === 4 && currentEpisode && currentEpisode.eliminated) {
-    const elim = currentEpisode.eliminated;
-    eliminatedQueens.push(elim);
-    aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+  const elim = currentEpisode.eliminated;
+  eliminatedQueens.push(elim);
+  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+
+  // 🔹 Actualizar su último episodio a "Eliminada"
+  const marks = trackRecord[elim.name];
+  if (marks && marks.length > 0) {
+    marks[marks.length - 1] = "Eliminada";
   }
+}
 
   // Después del track record
   if (step === 5) {
