@@ -956,21 +956,20 @@ let hasReturnHappened = false;
         safeFromLipsync
       };
 
-      // ✅ Ajustar el desempeño y el track record de la eliminada
-      if (eliminated) {
-        // 1) Cambiar el chip de este episodio en la lista de performances
-        const perf = performances.find(p => p.queen.name === eliminated.name);
-        if (perf) {
-          perf.track = "Eliminada";
-        }
-
-        // 2) Cambiar la ÚLTIMA casilla del track record a "Eliminada"
-        const marks = trackRecord[eliminated.name];
-        if (marks && marks.length > 0) {
-          marks[marks.length - 1] = "Eliminada";
-        }
-      }
-    }
+     // // ✅ Ajustar el desempeño y el track record de la eliminada
+// if (eliminated) {
+//   // 1) Cambiar el chip de este episodio en la lista de performances
+//   const perf = performances.find(p => p.queen.name === eliminated.name);
+//   if (perf) {
+//     perf.track = "Eliminada";
+//   }
+//
+//   // 2) Cambiar la ÚLTIMA casilla del track record a "Eliminada"
+//   const marks = trackRecord[eliminated.name];
+//   if (marks && marks.length > 0) {
+//     marks[marks.length - 1] = "Eliminada";
+//   }
+// }
 
     // =========================
     //   RENDERS
@@ -1395,6 +1394,32 @@ function getMarkClass(mark) {
   nextBtn.textContent = "Fin de la simulación";
   nextBtn.disabled = true;
 }
+
+      function renderFinalists() {
+  episodeContentEl.innerHTML = "";
+
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Finalistas de la temporada";
+  episodeContentEl.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "topBottomGrid"; // reutilizamos el estilo de tarjetas redondas
+
+  aliveQueens.forEach(q => {
+    const card = document.createElement("div");
+    card.className = "topBottomCard";
+
+    card.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <div class="topBottomName">${q.name}</div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  episodeContentEl.appendChild(grid);
+}
    // =========================
 //   CONTROL DE PASOS
 // =========================
@@ -1475,9 +1500,19 @@ function renderStep() {
       renderTrackRecord();
       break;
 
-    case 6:
-      // Gran final
-      startFinale();
+        case 6:
+      episodeTitleEl.textContent = "La Gran Final";
+      episodeSubtitleEl.textContent = "Finalistas de la temporada";
+
+      if (crownMode === "lipsync") {
+        nextBtn.textContent = "Doblaje por la corona";
+      } else if (crownMode === "user") {
+        nextBtn.textContent = "Elegir ganadora";
+      } else {
+        nextBtn.textContent = "Coronar al azar";
+      }
+
+      renderFinalists();
       break;
   }
 }
@@ -1529,6 +1564,13 @@ nextBtn.addEventListener("click", () => {
       renderStep();
       return;
     }
+  }
+
+    // Gran final: ya vimos las finalistas, ahora coronamos
+  if (step === 6) {
+    startFinale();  // aquí se hace el lipsync / random / etc
+    step = 7;       // estado final para que no vuelva a entrar
+    return;
   }
 
   // Flujo normal (0 → 5)
