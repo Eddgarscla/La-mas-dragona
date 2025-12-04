@@ -690,6 +690,11 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     0 0 6px rgba(255, 20, 147, 0.9),
     0 0 12px rgba(255, 255, 255, 0.7);
 }
+    .badge-elim {
+  background: #444;        /* gris oscuro tipo lápida 💀 */
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0,0,0,0.7);
+}
   </style>
 </head>
 <body>
@@ -871,7 +876,7 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
         safeFromLipsync = null;
       }
 
-      currentEpisode = {
+            currentEpisode = {
         challenge,
         performances,
         tops,
@@ -881,7 +886,15 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
         eliminated,
         safeFromLipsync
       };
-    }
+
+      // 🔴 Ajustar el track record para la eliminada
+      if (eliminated) {
+        const marks = trackRecord[eliminated.name];
+        // episodeNumber ya indica el episodio actual
+        if (marks && marks.length >= episodeNumber) {
+          marks[episodeNumber - 1] = "Eliminada";
+        }
+      }
 
     // =========================
     //   RENDERS
@@ -1208,6 +1221,8 @@ function getMarkClass(mark) {
       return "cell-bottom";
     case "Salvada":
       return "cell-safe";
+      case "Eliminada":
+      return { text: "ELIMINADA", cls: "badge-elim" };
     default:
       return "cell-blank";
   }
