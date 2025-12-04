@@ -955,6 +955,7 @@ let hasReturnHappened = false;
         eliminated,
         safeFromLipsync
       };
+    }
 
      // // ✅ Ajustar el desempeño y el track record de la eliminada
 // if (eliminated) {
@@ -1307,7 +1308,7 @@ function getMarkClass(mark) {
     episodeSubtitleEl.textContent = "No hay finalistas cargadas 😅";
     episodeContentEl.innerHTML = "";
     nextBtn.textContent = "Fin de la simulación";
-    nextBtn.disabled = true;
+    nextBtn.disabled = false;  // o simplemente borra esta línea
     return;
   }
 
@@ -1523,6 +1524,13 @@ function renderStep() {
 nextBtn.addEventListener("click", () => {
   if (!cast.length) return;
   if (nextBtn.disabled) return;
+
+    // Fin de la simulación → volver al inicio
+  if (step === 7) {
+    // 👇 cambia "index.html" por la ruta real de tu pantalla inicial si es distinta
+    window.location.href = "index.html";
+    return;
+  }
 
   // Primer click: construir episodio
   if (step === -1) {
