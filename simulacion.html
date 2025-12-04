@@ -483,6 +483,101 @@
   opacity: 0.9;
   margin-top: 4px;
 }
+    /* ===== TRACK RECORD ESTILO TABLA ===== */
+
+.trackTable {
+  margin-top: 10px;
+  padding: 10px 8px 12px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 22px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trackRow {
+  display: grid;
+  align-items: center;
+  column-gap: 4px;
+}
+
+.trackCell {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* Columna de nombre + foto */
+.trackNameCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+}
+
+.trackNameCell img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff69b4;
+  box-shadow: 0 0 8px rgba(255,105,180,0.8);
+}
+
+.trackNameCell span {
+  font-size: 0.8rem;
+}
+
+/* Encabezados */
+.trackHeaderRow .trackCell {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.trackNameHeader {
+  text-align: left;
+}
+
+.trackEpisodeHeader {
+  font-size: 0.7rem;
+}
+
+/* Celdas de mark */
+.trackMarkCell {
+  padding: 4px 2px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Colores tipo La Más Draga */
+.cell-win {
+  background: #36c26b;
+}
+
+.cell-high {
+  background: #7bdcff;
+}
+
+.cell-low {
+  background: #ffd86b;
+}
+
+.cell-bottom {
+  background: #ff4b6e;
+}
+
+.cell-safe {
+  background: #b4b4b4;
+}
+
+.cell-blank {
+  background: rgba(0,0,0,0.25);
+  opacity: 0.7;
+}
+    
     /* 🌈 Texto glam general */
 body, .episodeName, .savedQueensMessage, .safeText, .sectionTitle {
   font-family: 'Poppins', 'Montserrat', sans-serif;
@@ -1035,67 +1130,88 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 }
 
     function renderTrackRecord() {
-      episodeContentEl.innerHTML = "";
+  episodeContentEl.innerHTML = "";
 
-      const title = document.createElement("h2");
-      title.className = "sectionTitle";
-      title.textContent = "Track record de la temporada";
-      episodeContentEl.appendChild(title);
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Track record de la temporada";
+  episodeContentEl.appendChild(title);
 
-      const header = document.createElement("div");
-      header.style.display = "flex";
-      header.style.alignItems = "center";
-      header.style.justifyContent = "space-between";
-      header.style.fontSize = "0.8rem";
-      header.style.opacity = "0.9";
-      header.style.marginBottom = "6px";
-      header.innerHTML = `
-        <span>Feminosa</span>
-        <span>Episodio ${episodeNumber}</span>
-      `;
-      episodeContentEl.appendChild(header);
+  const wrapper = document.createElement("div");
+  wrapper.className = "trackTable";
 
-      const table = document.createElement("div");
-      table.style.display = "flex";
-      table.style.flexDirection = "column";
-      table.style.gap = "6px";
+  // misma definición de columnas para todas las filas
+  const gridTemplate =
+    `minmax(130px, 1.8fr) repeat(${episodeNumber}, minmax(44px, 1fr))`;
 
-      cast.forEach(q => {
-        const row = document.createElement("div");
-        row.style.display = "flex";
-        row.style.alignItems = "center";
-        row.style.gap = "8px";
+  // ===== Fila de encabezado =====
+  const headerRow = document.createElement("div");
+  headerRow.className = "trackRow trackHeaderRow";
+  headerRow.style.gridTemplateColumns = gridTemplate;
 
-        const marks = trackRecord[q.name] || [];
-        const mark = marks[episodeNumber - 1] || "—";
+  const nameHeader = document.createElement("div");
+  nameHeader.className = "trackCell trackNameHeader";
+  nameHeader.textContent = "Feminosa";
+  headerRow.appendChild(nameHeader);
 
-        row.innerHTML = `
-          <img src="${q.image}" alt="${q.name}" style="
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ff69b4;
-            box-shadow: 0 0 8px rgba(255,105,180,0.8);
-          ">
-          <span style="flex:1;font-size:0.85rem;">${q.name}</span>
-          <span style="
-            min-width: 90px;
-            text-align: center;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: rgba(0,0,0,0.55);
-            box-shadow: 0 0 10px rgba(0,0,0,0.7);
-          ">
-            ${mark}
-          </span>
-        `;
-        table.appendChild(row);
-      });
+  for (let ep = 1; ep <= episodeNumber; ep++) {
+    const hCell = document.createElement("div");
+    hCell.className = "trackCell trackEpisodeHeader";
+    hCell.textContent = `EP${ep}`;
+    headerRow.appendChild(hCell);
+  }
 
-      episodeContentEl.appendChild(table);
+  wrapper.appendChild(headerRow);
+
+  // ===== Filas por feminosa =====
+  cast.forEach(q => {
+    const row = document.createElement("div");
+    row.className = "trackRow";
+    row.style.gridTemplateColumns = gridTemplate;
+
+    // Columna nombre + foto
+    const nameCell = document.createElement("div");
+    nameCell.className = "trackCell trackNameCell";
+    nameCell.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <span>${q.name}</span>
+    `;
+    row.appendChild(nameCell);
+
+    const marks = trackRecord[q.name] || [];
+
+    // Celdas de episodios (hasta el episodio actual)
+    for (let ep = 0; ep < episodeNumber; ep++) {
+      const mark = marks[ep] || "";
+      const cell = document.createElement("div");
+      cell.className = "trackCell trackMarkCell " + getMarkClass(mark);
+      cell.textContent = mark || "";
+      row.appendChild(cell);
     }
+
+    wrapper.appendChild(row);
+  });
+
+  episodeContentEl.appendChild(wrapper);
+}
+
+// Mapea "La +" / "La casi +" etc a colores
+function getMarkClass(mark) {
+  switch (mark) {
+    case "La +":
+      return "cell-win";
+    case "La casi +":
+      return "cell-high";
+    case "La casi -":
+      return "cell-low";
+    case "La -":
+      return "cell-bottom";
+    case "Salvada":
+      return "cell-safe";
+    default:
+      return "cell-blank";
+  }
+}
 
     // =========================
     //   FINAL
