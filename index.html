@@ -1121,6 +1121,13 @@ selectBtn.addEventListener("click", () => {
 
   // Redirigimos a la página de simulación
   window.location.href = "simulacion.html";
+  
+  localStorage.setItem("lmd_seasonConfig", JSON.stringify({
+  seasonType:  "regular",      // o "solo_las_mas"
+  returnMode:  "none",         // o "one_return"
+  finalistsNum: 4,             // 2, 3, 4...
+  crownMode:   "random"        // "user" o "lipsync"
+}));
 });
   // 👁️ Botón del ojo (abrir/cerrar menú con animación)
   seasonBtn.addEventListener("click", () => {
