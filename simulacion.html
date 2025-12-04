@@ -316,6 +316,10 @@
     #episodeContent {
       margin-top: 4px;
     }
+    .top-align {
+  align-self: flex-start !important;
+  margin-top: 20px !important;
+}
   </style>
 </head>
 <body>
@@ -812,6 +816,8 @@
     episodeSubtitleEl.textContent = "Desempeño del episodio";
     nextBtn.textContent = "Las más y las menos";
     renderPerformanceList();
+
+    document.querySelector(".sim-panel").classList.add("top-align");
   }
   break;
 
@@ -833,6 +839,9 @@
           episodeTitleEl.textContent = retoNombre;
           episodeSubtitleEl.textContent = "Doblaje por su vida";
           nextBtn.textContent = "Resultado del doblaje";
+
+          document.querySelector(".sim-panel").classList.remove("top-align");
+          
           renderLipsync();
           break;
 
