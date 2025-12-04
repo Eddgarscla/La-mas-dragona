@@ -927,7 +927,7 @@ let hasReturnHappened = false;
         safeFromLipsync = null;
       }
 
-      currentEpisode = {
+            currentEpisode = {
         challenge,
         performances,
         tops,
@@ -938,11 +938,18 @@ let hasReturnHappened = false;
         safeFromLipsync
       };
 
-      // Ajustar el track record para marcar ELIMINADA en este episodio
+      // ✅ Ajustar el desempeño y el track record de la eliminada
       if (eliminated) {
+        // 1) Cambiar el chip de este episodio en la lista de performances
+        const perf = performances.find(p => p.queen.name === eliminated.name);
+        if (perf) {
+          perf.track = "Eliminada";
+        }
+
+        // 2) Cambiar la ÚLTIMA casilla del track record a "Eliminada"
         const marks = trackRecord[eliminated.name];
-        if (marks && marks.length >= episodeNumber) {
-          marks[episodeNumber - 1] = "Eliminada";
+        if (marks && marks.length > 0) {
+          marks[marks.length - 1] = "Eliminada";
         }
       }
     }
