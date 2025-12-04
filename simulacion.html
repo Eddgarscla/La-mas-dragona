@@ -737,21 +737,6 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
   </div>
 
   <script>
-
-    // 🔁 Recuperar cast y configuración desde el index
-const storedQueens  = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
-const storedConfig  = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
-
-// Lista de reinas activas en la temporada
-let queens = [...storedQueens];
-
-// Reinas eliminadas
-let eliminatedQueens = [];
-
-// Config de temporada (con valores por defecto por si faltan)
-const crownMode   = storedConfig.crownMode   || "aleatorio"; // "aleatorio" | "decidir" | "lipSync"
-const returnMode  = storedConfig.returnMode  || "none";      // "none" | "aleatorio" | "decide" | "mega"
-const finalistsNum = storedConfig.finalistsNum || 4;
     
     // =========================
     //   RETOS POR TEMPORADA
@@ -835,7 +820,6 @@ switch (rawCrownMode) {
 
 // para manejar retornos
 let eliminatedQueens = [];
-let hasReturnHappened = false;
 
     let aliveQueens = cast.slice();
     const trackRecord = {};
@@ -861,19 +845,19 @@ let hasReturnHappened = false;
     };
 
     let currentEpisode = null;
-    // -1 -> suspense / 0 -> desempeño / 1 -> top & bottom / 2 -> winner / 3 -> lipsync / 4 -> eliminación / 5 -> track / 6 -> final
-    let step = -1;
-   let hasShownPerformance = false; // controla si ya mostramos el desempeño
+// -1 -> suspense ...
+let step = -1;
+let hasShownPerformance = false; // controla si ya mostramos el desempeño
 
-    let eliminatedQueens = eliminatedQueens || []; // si ya tienes algo similar, no lo dupliques
+// 👇 solo estas dos, sin repetir eliminatedQueens
 let comebackDone = false;
 let comebackEpisode = null;
 
-    // 🌀 Elegimos en qué episodio puede pasar el retorno (si lo hay)
+// 🌀 Elegimos en qué episodio puede pasar el retorno (si lo hay)
 (function prepararRetorno() {
   if (returnMode === "none") return;
 
-  const total = storedQueens.length;
+  const total = cast.length;   // 👈 AQUÍ CAMBIAMOS storedQueens por cast
   const minEpisode = 2;
   const maxEpisodeBeforeTop5 = Math.max(minEpisode, total - 5);
 
@@ -1627,18 +1611,44 @@ nextBtn.addEventListener("click", () => {
     }
   }
 
-  // Después del track record
+    // Después del track record
   if (step === 5) {
     if (aliveQueens.length > finalistsNum) {
-      // Posible regreso
-      if (returnMode === "one_return" && !hasReturnHappened && eliminatedQueens.length > 0) {
-        const idx = Math.floor(Math.random() * eliminatedQueens.length);
-        const comeback = eliminatedQueens.splice(idx, 1)[0];
-        aliveQueens.push(comeback);
-        hasReturnHappened = true;
-        alert(`${comeback.name} regresa a la competencia ✨`);
+
+      // 🔁 ¿Toca retorno en el PRÓXIMO episodio?
+      if (
+        !comebackDone &&
+        comebackEpisode &&
+        eliminatedQueens.length &&
+        episodeNumber + 1 === comebackEpisode
+      ) {
+        comebackDone = true;
+
+        // Modo retorno aleatorio / mega
+        if (returnMode === "aleatorio" || returnMode === "mega") {
+          const idx = Math.floor(Math.random() * eliminatedQueens.length);
+          const returning = eliminatedQueens.splice(idx, 1)[0];
+          aliveQueens.push(returning);
+          alert(`✨ ${returning.name} regresa a la competencia`);
+        }
+        // Modo "tú decides quién regresa"
+        else if (returnMode === "decide") {
+          const namesList = eliminatedQueens
+            .map((q, i) => `${i + 1}. ${q.name}`)
+            .join("\n");
+
+          const choice = prompt("¿Quién regresa a la competencia?\n" + namesList);
+          const index = Number(choice) - 1;
+
+          if (!Number.isNaN(index) && index >= 0 && index < eliminatedQueens.length) {
+            const returning = eliminatedQueens.splice(index, 1)[0];
+            aliveQueens.push(returning);
+            alert(`✨ ${returning.name} regresa a la competencia`);
+          }
+        }
       }
 
+      // Nuevo episodio
       hasShownPerformance = false;
       episodeNumber++;
       buildEpisode();
