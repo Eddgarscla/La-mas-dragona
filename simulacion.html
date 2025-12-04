@@ -1511,7 +1511,7 @@ function getMarkClass(mark) {
   }
 }
 
-    // =========================
+   // =========================
 //   FINAL
 // =========================
 function startFinale(manualWinner) {
@@ -1526,38 +1526,42 @@ function startFinale(manualWinner) {
     return;
   }
 
-  // Texto base
   episodeTitleEl.textContent = "La Gran Final";
   episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
   let winner = null;
 
-    // Si vienes del modo "Tú decides" con ganadora seleccionada
-  if (crownMode === "user" && manualWinner) {
-    winner = manualWinner;
+  // 🔹 MODO 3: TÚ DECIDES
+  if (crownMode === "user") {
+    if (manualWinner) {
+      // Has tocado una feminosa y le pasamos esa como ganadora
+      winner = manualWinner;
+      episodeSubtitleEl.textContent = "Decisión de la jueza suprema (tú) 💅";
 
-    episodeSubtitleEl.textContent = "Decisión de la jueza suprema (tú) 💅";
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+      `;
+    } else {
+      // Por si acaso se llama sin elección (fallback aleatorio)
+      winner = finalists[Math.floor(Math.random() * finalists.length)];
+      episodeSubtitleEl.textContent =
+        "Modo 'Tú decides' (por ahora, coronación aleatoria)";
 
-    episodeContentEl.innerHTML = `
-      <div class="winnerCard">
-        <div class="winnerTitle">¡La más ganadora es…!</div>
-        <img src="${winner.image}" alt="${winner.name}">
-        <div class="episodeName">${winner.name}</div>
-      </div>
-    `;
-  }
-
-  // 🔹 MODO 1: CORONA ALEATORIA
-  if (crownMode === "random") {
-    winner = finalists[Math.floor(Math.random() * finalists.length)];
-
-    episodeContentEl.innerHTML = `
-      <div class="winnerCard">
-        <div class="winnerTitle">¡La más ganadora es…!</div>
-        <img src="${winner.image}" alt="${winner.name}">
-        <div class="episodeName">${winner.name}</div>
-      </div>
-    `;
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+        <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.9;">
+          Próximamente podrás elegir tú misma quién se lleva la corona ✨
+        </p>
+      `;
+    }
 
   // 🔹 MODO 2: DOBLAJE POR LA CORONA
   } else if (crownMode === "lipsync") {
@@ -1565,7 +1569,6 @@ function startFinale(manualWinner) {
     const pair = shuffled.slice(0, 2);
 
     if (pair.length < 2) {
-      // Solo hay una → se corona directa
       winner = pair[0];
       episodeContentEl.innerHTML = `
         <div class="winnerCard">
@@ -1603,12 +1606,9 @@ function startFinale(manualWinner) {
       `;
     }
 
-  // 🔹 MODO 3: "TÚ DECIDES" (por ahora aleatorio)
-  } else if (crownMode === "user") {
+  // 🔹 MODO 1: CORONA ALEATORIA
+  } else {
     winner = finalists[Math.floor(Math.random() * finalists.length)];
-
-    episodeSubtitleEl.textContent =
-      "Modo 'Tú decides' (por ahora, coronación aleatoria)";
 
     episodeContentEl.innerHTML = `
       <div class="winnerCard">
@@ -1616,18 +1616,14 @@ function startFinale(manualWinner) {
         <img src="${winner.image}" alt="${winner.name}">
         <div class="episodeName">${winner.name}</div>
       </div>
-      <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.9;">
-        Próximamente podrás elegir tú misma quién se lleva la corona ✨
-      </p>
     `;
   }
 
-  // 👉 Guardar en el Salón de la Fama
+  // Guardar en Salón de la Fama
   if (winner) {
     saveWinnerToHallOfFame(winner);
   }
 
-  // 👉 Botón listo para volver al inicio en el siguiente click (step === 7)
   nextBtn.textContent = "Fin de la simulación";
   nextBtn.disabled = false;
 }
@@ -1643,7 +1639,7 @@ function startFinale(manualWinner) {
   const grid = document.createElement("div");
   grid.className = "topBottomGrid"; // reutilizamos el estilo de tarjetas redondas
 
-          aliveQueens.forEach(q => {
+  aliveQueens.forEach(q => {
     const card = document.createElement("div");
     card.className = "topBottomCard";
 
@@ -1652,6 +1648,7 @@ function startFinale(manualWinner) {
       <div class="topBottomName">${q.name}</div>
     `;
 
+    // Si la coronación es "Tú decides", las finalistas son clicables
     if (crownMode === "user") {
       card.classList.add("finalistSelectable");
       card.addEventListener("click", () => {
@@ -1666,6 +1663,10 @@ function startFinale(manualWinner) {
 
     grid.appendChild(card);
   });
+
+  // 👉 aquí se añade la grid al episodio
+  episodeContentEl.appendChild(grid);
+}
   
    // =========================
 //   CONTROL DE PASOS
