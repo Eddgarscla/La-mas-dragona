@@ -319,6 +319,13 @@
   gap: 16px 10px;
   margin-top: 10px;
 }
+    .finalistsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 arriba, 2 abajo */
+  gap: 16px 10px;
+  margin-top: 10px;
+  justify-items: center; /* para que queden centradas en cada columna */
+}
 
 .topBottomCard {
   display: flex;
@@ -1637,7 +1644,7 @@ function startFinale(manualWinner) {
   episodeContentEl.appendChild(title);
 
   const grid = document.createElement("div");
-  grid.className = "topBottomGrid"; // reutilizamos el estilo de tarjetas redondas
+grid.className = "finalistsGrid"; // 2 x 2 solo en la final
 
   aliveQueens.forEach(q => {
     const card = document.createElement("div");
