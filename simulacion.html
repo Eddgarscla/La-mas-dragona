@@ -850,6 +850,38 @@ let hasReturnHappened = false;
    let hasShownPerformance = false; // controla si ya mostramos el desempeño
 
     // =========================
+//   SALÓN DE LA FAMA
+// =========================
+function saveWinnerToHallOfFame(winner) {
+  if (!winner) return;
+
+  const KEY = "lmd_hallOfFame";
+  const raw  = localStorage.getItem(KEY) || "[]";
+
+  let list;
+  try {
+    list = JSON.parse(raw);
+    if (!Array.isArray(list)) list = [];
+  } catch(e) {
+    list = [];
+  }
+
+  const entry = {
+    name: winner.name,
+    image: winner.image,
+    seasonType,   // de tu config
+    crownMode,    // random / lipsync / user
+    date: new Date().toISOString()
+  };
+
+  list.push(entry);
+
+  // Solo conservamos las ÚLTIMAS 10
+  const lastTen = list.slice(-10);
+  localStorage.setItem(KEY, JSON.stringify(lastTen));
+}
+
+    // =========================
     //   CONSTRUIR EPISODIO
     // =========================
     function buildEpisode() {
@@ -1393,6 +1425,14 @@ function getMarkClass(mark) {
 
   nextBtn.textContent = "Fin de la simulación";
   nextBtn.disabled = true;
+}
+      // 🔹 Al final de startFinale()
+  if (winner) {
+    saveWinnerToHallOfFame(winner);
+  }
+
+  nextBtn.textContent = "Fin de la simulación";
+  nextBtn.disabled = false;   // déjalo habilitado para que pueda volver al inicio
 }
 
       function renderFinalists() {
