@@ -489,9 +489,9 @@
   margin-top: 10px;
   padding: 10px 8px 12px;
   border-radius: 18px;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 22px rgba(0,0,0,0.7);
+  background: rgba(255, 255, 255, 0.92);  /* 👈 blanco/glass */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 22px rgba(0,0,0,0.45);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -821,80 +821,6 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
         const numLow = Math.min(2, indexes.length);
         for (let i = 0; i < numLow; i++) {
           lowIdxs.push(drawIndex());
-        }
-      }
-
-      const performances = [];
-
-      for (let i = 0; i < n; i++) {
-        const q = shuffled[i];
-        let perfType = "good";
-        let trackMark = "Salvada";
-
-        if (i === winnerIdx) {
-          perfType  = "excellent";
-          trackMark = "La +";
-        } else if (topIdxs.includes(i)) {
-          perfType  = "good";
-          trackMark = "La casi +";
-        } else if (lipIdxs.includes(i)) {
-          perfType  = "awful";
-          trackMark = "La -";
-        } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
-          perfType  = "bad";
-          trackMark = "La casi -";
-        } else {
-          perfType  = "good";
-          trackMark = "Salvada";
-        }
-
-        performances.push({
-          queen: q,
-          type: perfType,
-          text: performanceLabels[perfType],
-          track: trackMark
-        });
-
-        if (!trackRecord[q.name]) {
-          trackRecord[q.name] = [];
-        }
-        trackRecord[q.name].push(trackMark);
-      }
-
-      const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
-      const bottoms = [...lipIdxs.map(i => shuffled[i])];
-      if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
-
-      const lipsyncPair = lipIdxs.map(i => shuffled[i]);
-      let eliminated = null, safeFromLipsync = null;
-
-      if (lipsyncPair.length === 2) {
-        eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
-        safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
-      } else if (lipsyncPair.length === 1) {
-        eliminated = lipsyncPair[0];
-        safeFromLipsync = null;
-      }
-
-            currentEpisode = {
-        challenge,
-        performances,
-        tops,
-        bottoms,
-        winner: shuffled[winnerIdx],
-        lipsyncPair,
-        eliminated,
-        safeFromLipsync
-      };
-
-      // 🔴 Ajustar el track record para la eliminada
-      if (eliminated) {
-        const marks = trackRecord[eliminated.name];
-        // episodeNumber ya indica el episodio actual
-        if (marks && marks.length >= episodeNumber) {
-          marks[episodeNumber - 1] = "Eliminada";
-        }
-      }
 
     // =========================
     //   RENDERS
@@ -1221,8 +1147,8 @@ function getMarkClass(mark) {
       return "cell-bottom";
     case "Salvada":
       return "cell-safe";
-      case "Eliminada":
-      return { text: "ELIMINADA", cls: "badge-elim" };
+    case "Eliminada":
+      return "cell-elim";   // 👈 usamos una clase nueva
     default:
       return "cell-blank";
   }
