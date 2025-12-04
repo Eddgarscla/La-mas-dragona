@@ -881,13 +881,8 @@ let hasReturnHappened = false;
         extraBottomIdx = drawIndex();
       }
 
-      const lowIdxs = [];
-      if (indexes.length > 0) {
-        const numLow = Math.min(2, indexes.length);
-        for (let i = 0; i < numLow; i++) {
-          lowIdxs.push(drawIndex());
-        }
-      }
+            // Solo habrá una "La casi -": la tercera peor (extraBottomIdx)
+      const lowIdxs = []; // ya no la usamos
 
       const performances = [];
 
@@ -897,23 +892,27 @@ let hasReturnHappened = false;
         let perfType = "good";
         let trackMark = "Salvada";
 
-        if (i === winnerIdx) {
+                if (i === winnerIdx) {
           perfType  = "excellent";
           trackMark = "La +";
         } else if (topIdxs.includes(i)) {
           perfType  = "good";
           trackMark = "La casi +";
         } else if (lipIdxs.includes(i)) {
+          // Las dos del doblaje se marcan como "La -"
+          // y luego a la eliminada le cambiamos a "Eliminada"
           perfType  = "awful";
           trackMark = "La -";
-        } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
+        } else if (i === extraBottomIdx) {
+          // Tercera peor (no va al doblaje): "La casi -"
           perfType  = "bad";
           trackMark = "La casi -";
         } else {
+          // Todo lo demás es realmente "Salvada"
           perfType  = "good";
           trackMark = "Salvada";
         }
-
+        
         performances.push({
           queen: q,
           type:  perfType,
@@ -1063,9 +1062,9 @@ let hasReturnHappened = false;
   episodeContentEl.appendChild(grid);
 
         // ➤ Mostrar salvadas con estilo glam ✨
-  const saved = aliveQueens.filter(q =>
-    !selected.some(s => s.name === q.name)
-  );
+    const saved = currentEpisode.performances
+    .filter(p => p.track === "Salvada")
+    .map(p => p.queen);
 
   if (saved.length > 0) {
     const savedDiv = document.createElement("div");
@@ -1541,17 +1540,17 @@ nextBtn.addEventListener("click", () => {
     return;
   }
 
-  if (step === 4 && currentEpisode && currentEpisode.eliminated) {
-  const elim = currentEpisode.eliminated;
-  eliminatedQueens.push(elim);
-  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+    if (step === 4 && currentEpisode && currentEpisode.eliminated) {
+    const elim = currentEpisode.eliminated;
+    eliminatedQueens.push(elim);
+    aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
 
-  // 🔹 Actualizar su último episodio a "Eliminada"
-  const marks = trackRecord[elim.name];
-  if (marks && marks.length > 0) {
-    marks[marks.length - 1] = "Eliminada";
+    // 🔹 Cambiar su último resultado a "Eliminada"
+    const marks = trackRecord[elim.name];
+    if (marks && marks.length > 0) {
+      marks[marks.length - 1] = "Eliminada";
+    }
   }
-}
 
   // Después del track record
   if (step === 5) {
