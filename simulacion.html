@@ -695,6 +695,35 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
   color: #ffffff;
   box-shadow: 0 0 12px rgba(0,0,0,0.7);
 }
+    .finalLipGrid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.finalLipCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.finalLipCard img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ff69b4;
+  box-shadow: 0 0 18px rgba(255,105,180,0.9);
+}
+
+.finalLipCard.finalWinner img {
+  border-color: #ffd700;
+  box-shadow: 0 0 20px rgba(255,215,0,0.95);
+}
   </style>
 </head>
 <body>
@@ -769,8 +798,24 @@ const returnMode = config.returnMode || "none";
 // número de finalistas: 4, 3, 2, etc.
 const finalistsNum = config.finalistsNum || 4;
 
-// coronación: "random", "user", "lipsync"
-const crownMode = config.crownMode || "random";
+// coronación: "aleatorio", "decidir", "lipSync" (desde la pantalla 1)
+const rawCrownMode = config.crownMode || "aleatorio";
+
+// Lo mapeamos a claves internas más sencillas
+let crownMode;
+switch (rawCrownMode) {
+  case "aleatorio":
+    crownMode = "random";
+    break;
+  case "decidir":
+    crownMode = "user";
+    break;
+  case "lipSync":
+    crownMode = "lipsync";
+    break;
+  default:
+    crownMode = "random";
+}
 
 // para manejar retornos
 let eliminatedQueens = [];
@@ -1256,39 +1301,100 @@ function getMarkClass(mark) {
     //   FINAL
     // =========================
     function startFinale() {
+  const finalists = aliveQueens.slice();
+
+  if (!finalists.length) {
+    episodeTitleEl.textContent = "La Gran Final";
+    episodeSubtitleEl.textContent = "No hay finalistas cargadas 😅";
+    episodeContentEl.innerHTML = "";
+    nextBtn.textContent = "Fin de la simulación";
+    nextBtn.disabled = true;
+    return;
+  }
+
+  // Por defecto
   episodeTitleEl.textContent = "La Gran Final";
   episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
-  const finalists = aliveQueens.slice();
-  let winner;
+  let winner = null;
 
+  // 🔹 MODO 1: CORONA ALEATORIA
   if (crownMode === "random") {
     winner = finalists[Math.floor(Math.random() * finalists.length)];
-  } else if (crownMode === "lipsync") {
-    // versión simple: dos finalistas al azar y de ellas sale la ganadora
-    const shuffled = finalists.sort(() => Math.random() - 0.5);
-    const pair = shuffled.slice(0, 2);
-    winner = pair[Math.floor(Math.random() * pair.length)];
-    // aquí podríamos mostrar los dos nombres como "doblaje por la corona"
-  } else if (crownMode === "user") {
-    // por ahora, usar aleatorio pero luego haremos pantalla
-    winner = finalists[Math.floor(Math.random() * finalists.length)];
-  } else {
-    winner = finalists[Math.floor(Math.random() * finalists.length)];
-  }
 
-  episodeContentEl.innerHTML = `
-    <div class="winnerCard">
-      <div class="winnerTitle">¡La más ganadora es…!</div>
-      <img src="${winner.image}" alt="${winner.name}">
-      <div class="episodeName">${winner.name}</div>
-    </div>
-  `;
+    episodeContentEl.innerHTML = `
+      <div class="winnerCard">
+        <div class="winnerTitle">¡La más ganadora es…!</div>
+        <img src="${winner.image}" alt="${winner.name}">
+        <div class="episodeName">${winner.name}</div>
+      </div>
+    `;
+
+  // 🔹 MODO 2: DOBLAJE POR LA CORONA
+  } else if (crownMode === "lipsync") {
+    const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
+    const pair = shuffled.slice(0, 2);
+
+    // Si solo hay una, se corona directamente
+    if (pair.length < 2) {
+      winner = pair[0];
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+      `;
+    } else {
+      winner = pair[Math.floor(Math.random() * pair.length)];
+      const loser  = pair[0].name === winner.name ? pair[1] : pair[0];
+
+      episodeSubtitleEl.textContent = "Doblaje por la corona";
+
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+
+        <div class="finalLipGrid">
+          <div class="finalLipCard finalWinner">
+            <img src="${winner.image}" alt="${winner.name}">
+            <div class="lipQueenName">${winner.name}</div>
+            <div class="lipStatus">Se corona como La Más</div>
+          </div>
+
+          <div class="finalLipCard">
+            <img src="${loser.image}" alt="${loser.name}">
+            <div class="lipQueenName">${loser.name}</div>
+            <div class="lipStatus">Queda como finalista</div>
+          </div>
+        </div>
+      `;
+    }
+
+  // 🔹 MODO 3: "TÚ DECIDES" (por ahora también aleatorio, luego haremos pantalla)
+  } else if (crownMode === "user") {
+    winner = finalists[Math.floor(Math.random() * finalists.length)];
+
+    episodeSubtitleEl.textContent = "Modo 'Tú decides' (por ahora, coronación aleatoria)";
+
+    episodeContentEl.innerHTML = `
+      <div class="winnerCard">
+        <div class="winnerTitle">¡La más ganadora es…!</div>
+        <img src="${winner.image}" alt="${winner.name}">
+        <div class="episodeName">${winner.name}</div>
+      </div>
+      <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.9;">
+        Próximamente podrás elegir tú misma quién se lleva la corona ✨
+      </p>
+    `;
+  }
 
   nextBtn.textContent = "Fin de la simulación";
   nextBtn.disabled = true;
 }
-
     // =========================
     //   CONTROL DE PASOS
     // =========================
