@@ -287,31 +287,32 @@
 }
 
     .lipSyncGrid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 4px;
-    }
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
 
-    .lipSyncRow {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 18px rgba(0,0,0,0.7);
-    }
+.lipSyncRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
 
-    .lipSyncRow img {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #ff69b4;
-      box-shadow: 0 0 14px rgba(255,105,180,0.9);
-    }
+.lipSyncRow img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 0 14px rgba(255,105,180,0.9);
+}
     .topBottomGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 arriba, 3 abajo */
@@ -805,36 +806,45 @@
 }
 
     function renderLipsync() {
-      episodeContentEl.innerHTML = "";
+  episodeContentEl.innerHTML = "";
 
-      const title = document.createElement("h2");
-      title.className = "sectionTitle";
-      title.textContent = "Doblaje por la corona";
-      episodeContentEl.appendChild(title);
+  // Título dentro del panel
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Las menos del reto son:";
+  episodeContentEl.appendChild(title);
 
-      const info = document.createElement("p");
-      info.textContent = "Las menos se enfrentan en un lip sync por su vida.";
-      info.style.margin = "0 0 8px";
-      episodeContentEl.appendChild(info);
+  const grid = document.createElement("div");
+  grid.className = "lipSyncGrid";
 
-      const grid = document.createElement("div");
-      grid.className = "lipSyncGrid";
-
-      currentEpisode.lipsyncPair.forEach(q => {
-        const row = document.createElement("div");
-        row.className = "lipSyncRow";
-        row.innerHTML = `
-          <img src="${q.image}" alt="${q.name}">
-          <div class="episodeText">
-            <span class="episodeName">${q.name} (T${q.season})</span>
-            <span class="episodePerf">Doblaje de eliminación</span>
-          </div>
-        `;
-        grid.appendChild(row);
-      });
-
-      episodeContentEl.appendChild(grid);
+  // Usamos todas las bottoms (no solo las que doblan)
+  // y deduplicamos por si acaso
+  const seen = new Set();
+  const bottoms = [];
+  currentEpisode.bottoms.forEach(q => {
+    if (!seen.has(q.name)) {
+      seen.add(q.name);
+      bottoms.push(q);
     }
+  });
+
+  bottoms.forEach(q => {
+    const isLip = currentEpisode.lipsyncPair.some(l => l.name === q.name);
+
+    const row = document.createElement("div");
+    row.className = "lipSyncRow";
+    row.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <div class="episodeName">${q.name}</div>
+      <div class="episodePerf">
+        ${isLip ? "Doblaje de eliminación" : "Está salvada"}
+      </div>
+    `;
+    grid.appendChild(row);
+  });
+
+  episodeContentEl.appendChild(grid);
+}
 
     function renderElimination() {
       episodeContentEl.innerHTML = "";
@@ -1006,14 +1016,14 @@
           break;
 
         case 3:
-          episodeTitleEl.textContent = retoNombre;
-          episodeSubtitleEl.textContent = "Doblaje por su vida";
-          nextBtn.textContent = "Resultado del doblaje";
+  episodeTitleEl.textContent = retoNombre;
+  episodeSubtitleEl.textContent = "Reto de doblaje";
+  nextBtn.textContent = "Resultado del doblaje";
 
-          document.querySelector(".sim-panel").classList.remove("top-align");
+  document.querySelector(".sim-panel").classList.remove("top-align");
           
-          renderLipsync();
-          break;
+  renderLipsync();
+  break;
 
         case 4:
           episodeTitleEl.textContent = retoNombre;
