@@ -448,6 +448,41 @@
   opacity: 0.9;
   margin-top: 4px;
 }
+    /* 🌈 Texto glam general */
+body, .episodeName, .savedQueensMessage, .safeText, .sectionTitle {
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+/* 💫 Estilo texto blanco */
+p, span, .episodePerf, .challengeText, #episodeSubtitle {
+  color: #ffffff;
+  text-shadow: 
+    0 0 8px rgba(255, 20, 147, 0.9),
+    0 0 14px rgba(255, 255, 255, 0.6);
+}
+    .glowText {
+  animation: neonGlitter 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes neonGlitter {
+  0% { text-shadow: 0 0 6px #ff52d9; }
+  100% { text-shadow: 0 0 18px #ffd1ff; }
+}
+    <span class="glowText">Texto glam</span>
+    .winnerTitle {
+  color: #ffe88a !important;
+  text-shadow:
+    0 0 10px #ffdd55,
+    0 0 20px #ffb800,
+    0 0 35px #ff9f00;
+  animation: goldPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes goldPulse {
+  0% { opacity: 0.9; filter: brightness(1.1); }
+  100% { opacity: 1; filter: brightness(1.35); }
+}
   </style>
 </head>
 <body>
@@ -1011,7 +1046,7 @@
           break;
 
         case 2:
-          nextBtn.textContent = "Ver lip sync";
+          nextBtn.textContent = "Ver las Menos";
           renderWinner();
           break;
 
