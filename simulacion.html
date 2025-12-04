@@ -827,6 +827,7 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 .finalistSelectable.selected .topBottomName {
   color:#ffe88a;
 }
+ 
   </style>
 </head>
 <body>
@@ -1570,13 +1571,14 @@ function startFinale(manualWinner) {
       `;
     }
 
-  // 🔹 MODO 2: DOBLAJE POR LA CORONA
+   // 🔹 MODO 2: DOBLAJE POR LA CORONA
   } else if (crownMode === "lipsync") {
     const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
-    const pair = shuffled.slice(0, 2);
 
-    if (pair.length < 2) {
-      winner = pair[0];
+    // 1 sola finalista → se corona directa
+    if (shuffled.length === 1) {
+      winner = shuffled[0];
+
       episodeContentEl.innerHTML = `
         <div class="winnerCard">
           <div class="winnerTitle">¡La más ganadora es…!</div>
@@ -1584,9 +1586,13 @@ function startFinale(manualWinner) {
           <div class="episodeName">${winner.name}</div>
         </div>
       `;
-    } else {
+    }
+
+    // 2 finalistas → tu lógica de antes (un solo doblaje)
+    else if (shuffled.length === 2) {
+      const pair = shuffled;
       winner = pair[Math.floor(Math.random() * pair.length)];
-      const loser = pair[0].name === winner.name ? pair[1] : pair[0];
+      const loser = winner === pair[0] ? pair[1] : pair[0];
 
       episodeSubtitleEl.textContent = "Doblaje por la corona";
 
@@ -1612,6 +1618,83 @@ function startFinale(manualWinner) {
         </div>
       `;
     }
+
+    // 4 (o más) finalistas → 1 vs 1, 1 vs 1 y final entre ganadoras
+    else if (shuffled.length >= 4) {
+      const [a, b, c, d] = shuffled;
+
+      // Ronda 1
+      const r1Winner1 = Math.random() < 0.5 ? a : b;
+      const r1Loser1  = r1Winner1 === a ? b : a;
+
+      const r1Winner2 = Math.random() < 0.5 ? c : d;
+      const r1Loser2  = r1Winner2 === c ? d : c;
+
+      // Ronda 2 (final por la corona)
+      winner = Math.random() < 0.5 ? r1Winner1 : r1Winner2;
+      const finalLoser = winner === r1Winner1 ? r1Winner2 : r1Winner1;
+
+      episodeSubtitleEl.textContent = "Doblaje por la corona";
+
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+
+        <div class="finalLipGrid">
+          <div class="finalLipCard finalWinner">
+            <img src="${winner.image}" alt="${winner.name}">
+            <div class="lipQueenName">${winner.name}</div>
+            <div class="lipStatus">Se corona como La Más</div>
+          </div>
+
+          <div class="finalLipCard">
+            <img src="${finalLoser.image}" alt="${finalLoser.name}">
+            <div class="lipQueenName">${finalLoser.name}</div>
+            <div class="lipStatus">Queda como finalista</div>
+          </div>
+        </div>
+
+        <p style="margin-top:12px;font-size:0.85rem;text-align:center;">
+          Hubo dos doblajes iniciales (1 vs 1, 1 vs 1) y las ganadoras
+          se enfrentaron en un último doblaje por la corona 💿✨
+        </p>
+      `;
+    }
+
+    // Caso raro: 3 finalistas → usamos 2 al azar para el último doblaje
+    else {
+      const pair = shuffled.slice(0, 2);
+      winner = pair[Math.floor(Math.random() * pair.length)];
+      const loser = winner === pair[0] ? pair[1] : pair[0];
+
+      episodeSubtitleEl.textContent = "Doblaje por la corona";
+
+      episodeContentEl.innerHTML = `
+        <div class="winnerCard">
+          <div class="winnerTitle">¡La más ganadora es…!</div>
+          <img src="${winner.image}" alt="${winner.name}">
+          <div class="episodeName">${winner.name}</div>
+        </div>
+
+        <div class="finalLipGrid">
+          <div class="finalLipCard finalWinner">
+            <img src="${winner.image}" alt="${winner.name}">
+            <div class="lipQueenName">${winner.name}</div>
+            <div class="lipStatus">Se corona como La Más</div>
+          </div>
+
+          <div class="finalLipCard">
+            <img src="${loser.image}" alt="${loser.name}">
+            <div class="lipQueenName">${loser.name}</div>
+            <div class="lipStatus">Queda como finalista</div>
+          </div>
+        </div>
+      `;
+    }
+  }
 
   // 🔹 MODO 1: CORONA ALEATORIA
   } else {
