@@ -920,39 +920,39 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     function renderLipsync() {
   episodeContentEl.innerHTML = "";
 
-  // Título dentro del panel
+  // Título glam centrado (sin "Reto de doblaje" ni textos básicos)
   const title = document.createElement("h2");
   title.className = "lipTitle";
-  title.textContent = "Las menos del reto son:";
+  title.textContent = "LAS MENOS DEL RETO SON:";
   episodeContentEl.appendChild(title);
 
   const grid = document.createElement("div");
   grid.className = "lipSyncGrid";
 
-  // Usamos todas las bottoms (no solo las que doblan)
-  // y deduplicamos por si acaso
-  const seen = new Set();
-  const bottoms = [];
-  currentEpisode.bottoms.forEach(q => {
-    if (!seen.has(q.name)) {
-      seen.add(q.name);
-      bottoms.push(q);
-    }
-  });
+  // Tomamos hasta 3 menos del episodio
+  const bottoms = currentEpisode.bottoms.slice(0, 3);
 
-  bottoms.forEach(q => {
-    currentEpisode.lipsyncPair.forEach(q => {
-  const card = document.createElement("div");
-  card.className = "lipCard";
-  
-  card.innerHTML = `
-    <img src="${q.image}" alt="${q.name}">
-    <div class="lipQueenName">${q.name}</div>
-    <div class="lipStatus">Doblaje de eliminación</div>
-  `;
-  
-  grid.appendChild(card);
-});
+  bottoms.forEach((q, index) => {
+    const card = document.createElement("div");
+    card.className = "lipCard";
+
+    // Las 2 primeras van al doblaje, la tercera está salvada
+    let label;
+    if (index < 2) {
+      label = "Doblaje de eliminación";
+    } else {
+      label = "Está salvada";
+    }
+
+    // ⬇️ AQUÍ va el card.innerHTML que me pedías
+    card.innerHTML = `
+      <img src="${q.image}" alt="${q.name}">
+      <div class="lipQueenName">${q.name}</div>
+      <div class="lipStatus">${label}</div>
+    `;
+
+    grid.appendChild(card);
+  });
 
   episodeContentEl.appendChild(grid);
 }
