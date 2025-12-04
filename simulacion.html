@@ -756,6 +756,26 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     const cast   = JSON.parse(localStorage.getItem("lmd_selectedQueens") || "[]");
     const config = JSON.parse(localStorage.getItem("lmd_seasonConfig") || "{}");
 
+    // =========================
+//   OPCIONES DE TEMPORADA
+// =========================
+
+// tipo de temporada: "regular" o "solo_las_mas"
+const seasonType = config.seasonType || "regular";
+
+// retorno: "none" (sin retorno) o "one_return" (un regreso)
+const returnMode = config.returnMode || "none";
+
+// número de finalistas: 4, 3, 2, etc.
+const finalistsNum = config.finalistsNum || 4;
+
+// coronación: "random", "user", "lipsync"
+const crownMode = config.crownMode || "random";
+
+// para manejar retornos
+let eliminatedQueens = [];
+let hasReturnHappened = false;
+
     let aliveQueens = cast.slice();
     const trackRecord = {};
     let episodeNumber = 1;
@@ -784,9 +804,33 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     let step = -1;
    let hasShownPerformance = false; // controla si ya mostramos el desempeño
 
-    // =========================
-    //   CONSTRUIR EPISODIO
-    // =========================
+    if (step === 5) {
+  if (aliveQueens.length > finalistsNum) {
+
+    // ➤ COMEBACK si está activado el retorno
+    if (returnMode === "one_return" && !hasReturnHappened && eliminatedQueens.length > 0) {
+      const idx = Math.floor(Math.random() * eliminatedQueens.length);
+      const comeback = eliminatedQueens.splice(idx, 1)[0]; // sacarla de eliminadas
+      aliveQueens.push(comeback);
+      hasReturnHappened = true;
+
+      // mensaje rápido para que se note el regreso (se verá en el EP siguiente)
+      alert(`${comeback.name} regresa a la competencia ✨`);
+    }
+
+    hasShownPerformance = false;
+    episodeNumber++;
+    buildEpisode();
+    step = -1;
+    renderStep();
+    return;
+  } else {
+    step = 6; // Final
+    renderStep();
+    return;
+  }
+}
+
     // =========================
     //   CONSTRUIR EPISODIO
     // =========================
@@ -1232,23 +1276,38 @@ function getMarkClass(mark) {
     //   FINAL
     // =========================
     function startFinale() {
-      episodeTitleEl.textContent = "La Gran Final";
-      episodeSubtitleEl.textContent = "Ganadora de la temporada";
+  episodeTitleEl.textContent = "La Gran Final";
+  episodeSubtitleEl.textContent = "Ganadora de la temporada";
 
-      const finalists = aliveQueens.slice();
-      const winner = finalists[Math.floor(Math.random() * finalists.length)];
+  const finalists = aliveQueens.slice();
+  let winner;
 
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name} (T${winner.season})</div>
-        </div>
-      `;
+  if (crownMode === "random") {
+    winner = finalists[Math.floor(Math.random() * finalists.length)];
+  } else if (crownMode === "lipsync") {
+    // versión simple: dos finalistas al azar y de ellas sale la ganadora
+    const shuffled = finalists.sort(() => Math.random() - 0.5);
+    const pair = shuffled.slice(0, 2);
+    winner = pair[Math.floor(Math.random() * pair.length)];
+    // aquí podríamos mostrar los dos nombres como "doblaje por la corona"
+  } else if (crownMode === "user") {
+    // por ahora, usar aleatorio pero luego haremos pantalla
+    winner = finalists[Math.floor(Math.random() * finalists.length)];
+  } else {
+    winner = finalists[Math.floor(Math.random() * finalists.length)];
+  }
 
-      nextBtn.textContent = "Fin de la simulación";
-      nextBtn.disabled = true;
-    }
+  episodeContentEl.innerHTML = `
+    <div class="winnerCard">
+      <div class="winnerTitle">¡La más ganadora es…!</div>
+      <img src="${winner.image}" alt="${winner.name}">
+      <div class="episodeName">${winner.name}</div>
+    </div>
+  `;
+
+  nextBtn.textContent = "Fin de la simulación";
+  nextBtn.disabled = true;
+}
 
     // =========================
     //   CONTROL DE PASOS
@@ -1322,9 +1381,9 @@ function getMarkClass(mark) {
         case 5:
           episodeTitleEl.textContent = "Track record de la temporada";
           episodeSubtitleEl.textContent = "Resumen hasta este episodio";
-          nextBtn.textContent = aliveQueens.length > 4
-            ? "Siguiente episodio"
-            : "Ir a la Gran Final";
+          nextBtn.textContent = aliveQueens.length > finalistsNum
+  ? "Siguiente episodio"
+  : "Ir a la Gran Final";
           renderTrackRecord();
           break;
 
@@ -1350,15 +1409,17 @@ if (step === -1) {
   return;
 }
 
-      // Después de eliminación: sacar a la eliminada de aliveQueens
-      if (step === 4 && currentEpisode && currentEpisode.eliminated) {
-        aliveQueens = aliveQueens.filter(q => q.name !== currentEpisode.eliminated.name);
-      }
+  // Después de eliminación: guardar eliminada y sacarla del cast activo
+if (step === 4 && currentEpisode && currentEpisode.eliminated) {
+  const elim = currentEpisode.eliminated;
+  eliminatedQueens.push(elim);
+  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+}
 
       // Después del track record
 if (step === 5) {
-  if (aliveQueens.length > 4) {
-    hasShownPerformance = false; // reset para el nuevo episodio
+  if (aliveQueens.length > finalistsNum) {
+    hasShownPerformance = false;
     episodeNumber++;
     buildEpisode();
     step = -1;
@@ -1370,7 +1431,6 @@ if (step === 5) {
     return;
   }
 }
-
      // Flujo normal (0 → 5)
 if (step >= 0 && step < 5) {
 
