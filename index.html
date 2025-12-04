@@ -543,6 +543,74 @@
   font-size: 0.65rem;
   opacity: 0.8;
 }
+  .hofGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.hofCard {
+  width: 140px;
+  padding: 10px 10px 12px;
+  border-radius: 22px;
+  background: radial-gradient(circle at top, #ff9bf5, #3b004f 65%, #0b0015);
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  text-align: center;
+  color: #fff;
+  font-family: 'Poppins','Montserrat',sans-serif;
+  position: relative;
+}
+
+/* Marco de foto */
+.hofPhotoWrapper {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 6px;
+  border-radius: 24px;
+  padding: 4px;
+  background: linear-gradient(135deg,#ffd700,#ff6bd5,#55e0ff);
+  box-shadow: 0 0 18px rgba(255,215,0,0.8);
+}
+
+.hofPhotoInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+}
+
+.hofPhotoInner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Corona encima de la foto */
+.hofCrown {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-6deg);
+  font-size: 26px;
+  text-shadow: 0 0 8px rgba(0,0,0,0.8);
+}
+
+/* Nombre y detalles */
+.hofName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.hofMeta {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  opacity: 0.9;
+}
 </style>
 </head>
 <body>
@@ -625,11 +693,11 @@
 <button id="selectQueensBtn">A Hechizar</button>
 </div>
   <!-- ⚜️ SALÓN DE LA FAMA -->
-<section id="hallOfFameSection" class="hall-of-fame-wrapper">
-  <h2 class="hof-title">Salón de la fama ✨</h2>
-  <p class="hof-subtitle">Últimas ganadoras de tus simulaciones</p>
-  <div id="hallOfFameList" class="hof-grid"></div>
-</section>
+<div class="sim-panel">
+  <h1>SALÓN DE LA FAMA</h1>
+  <p>Últimas 10 ganadoras de la temporada</p>
+  <div id="hofGrid" class="hofGrid"></div>
+</div>
 <script>
   // 🔮 Reinas por temporada (con imagen)
   const queensBySeason = {
@@ -1254,50 +1322,70 @@ selectBtn.addEventListener("click", () => {
     });
   });
   
-  function loadHallOfFame() {
-    const KEY = "lmd_hallOfFame";
-    const container = document.getElementById("hallOfFameList");
-    if (!container) return;
+  // ===============
+// 🏆 SALÓN DE LA FAMA
+// ===============
+function renderHallOfFame() {
+  const KEY = "lmd_hallOfFame";
+  const raw = localStorage.getItem(KEY) || "[]";
+  let list;
 
-    const raw = localStorage.getItem(KEY) || "[]";
-    let list;
-    try {
-      list = JSON.parse(raw);
-      if (!Array.isArray(list)) list = [];
-    } catch(e) {
-      list = [];
-    }
-
-    const section = document.getElementById("hallOfFameSection");
-    if (!list.length) {
-      if (section) section.style.display = "none";
-      return;
-    }
-
-    const ordered = list.slice().reverse();
-
-    container.innerHTML = "";
-    ordered.forEach(entry => {
-      const card = document.createElement("div");
-      card.className = "hof-card";
-
-      const crownText = entry.crownMode === "lipsync"
-        ? "Final lipsync"
-        : entry.crownMode === "user"
-        ? "Elegida"
-        : "Aleatoria";
-
-      card.innerHTML = `
-        <img src="${entry.image}" alt="${entry.name}">
-        <div class="hof-name">${entry.name}</div>
-        <div class="hof-meta">${crownText}</div>
-      `;
-
-      container.appendChild(card);
-    });
+  try {
+    list = JSON.parse(raw);
+    if (!Array.isArray(list)) list = [];
+  } catch (e) {
+    list = [];
   }
 
-  loadHallOfFame();
+  const grid = document.getElementById("hofGrid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  if (!list.length) {
+    grid.innerHTML = `<p style="text-align:center;width:100%;">Aún no hay ganadoras coronadas 👑</p>`;
+    return;
+  }
+
+  // Mostrar primero las más recientes
+  const reversed = [...list].reverse();
+
+  reversed.forEach(entry => {
+    const card = document.createElement("div");
+    card.className = "hofCard";
+
+    const dateText = new Date(entry.date).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+
+    card.innerHTML = `
+      <div class="hofPhotoWrapper">
+        <div class="hofCrown">👑</div>
+        <div class="hofPhotoInner">
+          <img src="${entry.image}" alt="${entry.name}">
+        </div>
+      </div>
+      <div class="hofName">${entry.name}</div>
+      <div class="hofMeta">
+        Modo: ${
+          entry.crownMode === "lipsync" 
+          ? "Doblaje" 
+          : entry.crownMode === "user" 
+          ? "Tú decides" 
+          : "Aleatorio"
+        }<br>
+        ${dateText}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// Ejecutar al cargar index
+renderHallOfFame();
 </script>
 </body>
 </html>
