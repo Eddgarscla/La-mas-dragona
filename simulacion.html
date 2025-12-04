@@ -787,6 +787,9 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
     // =========================
     //   CONSTRUIR EPISODIO
     // =========================
+    // =========================
+    //   CONSTRUIR EPISODIO
+    // =========================
     function buildEpisode() {
       const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
 
@@ -821,6 +824,84 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
         const numLow = Math.min(2, indexes.length);
         for (let i = 0; i < numLow; i++) {
           lowIdxs.push(drawIndex());
+        }
+      }
+
+      const performances = [];
+
+      // Asignar desempeño y marcar track record
+      for (let i = 0; i < n; i++) {
+        const q = shuffled[i];
+        let perfType = "good";
+        let trackMark = "Salvada";
+
+        if (i === winnerIdx) {
+          perfType  = "excellent";
+          trackMark = "La +";
+        } else if (topIdxs.includes(i)) {
+          perfType  = "good";
+          trackMark = "La casi +";
+        } else if (lipIdxs.includes(i)) {
+          perfType  = "awful";
+          trackMark = "La -";
+        } else if (i === extraBottomIdx || lowIdxs.includes(i)) {
+          perfType  = "bad";
+          trackMark = "La casi -";
+        } else {
+          perfType  = "good";
+          trackMark = "Salvada";
+        }
+
+        performances.push({
+          queen: q,
+          type:  perfType,
+          text:  performanceLabels[perfType],
+          track: trackMark
+        });
+
+        if (!trackRecord[q.name]) {
+          trackRecord[q.name] = [];
+        }
+        trackRecord[q.name].push(trackMark);
+      }
+
+      // Tops y bottoms
+      const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
+      const bottoms = [...lipIdxs.map(i => shuffled[i])];
+      if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
+
+      // Pareja de lipsync
+      const lipsyncPair = lipIdxs.map(i => shuffled[i]);
+      let eliminated = null;
+      let safeFromLipsync = null;
+
+      if (lipsyncPair.length === 2) {
+        eliminated = Math.random() < 0.5 ? lipsyncPair[0] : lipsyncPair[1];
+        safeFromLipsync = eliminated === lipsyncPair[0] ? lipsyncPair[1] : lipsyncPair[0];
+      } else if (lipsyncPair.length === 1) {
+        eliminated = lipsyncPair[0];
+        safeFromLipsync = null;
+      }
+
+      currentEpisode = {
+        challenge,
+        performances,
+        tops,
+        bottoms,
+        winner: shuffled[winnerIdx],
+        lipsyncPair,
+        eliminated,
+        safeFromLipsync
+      };
+
+      // Ajustar el track record para marcar ELIMINADA en este episodio
+      if (eliminated) {
+        const marks = trackRecord[eliminated.name];
+        if (marks && marks.length >= episodeNumber) {
+          marks[episodeNumber - 1] = "Eliminada";
+        }
+      }
+    }
 
     // =========================
     //   RENDERS
@@ -1137,20 +1218,13 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 // Mapea "La +" / "La casi +" etc a colores
 function getMarkClass(mark) {
   switch (mark) {
-    case "La +":
-      return "cell-win";
-    case "La casi +":
-      return "cell-high";
-    case "La casi -":
-      return "cell-low";
-    case "La -":
-      return "cell-bottom";
-    case "Salvada":
-      return "cell-safe";
-    case "Eliminada":
-      return "cell-elim";   // 👈 usamos una clase nueva
-    default:
-      return "cell-blank";
+    case "La +":      return "cell-win";
+    case "La casi +": return "cell-high";
+    case "La casi -": return "cell-low";
+    case "La -":      return "cell-bottom";
+    case "Salvada":   return "cell-safe";
+    case "Eliminada": return "badge-elim";
+    default:          return "cell-blank";
   }
 }
 
