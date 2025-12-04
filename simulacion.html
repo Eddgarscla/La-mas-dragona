@@ -1472,14 +1472,14 @@ function getMarkClass(mark) {
     : "Ir a la Gran Final";
   renderTrackRecord();
   break;  // 👈 ESTE break arregla el avance
-}
-    // =========================
+   
+          // =========================
     //   CLICK DEL BOTÓN
     // =========================
     nextBtn.addEventListener("click", () => {
       if (!cast.length) return;
       if (nextBtn.disabled) return;
-
+  }
       // Primer click: construir episodio
 if (step === -1) {
   hasShownPerformance = false; // siempre empezar desde el reto
