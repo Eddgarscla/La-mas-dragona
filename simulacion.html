@@ -287,6 +287,12 @@
   align-items: center;
   text-align: center;
 }
+    .safeText {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
 
 .topBottomCard img {
   width: 80px;
@@ -301,11 +307,6 @@
   margin-top: 6px;
   font-size: 0.85rem;
   font-weight: 600;
-}
-
-.topBottomTag {
-  font-size: 0.75rem;
-  opacity: 0.9;
 }
 
     .eliminationWrapper {
@@ -613,6 +614,24 @@
 
     function renderTopBottom() {
   episodeContentEl.innerHTML = "";
+      
+        // ===== LISTA DE SALVADAS =====
+  const topNames = new Set(currentEpisode.tops.map(q => q.name));
+  const bottomNames = new Set(currentEpisode.bottoms.map(q => q.name));
+
+  const safeQueens = aliveQueens.filter(q => 
+    !topNames.has(q.name) && !bottomNames.has(q.name)
+  );
+
+  if (safeQueens.length > 0) {
+    const p = document.createElement("p");
+    p.className = "safeText";
+
+    const nombres = safeQueens.map(q => q.name).join(", ");
+    p.textContent = `${nombres} están salvadas`;
+
+    episodeContentEl.appendChild(p);
+  }
 
   // Título general
   const title = document.createElement("h2");
@@ -660,10 +679,9 @@
     }
 
     card.innerHTML = `
-      <img src="${q.image}" alt="${q.name}">
-      <div class="topBottomName">${q.name}</div>
-      <div class="topBottomTag">${tag}</div>
-    `;
+  <img src="${q.image}" alt="${q.name}">
+  <div class="topBottomName">${q.name}</div>
+`;
 
     grid.appendChild(card);
   });
