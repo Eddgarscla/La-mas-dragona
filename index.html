@@ -474,7 +474,7 @@
   color: #fff;
   font-weight: bold;
 }
-
+#hallOfFameSection {
   max-width: 430px;
   margin: 40px auto 24px;
   padding: 16px 18px 20px;
@@ -725,6 +725,12 @@
   <!-- BOTÓN ABAJO -->
 <button id="selectQueensBtn">A Hechizar</button>
 </div>
+  <!-- ⚜️ SALÓN DE LA FAMA -->
+<section id="hallOfFameSection" class="hall-of-fame-wrapper">
+  <h2 class="hof-title">Salón de la fama ✨</h2>
+  <p class="hof-subtitle">Últimas ganadoras de tus simulaciones</p>
+  <div id="hallOfFameList" class="hof-grid"></div>
+</section>
 <script>
   // 🔮 Reinas por temporada (con imagen)
   const queensBySeason = {
@@ -1348,7 +1354,6 @@ selectBtn.addEventListener("click", () => {
       }, 220);
     });
   });
-  ...
   
   function loadHallOfFame() {
     const KEY = "lmd_hallOfFame";
