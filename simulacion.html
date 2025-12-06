@@ -1569,6 +1569,19 @@ function getTrackScore(name) {
 
   return score;
 }
+    // Elige la feminosa con mejor track record entre dos
+function pickByTrackRecord(q1, q2) {
+  const s1 = getTrackScore(q1.name);
+  const s2 = getTrackScore(q2.name);
+
+  // Si están empatadas, desempate aleatorio
+  if (s1 === s2) {
+    return Math.random() < 0.5 ? q1 : q2;
+  }
+
+  // Se queda la que tenga mejor puntuación
+  return s1 > s2 ? q1 : q2;
+}
   function startFinale(manualWinner) {
   const finalists = aliveQueens.slice();
 
