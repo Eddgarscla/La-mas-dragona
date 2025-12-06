@@ -1764,6 +1764,7 @@ function showLipsyncOutcome(card1, card2, statusEl) {
         elimCard.classList.add("slideOutRight");
 
         setTimeout(() => {
+          lipResultShown = true;
           // Al terminar, desbloqueamos el botón y lo dejamos listo
           nextBtn.disabled = false;
           nextBtn.textContent = "Track record";
@@ -1941,115 +1942,32 @@ function pickByTrackRecord(q1, q2) {
   // 🔹 MODO 3: TÚ DECIDES
   if (crownMode === "user") {
     if (manualWinner) {
-      // Has tocado una feminosa y le pasamos esa como ganadora
       winner = manualWinner;
-      episodeSubtitleEl.textContent = "";
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-      `;
     } else {
-      // Fallback aleatorio si por algún motivo no hay seleccionada
+      // Por si acaso se llama sin selección
       winner = finalists[Math.floor(Math.random() * finalists.length)];
-      episodeSubtitleEl.textContent =
-        "Modo 'Tú decides' (coronación automática por ahora)";
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-      `;
     }
 
-  // 🔹 MODO 2: DOBLAJE POR LA CORONA (AQUÍ USAMOS TRACK RECORD)
-     // 4 (o más) finalistas → 1 vs 1, 1 vs 1 y final entre ganadoras
-    else if (shuffled.length >= 4) {
-      const [a, b, c, d] = shuffled;
+    episodeContentEl.innerHTML = `
+      <div class="winnerCard">
+        <div class="winnerTitle">¡La más ganadora es…!</div>
+        <img src="${winner.image}" alt="${winner.name}">
+        <div class="episodeName">${winner.name}</div>
+      </div>
+    `;
 
-      // Ronda 1: A vs B y C vs D (usando track record)
-      const r1Winner1 = pickByTrackRecord(a, b);
-      const r1Loser1  = r1Winner1 === a ? b : a;
-
-      const r1Winner2 = pickByTrackRecord(c, d);
-      const r1Loser2  = r1Winner2 === c ? d : c;
-
-      // Ronda 2: final por la corona entre las dos ganadoras
-      winner = pickByTrackRecord(r1Winner1, r1Winner2);
-      const finalLoser = winner === r1Winner1 ? r1Winner2 : r1Winner1;
-
-      episodeSubtitleEl.textContent = "Doblaje por la corona";
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-
-        <div class="finalLipGrid">
-          <!-- PRIMER DOBLAJE -->
-          <div style="width:100%;text-align:center;margin-bottom:6px;font-size:0.9rem;">
-            Primer doblaje
-          </div>
-
-          <div class="finalLipCard finalWinner">
-            <img src="${r1Winner1.image}" alt="${r1Winner1.name}">
-            <div class="lipQueenName">${r1Winner1.name}</div>
-            <div class="lipStatus">Gana el doblaje</div>
-          </div>
-
-          <div class="finalLipCard">
-            <img src="${r1Loser1.image}" alt="${r1Loser1.name}">
-            <div class="lipQueenName">${r1Loser1.name}</div>
-            <div class="lipStatus">Queda eliminada</div>
-          </div>
-
-          <!-- SEGUNDO DOBLAJE -->
-          <div style="width:100%;text-align:center;margin:10px 0 6px;font-size:0.9rem;">
-            Segundo doblaje
-          </div>
-
-          <div class="finalLipCard finalWinner">
-            <img src="${r1Winner2.image}" alt="${r1Winner2.name}">
-            <div class="lipQueenName">${r1Winner2.name}</div>
-            <div class="lipStatus">Gana el doblaje</div>
-          </div>
-
-          <div class="finalLipCard">
-            <img src="${r1Loser2.image}" alt="${r1Loser2.name}">
-            <div class="lipQueenName">${r1Loser2.name}</div>
-            <div class="lipStatus">Queda eliminada</div>
-          </div>
-
-          <!-- DOBLAJE FINAL POR LA CORONA -->
-          <div style="width:100%;text-align:center;margin:10px 0 6px;font-size:0.9rem;">
-            Doblaje final por la corona
-          </div>
-
-          <div class="finalLipCard finalWinner">
-            <img src="${winner.image}" alt="${winner.name}">
-            <div class="lipQueenName">${winner.name}</div>
-            <div class="lipStatus">Se corona como La Más</div>
-          </div>
-
-          <div class="finalLipCard">
-            <img src="${finalLoser.image}" alt="${finalLoser.name}">
-            <div class="lipQueenName">${finalLoser.name}</div>
-            <div class="lipStatus">Queda como finalista</div>
-          </div>
-        </div>
-      `;
-    }
-
-  // 🔹 MODO 1: CORONA ALEATORIA (sigue siendo aleatorio)
   } else {
-    winner = finalists[Math.floor(Math.random() * finalists.length)];
+    // 🔹 MODO ALEATORIO o LIPSYNC cuando NO son 4 finalistas
+    if (crownMode === "lipsync") {
+      // Elegimos por mejor track record entre todas las finalistas
+      winner = finalists.reduce((best, q) => {
+        if (!best) return q;
+        return pickByTrackRecord(best, q);
+      }, null);
+    } else {
+      // Modo aleatorio puro
+      winner = finalists[Math.floor(Math.random() * finalists.length)];
+    }
 
     episodeContentEl.innerHTML = `
       <div class="winnerCard">
