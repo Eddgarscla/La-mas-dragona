@@ -313,6 +313,85 @@
   border: 3px solid #ff69b4;
   box-shadow: 0 0 14px rgba(255,105,180,0.9);
 }
+    /* ===== Doblaje interactivo ===== */
+
+.lipBattleContainer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.lipBattleCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 110px;
+  transition: transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease,
+              box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.lipBattleCard img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ff69b4;
+  box-shadow: 0 0 18px rgba(255,105,180,0.9);
+  margin-bottom: 6px;
+}
+
+.lipBattleCard .lipQueenName {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Movimiento izquierda ↔ derecha durante el doblaje */
+.lipBattleCard.battle-left {
+  transform: translateX(-18px);
+}
+
+.lipBattleCard.battle-right {
+  transform: translateX(18px);
+}
+
+/* Ganadora: viene al frente */
+.lipBattleCard.winnerPulse {
+  transform: scale(1.12);
+  border-color: #ffd700;
+  box-shadow: 0 0 22px rgba(255,215,0,1);
+}
+
+/* Perdedorx: blanco y negro al final */
+.lipBattleCard.loserCard img {
+  filter: grayscale(100%);
+  opacity: 0.9;
+}
+
+/* Sale hacia la izquierda (ganadora salvada) */
+@keyframes slideOutLeft {
+  to {
+    transform: translateX(-180%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Sale hacia la derecha (eliminada al dragaltar) */
+@keyframes slideOutRight {
+  to {
+    transform: translateX(180%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.lipBattleCard.slideOutLeft {
+  animation: slideOutLeft 0.8s forwards;
+}
+
+.lipBattleCard.slideOutRight {
+  animation: slideOutRight 0.8s forwards;
+}
     .topBottomGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 arriba, 3 abajo */
@@ -1422,6 +1501,133 @@ function saveWinnerToHallOfFame(winner) {
 
   episodeContentEl.appendChild(grid);
 }
+    // ===== DOBLAJE INTERACTIVO DE ELIMINACIÓN =====
+function renderInteractiveLipsync() {
+  episodeContentEl.innerHTML = "";
+
+  // Si por lo que sea no hay pareja completa, usamos la versión normal
+  if (!currentEpisode.lipsyncPair || currentEpisode.lipsyncPair.length < 2) {
+    renderLipsync();
+    return;
+  }
+
+  const [q1, q2] = currentEpisode.lipsyncPair;
+
+  const title = document.createElement("h2");
+  title.className = "lipTitle";
+  title.textContent = "Doblaje de eliminación";
+  episodeContentEl.appendChild(title);
+
+  const container = document.createElement("div");
+  container.className = "lipBattleContainer";
+
+  const card1 = document.createElement("div");
+  card1.className = "lipBattleCard battle-left";
+  card1.dataset.name = q1.name;
+  card1.innerHTML = `
+    <img src="${q1.image}" alt="${q1.name}">
+    <div class="lipQueenName">${q1.name}</div>
+  `;
+
+  const card2 = document.createElement("div");
+  card2.className = "lipBattleCard battle-right";
+  card2.dataset.name = q2.name;
+  card2.innerHTML = `
+    <img src="${q2.image}" alt="${q2.name}">
+    <div class="lipQueenName">${q2.name}</div>
+  `;
+
+  container.appendChild(card1);
+  container.appendChild(card2);
+  episodeContentEl.appendChild(container);
+
+  const status = document.createElement("p");
+  status.id = "lipBattleStatus";
+  status.style.textAlign = "center";
+  status.style.marginTop = "10px";
+  status.style.fontSize = "0.9rem";
+  status.textContent = "El destino se decide en el escenario…";
+  episodeContentEl.appendChild(status);
+
+  // Bloqueamos el botón mientras se mueven
+  nextBtn.disabled = true;
+
+  let flip = false;
+  let elapsed = 0;
+  const intervalMs = 500;   // cada 0,5s cambian de lado
+  const totalMs    = 10000; // 10 segundos
+
+  const intervalId = setInterval(() => {
+    flip = !flip;
+
+    if (flip) {
+      card1.classList.remove("battle-left");
+      card1.classList.add("battle-right");
+      card2.classList.remove("battle-right");
+      card2.classList.add("battle-left");
+    } else {
+      card1.classList.remove("battle-right");
+      card1.classList.add("battle-left");
+      card2.classList.remove("battle-left");
+      card2.classList.add("battle-right");
+    }
+
+    elapsed += intervalMs;
+
+    if (elapsed >= totalMs) {
+      clearInterval(intervalId);
+      showLipsyncOutcome(card1, card2, status);
+    }
+  }, intervalMs);
+}
+
+function showLipsyncOutcome(card1, card2, statusEl) {
+  const safe = currentEpisode.safeFromLipsync;
+  const elim = currentEpisode.eliminated;
+
+  if (!safe || !elim) {
+    // Por seguridad, si algo raro pasa
+    nextBtn.disabled = false;
+    return;
+  }
+
+  // ¿Cuál card es cuál?
+  const safeCard = card1.dataset.name === safe.name ? card1 : card2;
+  const elimCard = safeCard === card1 ? card2 : card1;
+
+  // Limpiamos clases de movimiento
+  [safeCard, elimCard].forEach(c => {
+    c.classList.remove("battle-left", "battle-right");
+  });
+
+  // 1) La que se salva viene al frente
+  safeCard.classList.add("winnerPulse");
+  statusEl.textContent = `${safe.name} está salvada`;
+
+  setTimeout(() => {
+    // Sale hacia la izquierda
+    safeCard.classList.add("slideOutLeft");
+
+    setTimeout(() => {
+      safeCard.style.display = "none";
+
+      // 2) La eliminada queda sola, en B/N
+      elimCard.classList.add("loserCard");
+      statusEl.textContent = `${elim.name} ahora vas al Dragaltar`;
+
+      setTimeout(() => {
+        // Sale hacia la derecha
+        elimCard.classList.add("slideOutRight");
+
+        setTimeout(() => {
+          // Al terminar, desbloqueamos el botón y lo dejamos listo
+          nextBtn.disabled = false;
+          nextBtn.textContent = "Track record";
+        }, 900);
+      }, 1200);
+    }, 800);
+  }, 800);
+}
 
     function renderElimination() {
   episodeContentEl.innerHTML = "";
@@ -1866,13 +2072,13 @@ function renderStep() {
       renderWinner();
       break;
 
-    case 3:
+        case 3:
       episodeTitleEl.textContent = retoNombre;
       episodeSubtitleEl.textContent = "";
       nextBtn.textContent = "Resultado del doblaje";
 
       document.querySelector(".sim-panel").classList.remove("top-align");
-      renderLipsync();
+      renderInteractiveLipsync(); // 👈 ahora usamos la versión interactiva
       break;
 
     case 4:
