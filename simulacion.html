@@ -1645,134 +1645,6 @@ function showLipSyncResult(duel, winner, loser, msgEl) {
     }, 1500); // tiempo para que la ganadora salga
   }, 1500);   // tiempo para que se quede un momento en el centro
 }
-    // ===== DOBLAJE INTERACTIVO DE ELIMINACIÓN =====
-function renderInteractiveLipsync() {
-  episodeContentEl.innerHTML = "";
-
-  // Si por lo que sea no hay pareja completa, usamos la versión normal
-  if (!currentEpisode.lipsyncPair || currentEpisode.lipsyncPair.length < 2) {
-    renderLipsync();
-    return;
-  }
-
-  const [q1, q2] = currentEpisode.lipsyncPair;
-
-  const title = document.createElement("h2");
-  title.className = "lipTitle";
-  title.textContent = "Doblaje de eliminación";
-  episodeContentEl.appendChild(title);
-
-  const container = document.createElement("div");
-  container.className = "lipBattleContainer";
-
-  const card1 = document.createElement("div");
-  card1.className = "lipBattleCard battle-left";
-  card1.dataset.name = q1.name;
-  card1.innerHTML = `
-    <img src="${q1.image}" alt="${q1.name}">
-    <div class="lipQueenName">${q1.name}</div>
-  `;
-
-  const card2 = document.createElement("div");
-  card2.className = "lipBattleCard battle-right";
-  card2.dataset.name = q2.name;
-  card2.innerHTML = `
-    <img src="${q2.image}" alt="${q2.name}">
-    <div class="lipQueenName">${q2.name}</div>
-  `;
-
-  container.appendChild(card1);
-  container.appendChild(card2);
-  episodeContentEl.appendChild(container);
-
-  const status = document.createElement("p");
-  status.id = "lipBattleStatus";
-  status.style.textAlign = "center";
-  status.style.marginTop = "10px";
-  status.style.fontSize = "0.9rem";
-  status.textContent = "El destino se decide en el escenario…";
-  episodeContentEl.appendChild(status);
-
-  // Bloqueamos el botón mientras se mueven
-  nextBtn.disabled = true;
-
-  let flip = false;
-  let elapsed = 0;
-  const intervalMs = 500;   // cada 0,5s cambian de lado
-  const totalMs    = 10000; // 10 segundos
-
-  const intervalId = setInterval(() => {
-    flip = !flip;
-
-    if (flip) {
-      card1.classList.remove("battle-left");
-      card1.classList.add("battle-right");
-      card2.classList.remove("battle-right");
-      card2.classList.add("battle-left");
-    } else {
-      card1.classList.remove("battle-right");
-      card1.classList.add("battle-left");
-      card2.classList.remove("battle-left");
-      card2.classList.add("battle-right");
-    }
-
-    elapsed += intervalMs;
-
-    if (elapsed >= totalMs) {
-      clearInterval(intervalId);
-      showLipsyncOutcome(card1, card2, status);
-    }
-  }, intervalMs);
-}
-
-function showLipsyncOutcome(card1, card2, statusEl) {
-  const safe = currentEpisode.safeFromLipsync;
-  const elim = currentEpisode.eliminated;
-
-  if (!safe || !elim) {
-    // Por seguridad, si algo raro pasa
-    nextBtn.disabled = false;
-    return;
-  }
-
-  // ¿Cuál card es cuál?
-  const safeCard = card1.dataset.name === safe.name ? card1 : card2;
-  const elimCard = safeCard === card1 ? card2 : card1;
-
-  // Limpiamos clases de movimiento
-  [safeCard, elimCard].forEach(c => {
-    c.classList.remove("battle-left", "battle-right");
-  });
-
-  // 1) La que se salva viene al frente
-  safeCard.classList.add("winnerPulse");
-  statusEl.textContent = `${safe.name} está salvada`;
-
-  setTimeout(() => {
-    // Sale hacia la izquierda
-    safeCard.classList.add("slideOutLeft");
-
-    setTimeout(() => {
-      safeCard.style.display = "none";
-
-      // 2) La eliminada queda sola, en B/N
-      elimCard.classList.add("loserCard");
-      statusEl.textContent = `${elim.name} ahora vas al Dragaltar`;
-
-      setTimeout(() => {
-        // Sale hacia la derecha
-        elimCard.classList.add("slideOutRight");
-
-        setTimeout(() => {
-          lipResultShown = true;
-          // Al terminar, desbloqueamos el botón y lo dejamos listo
-          nextBtn.disabled = false;
-          nextBtn.textContent = "Track record";
-        }, 900);
-      }, 1200);
-    }, 800);
-  }, 800);
-}
 
     function renderTrackRecord() {
   episodeContentEl.innerHTML = "";
@@ -2190,13 +2062,13 @@ function renderStep() {
       break;
 
         case 3:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "";
-      nextBtn.textContent = "Resultado del doblaje";
+  episodeTitleEl.textContent = retoNombre;
+  episodeSubtitleEl.textContent = "";
+  nextBtn.textContent = "Resultado del doblaje";
 
-      document.querySelector(".sim-panel").classList.remove("top-align");
-      renderInteractiveLipsync(); // 👈 ahora usamos la versión interactiva
-      break;
+  document.querySelector(".sim-panel").classList.remove("top-align");
+  renderLipsync(); // 👈 usamos el sistema nuevo que intercambia posiciones
+  break;
 
     case 5:
       episodeTitleEl.textContent = "Track record de la temporada";
