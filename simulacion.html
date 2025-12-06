@@ -392,6 +392,65 @@
 .lipBattleCard.slideOutRight {
   animation: slideOutRight 0.8s forwards;
 }
+    /* Contenedor del duelo */
+.lipSyncDuel {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 18px;
+  transition: all 0.4s ease;
+}
+
+/* Cuando tenga esta clase, las queens intercambian posiciones */
+.lipSyncDuel.swap {
+  flex-direction: row-reverse; /* 👈 invierte izquierda/derecha */
+}
+
+/* Cada queen del doblaje */
+.lipDiva {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.7s ease, opacity 0.7s ease, filter 0.7s ease;
+}
+
+.lipDiva img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ff69b4;
+  box-shadow: 0 0 18px rgba(255,105,180,0.9);
+}
+
+/* Estado final de la ganadora (más grande y al frente) */
+.lipWinnerFinal {
+  transform: scale(1.25) translateY(-4px);
+}
+
+/* Estado final de la perdedora (BN, más discreta) */
+.lipLoserFinal {
+  filter: grayscale(100%);
+  opacity: 0.9;
+}
+
+/* Salidas lentas hacia los lados */
+.lipExitLeft {
+  transform: translateX(-130%) scale(0.9);
+  opacity: 0;
+}
+
+.lipExitRight {
+  transform: translateX(130%) scale(0.9);
+  opacity: 0;
+}
+
+/* Mensaje bajo el duelo */
+#lipMessage {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+}
     .topBottomGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 arriba, 3 abajo */
@@ -1032,6 +1091,7 @@ let selectedFinalWinner = null;
       episodeContentEl.textContent = "";
       nextBtn.disabled = true;
     }
+    let finaleBracket = null; // datos de los 3 doblajes de la final
 
     const performanceLabels = {
       excellent: "tuvo un excelente desempeño",
@@ -1044,6 +1104,9 @@ let selectedFinalWinner = null;
 // -1 -> suspense ...
 let step = -1;
 let hasShownPerformance = false; // controla si ya mostramos el desempeño
+    // 🔥 Variables para animación del doblaje interactivo
+let lipResultShown = false;
+let lipSwapInterval = null;
 
 // 👇 solo estas dos, sin repetir eliminatedQueens
 let comebackDone = false;
@@ -1457,49 +1520,130 @@ function saveWinnerToHallOfFame(winner) {
     function renderLipsync() {
   episodeContentEl.innerHTML = "";
 
-  // Título glam
-  const title = document.createElement("h2");
-  title.className = "lipTitle";
-  title.textContent = "Las menos del reto son:";
-  episodeContentEl.appendChild(title);
+  const retoNombre = currentEpisode.challenge.name;
+  episodeTitleEl.textContent = retoNombre;
+  episodeSubtitleEl.textContent = "Doblaje de eliminación";
 
-  const grid = document.createElement("div");
-  grid.className = "lipSyncGrid";
+  const winner = currentEpisode.safeFromLipsync;   // la que se salva
+  const loser  = currentEpisode.eliminated;        // la que se va
 
-  // Deduplicar bottoms por nombre
-  const seen = new Set();
-  const bottoms = [];
-  currentEpisode.bottoms.forEach(q => {
-    if (!seen.has(q.name)) {
-      seen.add(q.name);
-      bottoms.push(q);
+  if (!winner || !loser) {
+    episodeContentEl.innerHTML = "<p>Error en el doblaje 😅</p>";
+    return;
+  }
+
+  lipResultShown = false;
+  if (lipSwapInterval) {
+    clearInterval(lipSwapInterval);
+    lipSwapInterval = null;
+  }
+
+  // Contenedor del duelo
+  const duel = document.createElement("div");
+  duel.className = "lipSyncDuel";
+
+  const left = document.createElement("div");
+  left.className = "lipDiva";
+  left.dataset.name = winner.name; // orden inicial da igual
+  left.innerHTML = `
+    <img src="${winner.image}" alt="${winner.name}">
+    <div class="lipQueenName">${winner.name}</div>
+  `;
+
+  const right = document.createElement("div");
+  right.className = "lipDiva";
+  right.dataset.name = loser.name;
+  right.innerHTML = `
+    <img src="${loser.image}" alt="${loser.name}">
+    <div class="lipQueenName">${loser.name}</div>
+  `;
+
+  duel.appendChild(left);
+  duel.appendChild(right);
+  episodeContentEl.appendChild(duel);
+
+  // Mensaje bajo el duelo
+  const msg = document.createElement("p");
+  msg.id = "lipMessage";
+  msg.textContent = "El destino se decide en el escenario…";
+  episodeContentEl.appendChild(msg);
+
+  // Configuramos el botón
+  nextBtn.textContent = "Resultado del doblaje";
+  nextBtn.disabled = true; // se habilita al final de la animación
+
+  // Arrancamos la animación
+  startLipSyncAnimation(duel, winner, loser, msg);
+}
+    function startLipSyncAnimation(duel, winner, loser, msgEl) {
+  const durationMs = 10000; // 10 segundos aprox
+  const stepMs = 800;       // cada cuánto se intercambian
+  let elapsed = 0;
+
+  lipSwapInterval = setInterval(() => {
+    duel.classList.toggle("swap"); // 👈 intercambia izquierda/derecha
+    elapsed += stepMs;
+
+    if (elapsed >= durationMs) {
+      clearInterval(lipSwapInterval);
+      lipSwapInterval = null;
+      showLipSyncResult(duel, winner, loser, msgEl);
     }
-  });
+  }, stepMs);
+}
 
-  // Nos quedamos con máximo 3 (2 al doblaje + 1 salvada)
-  const selected = bottoms.slice(0, 3);
+function showLipSyncResult(duel, winner, loser, msgEl) {
+  lipResultShown = true;
 
-  selected.forEach((q, index) => {
-    const card = document.createElement("div");
-    card.className = "lipCard";
+  const cards = duel.querySelectorAll(".lipDiva");
+  let winnerCard = null;
+  let loserCard  = null;
 
-    let label;
-    if (index < 2) {
-      label = "Doblaje de eliminación";
+  cards.forEach(c => {
+    if (c.dataset.name === winner.name) {
+      winnerCard = c;
     } else {
-      label = "Está salvada";
+      loserCard = c;
     }
-
-    card.innerHTML = `
-      <img src="${q.image}" alt="${q.name}">
-      <div class="lipQueenName">${q.name}</div>
-      <div class="lipStatus">${label}</div>
-    `;
-
-    grid.appendChild(card);
   });
 
-  episodeContentEl.appendChild(grid);
+  // centramos ambas
+  duel.classList.remove("swap");
+  duel.style.justifyContent = "center";
+  duel.style.gap = "20px";
+
+  // estado visual final
+  winnerCard.classList.add("lipWinnerFinal");
+  loserCard.classList.add("lipLoserFinal");
+
+  // mensaje: quién se salva
+  msgEl.textContent = `${winner.name}, estás salvada ✨`;
+
+  // Desplazamos primero a la ganadora, luego a la eliminada
+  setTimeout(() => {
+    winnerCard.classList.add("lipExitLeft");
+
+    setTimeout(() => {
+      msgEl.textContent = `${loser.name}, ahora vas al Dragaltar… 💐`;
+      loserCard.classList.add("lipExitRight");
+
+      // 👉 aquí hacemos la eliminación REAL en los datos
+      const elim = currentEpisode.eliminated;
+      if (elim) {
+        eliminatedQueens.push(elim);
+        aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+
+        const marks = trackRecord[elim.name];
+        if (marks && marks.length > 0) {
+          marks[marks.length - 1] = "Eliminada";
+        }
+      }
+
+      // Activamos el botón para ir directo al Track record
+      nextBtn.textContent = "Track record";
+      nextBtn.disabled = false;
+    }, 1500); // tiempo para que la ganadora salga
+  }, 1500);   // tiempo para que se quede un momento en el centro
 }
     // ===== DOBLAJE INTERACTIVO DE ELIMINACIÓN =====
 function renderInteractiveLipsync() {
@@ -1629,40 +1773,6 @@ function showLipsyncOutcome(card1, card2, statusEl) {
   }, 800);
 }
 
-    function renderElimination() {
-  episodeContentEl.innerHTML = "";
-
-  const title = document.createElement("h2");
-  title.className = "sectionTitle";
-  title.textContent = "Resultado del doblaje";
-  episodeContentEl.appendChild(title);
-
-  const wrap = document.createElement("div");
-  wrap.className = "eliminationWrapper";
-
-  // 👑 Reina que se queda
-  const safe = document.createElement("div");
-  safe.className = "safeQueen";
-  safe.innerHTML = `
-    <img src="${currentEpisode.safeFromLipsync.image}" alt="${currentEpisode.safeFromLipsync.name}">
-    <div class="elimName">${currentEpisode.safeFromLipsync.name}</div>
-    <div class="elimStatus">Sigue en la competencia</div>
-  `;
-
-  // 👋 Reina eliminada
-  const out = document.createElement("div");
-  out.className = "outQueen";
-  out.innerHTML = `
-    <img src="${currentEpisode.eliminated.image}" alt="${currentEpisode.eliminated.name}">
-    <div class="elimOutLabel">Abandona la competencia</div>
-    <div class="elimName">${currentEpisode.eliminated.name}</div>
-  `;
-
-  wrap.appendChild(safe);
-  wrap.appendChild(out);
-  episodeContentEl.appendChild(wrap);
-}
-
     function renderTrackRecord() {
   episodeContentEl.innerHTML = "";
 
@@ -1788,6 +1898,29 @@ function pickByTrackRecord(q1, q2) {
   // Se queda la que tenga mejor puntuación
   return s1 > s2 ? q1 : q2;
 }
+    function prepareFinaleBracket() {
+  const finalists = aliveQueens.slice();
+  if (finalists.length < 4) return null;
+
+  const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
+  const [a, b, c, d] = shuffled;
+
+  const r1Winner1 = pickByTrackRecord(a, b);
+  const r1Loser1  = r1Winner1 === a ? b : a;
+
+  const r1Winner2 = pickByTrackRecord(c, d);
+  const r1Loser2  = r1Winner2 === c ? d : c;
+
+  const crownWinner = pickByTrackRecord(r1Winner1, r1Winner2);
+  const finalLoser  = crownWinner === r1Winner1 ? r1Winner2 : r1Winner1;
+
+  finaleBracket = {
+    a, b, c, d,
+    r1Winner1, r1Loser1,
+    r1Winner2, r1Loser2,
+    crownWinner, finalLoser
+  };
+}
   function startFinale(manualWinner) {
   const finalists = aliveQueens.slice();
 
@@ -1835,65 +1968,18 @@ function pickByTrackRecord(q1, q2) {
     }
 
   // 🔹 MODO 2: DOBLAJE POR LA CORONA (AQUÍ USAMOS TRACK RECORD)
-  } else if (crownMode === "lipsync") {
-    const shuffled = finalists.slice().sort(() => Math.random() - 0.5);
-
-    // 1 sola finalista → se corona directa
-    if (shuffled.length === 1) {
-      winner = shuffled[0];
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-      `;
-    }
-
-    // 2 finalistas → 1 doblaje, gana la que tenga mejor trackrecord
-    else if (shuffled.length === 2) {
-      const [q1, q2] = shuffled;
-      winner = pickByTrackRecord(q1, q2);
-      const loser = winner === q1 ? q2 : q1;
-
-      episodeSubtitleEl.textContent = "Doblaje por la corona";
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-
-        <div class="finalLipGrid">
-          <div class="finalLipCard finalWinner">
-            <img src="${winner.image}" alt="${winner.name}">
-            <div class="lipQueenName">${winner.name}</div>
-            <div class="lipStatus">Se corona como La Más</div>
-          </div>
-
-          <div class="finalLipCard">
-            <img src="${loser.image}" alt="${loser.name}">
-            <div class="lipQueenName">${loser.name}</div>
-            <div class="lipStatus">Queda como finalista</div>
-          </div>
-        </div>
-      `;
-    }
-
-    // 4 (o más) finalistas → 1 vs 1, 1 vs 1 y final entre ganadoras
+     // 4 (o más) finalistas → 1 vs 1, 1 vs 1 y final entre ganadoras
     else if (shuffled.length >= 4) {
       const [a, b, c, d] = shuffled;
 
-      // Ronda 1 (se quedan las que tengan mejor track record)
+      // Ronda 1: A vs B y C vs D (usando track record)
       const r1Winner1 = pickByTrackRecord(a, b);
       const r1Loser1  = r1Winner1 === a ? b : a;
 
       const r1Winner2 = pickByTrackRecord(c, d);
       const r1Loser2  = r1Winner2 === c ? d : c;
 
-      // Ronda 2 (final por la corona, usando trackrecord otra vez)
+      // Ronda 2: final por la corona entre las dos ganadoras
       winner = pickByTrackRecord(r1Winner1, r1Winner2);
       const finalLoser = winner === r1Winner1 ? r1Winner2 : r1Winner1;
 
@@ -1907,6 +1993,45 @@ function pickByTrackRecord(q1, q2) {
         </div>
 
         <div class="finalLipGrid">
+          <!-- PRIMER DOBLAJE -->
+          <div style="width:100%;text-align:center;margin-bottom:6px;font-size:0.9rem;">
+            Primer doblaje
+          </div>
+
+          <div class="finalLipCard finalWinner">
+            <img src="${r1Winner1.image}" alt="${r1Winner1.name}">
+            <div class="lipQueenName">${r1Winner1.name}</div>
+            <div class="lipStatus">Gana el doblaje</div>
+          </div>
+
+          <div class="finalLipCard">
+            <img src="${r1Loser1.image}" alt="${r1Loser1.name}">
+            <div class="lipQueenName">${r1Loser1.name}</div>
+            <div class="lipStatus">Queda eliminada</div>
+          </div>
+
+          <!-- SEGUNDO DOBLAJE -->
+          <div style="width:100%;text-align:center;margin:10px 0 6px;font-size:0.9rem;">
+            Segundo doblaje
+          </div>
+
+          <div class="finalLipCard finalWinner">
+            <img src="${r1Winner2.image}" alt="${r1Winner2.name}">
+            <div class="lipQueenName">${r1Winner2.name}</div>
+            <div class="lipStatus">Gana el doblaje</div>
+          </div>
+
+          <div class="finalLipCard">
+            <img src="${r1Loser2.image}" alt="${r1Loser2.name}">
+            <div class="lipQueenName">${r1Loser2.name}</div>
+            <div class="lipStatus">Queda eliminada</div>
+          </div>
+
+          <!-- DOBLAJE FINAL POR LA CORONA -->
+          <div style="width:100%;text-align:center;margin:10px 0 6px;font-size:0.9rem;">
+            Doblaje final por la corona
+          </div>
+
           <div class="finalLipCard finalWinner">
             <img src="${winner.image}" alt="${winner.name}">
             <div class="lipQueenName">${winner.name}</div>
@@ -1916,42 +2041,6 @@ function pickByTrackRecord(q1, q2) {
           <div class="finalLipCard">
             <img src="${finalLoser.image}" alt="${finalLoser.name}">
             <div class="lipQueenName">${finalLoser.name}</div>
-            <div class="lipStatus">Queda como finalista</div>
-          </div>
-        </div>
-
-        <p style="margin-top:12px;font-size:0.85rem;text-align:center;">
-          Hubo dos doblajes iniciales (1 vs 1, 1 vs 1) y las ganadoras
-          se enfrentaron en un último doblaje por la corona 💿✨
-        </p>
-      `;
-    }
-
-    // Caso raro: 3 finalistas → cogemos 2 y decide el trackrecord
-    else {
-      const [q1, q2] = shuffled.slice(0, 2);
-      winner = pickByTrackRecord(q1, q2);
-      const loser = winner === q1 ? q2 : q1;
-
-      episodeSubtitleEl.textContent = "Doblaje por la corona";
-
-      episodeContentEl.innerHTML = `
-        <div class="winnerCard">
-          <div class="winnerTitle">¡La más ganadora es…!</div>
-          <img src="${winner.image}" alt="${winner.name}">
-          <div class="episodeName">${winner.name}</div>
-        </div>
-
-        <div class="finalLipGrid">
-          <div class="finalLipCard finalWinner">
-            <img src="${winner.image}" alt="${winner.name}">
-            <div class="lipQueenName">${winner.name}</div>
-            <div class="lipStatus">Se corona como La Más</div>
-          </div>
-
-          <div class="finalLipCard">
-            <img src="${loser.image}" alt="${loser.name}">
-            <div class="lipQueenName">${loser.name}</div>
             <div class="lipStatus">Queda como finalista</div>
           </div>
         </div>
@@ -2019,7 +2108,117 @@ grid.className = "finalistsGrid"; // 2 x 2 solo en la final
   // 👉 aquí se añade la grid al episodio
   episodeContentEl.appendChild(grid);
 }
-  
+
+    function renderFinalLipRound1() {
+  episodeContentEl.innerHTML = "";
+
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Primer doblaje";
+  episodeContentEl.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "finalLipGrid";
+
+  const { r1Winner1, r1Loser1 } = finaleBracket;
+
+  const cardWin = document.createElement("div");
+  cardWin.className = "finalLipCard finalWinner";
+  cardWin.innerHTML = `
+    <img src="${r1Winner1.image}" alt="${r1Winner1.name}">
+    <div class="lipQueenName">${r1Winner1.name}</div>
+    <div class="lipStatus">Gana el doblaje y avanza</div>
+  `;
+
+  const cardLose = document.createElement("div");
+  cardLose.className = "finalLipCard";
+  cardLose.innerHTML = `
+    <img src="${r1Loser1.image}" alt="${r1Loser1.name}">
+    <div class="lipQueenName">${r1Loser1.name}</div>
+    <div class="lipStatus">Queda eliminada</div>
+  `;
+
+  grid.appendChild(cardWin);
+  grid.appendChild(cardLose);
+  episodeContentEl.appendChild(grid);
+}
+
+function renderFinalLipRound2() {
+  episodeContentEl.innerHTML = "";
+
+  const title = document.createElement("h2");
+  title.className = "sectionTitle";
+  title.textContent = "Segundo doblaje";
+  episodeContentEl.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "finalLipGrid";
+
+  const { r1Winner2, r1Loser2 } = finaleBracket;
+
+  const cardWin = document.createElement("div");
+  cardWin.className = "finalLipCard finalWinner";
+  cardWin.innerHTML = `
+    <img src="${r1Winner2.image}" alt="${r1Winner2.name}">
+    <div class="lipQueenName">${r1Winner2.name}</div>
+    <div class="lipStatus">Gana el doblaje y avanza</div>
+  `;
+
+  const cardLose = document.createElement("div");
+  cardLose.className = "finalLipCard";
+  cardLose.innerHTML = `
+    <img src="${r1Loser2.image}" alt="${r1Loser2.name}">
+    <div class="lipQueenName">${r1Loser2.name}</div>
+    <div class="lipStatus">Queda eliminada</div>
+  `;
+
+  grid.appendChild(cardWin);
+  grid.appendChild(cardLose);
+  episodeContentEl.appendChild(grid);
+}
+
+function renderFinalLipGrandFinal() {
+  episodeContentEl.innerHTML = "";
+
+  const { crownWinner, finalLoser } = finaleBracket;
+
+  // Bloque grande de ganadora
+  const winnerCard = document.createElement("div");
+  winnerCard.className = "winnerCard";
+  winnerCard.innerHTML = `
+    <div class="winnerTitle">¡La más ganadora es…!</div>
+    <img src="${crownWinner.image}" alt="${crownWinner.name}">
+    <div class="episodeName">${crownWinner.name}</div>
+  `;
+  episodeContentEl.appendChild(winnerCard);
+
+  // Doblaje final visual
+  const grid = document.createElement("div");
+  grid.className = "finalLipGrid";
+
+  const winCard = document.createElement("div");
+  winCard.className = "finalLipCard finalWinner";
+  winCard.innerHTML = `
+    <img src="${crownWinner.image}" alt="${crownWinner.name}">
+    <div class="lipQueenName">${crownWinner.name}</div>
+    <div class="lipStatus">Se corona como La Más</div>
+  `;
+
+  const loseCard = document.createElement("div");
+  loseCard.className = "finalLipCard";
+  loseCard.innerHTML = `
+    <img src="${finalLoser.image}" alt="${finalLoser.name}">
+    <div class="lipQueenName">${finalLoser.name}</div>
+    <div class="lipStatus">Queda como finalista</div>
+  `;
+
+  grid.appendChild(winCard);
+  grid.appendChild(loseCard);
+  episodeContentEl.appendChild(grid);
+
+  // Guardamos en el Salón de la Fama aquí
+  saveWinnerToHallOfFame(crownWinner);
+}
    // =========================
 //   CONTROL DE PASOS
 // =========================
@@ -2081,13 +2280,6 @@ function renderStep() {
       renderInteractiveLipsync(); // 👈 ahora usamos la versión interactiva
       break;
 
-    case 4:
-      episodeTitleEl.textContent = retoNombre;
-      episodeSubtitleEl.textContent = "";
-      nextBtn.textContent = "Track record";
-      renderElimination();
-      break;
-
     case 5:
       episodeTitleEl.textContent = "Track record de la temporada";
       episodeSubtitleEl.textContent = "Resumen hasta este episodio";
@@ -2114,6 +2306,34 @@ function renderStep() {
 
       renderFinalists();
       break;
+         
+    case 7:
+      // Primer doblaje de la final (solo lipsync + 4 finalistas)
+      if (crownMode === "lipsync" && finaleBracket) {
+        episodeTitleEl.textContent = "La Gran Final";
+        episodeSubtitleEl.textContent = "Primer doblaje";
+        nextBtn.textContent = "Segundo doblaje";
+        renderFinalLipRound1();
+      }
+      break;
+
+    case 8:
+      if (crownMode === "lipsync" && finaleBracket) {
+        episodeTitleEl.textContent = "La Gran Final";
+        episodeSubtitleEl.textContent = "Segundo doblaje";
+        nextBtn.textContent = "Doblaje por la corona";
+        renderFinalLipRound2();
+      }
+      break;
+
+    case 9:
+      if (crownMode === "lipsync" && finaleBracket) {
+        episodeTitleEl.textContent = "La Gran Final";
+        episodeSubtitleEl.textContent = "Doblaje por la corona";
+        nextBtn.textContent = "Fin de la simulación";
+        renderFinalLipGrandFinal();
+      }
+      break;
   }
 }
         
@@ -2133,8 +2353,7 @@ nextBtn.addEventListener("click", () => {
   if (nextBtn.disabled) return;
 
     // Fin de la simulación → volver al inicio
-  if (step === 7) {
-    // 👇 cambia "index.html" por la ruta real de tu pantalla inicial si es distinta
+    if (step === 9 && nextBtn.textContent === "Fin de la simulación") {
     window.location.href = "index.html";
     return;
   }
@@ -2146,18 +2365,6 @@ nextBtn.addEventListener("click", () => {
     step = 0;
     renderStep();
     return;
-  }
-
-    if (step === 4 && currentEpisode && currentEpisode.eliminated) {
-    const elim = currentEpisode.eliminated;
-    eliminatedQueens.push(elim);
-    aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
-
-    // 🔹 Cambiar su último resultado a "Eliminada"
-    const marks = trackRecord[elim.name];
-    if (marks && marks.length > 0) {
-      marks[marks.length - 1] = "Eliminada";
-    }
   }
 
      // Después del track record
@@ -2203,18 +2410,30 @@ nextBtn.addEventListener("click", () => {
   }
 
     // Gran final: ya vimos las finalistas, ahora coronamos
+    // Gran final: ya vimos las finalistas
   if (step === 6) {
+    // Modo "Tú decides"
     if (crownMode === "user") {
       if (!selectedFinalWinner) {
         alert("Toca la feminosa que quieres coronar antes de continuar ✨");
         return;
       }
       startFinale(selectedFinalWinner);
-    } else {
-      startFinale(null);
+      step = 9; // ya es pantalla final
+      return;
     }
 
-    step = 7; // estado final
+    // Modo lipsync con 4 finalistas → 3 pantallas (doblaje 1, doblaje 2, final)
+    if (crownMode === "lipsync" && aliveQueens.length === 4) {
+      prepareFinaleBracket();   // calculamos los enfrentamientos
+      step = 7;                 // primer doblaje
+      renderStep();
+      return;
+    }
+
+    // Otros casos (lipsync con 2 o 3 finalistas, o modo aleatorio)
+    startFinale(null);
+    step = 9; // pantalla final
     return;
   }
 
@@ -2227,6 +2446,13 @@ nextBtn.addEventListener("click", () => {
       renderStep(); // actualiza la vista sin cambiar de paso
       return;
     }
+      // Desde el paso del doblaje (3), si ya se mostró el resultado,
+  // saltamos directamente al Track record (paso 5)
+  if (step === 3 && lipResultShown) {
+    step = 5;
+    renderStep();
+    return;
+  }
 
     step++;
     renderStep();
