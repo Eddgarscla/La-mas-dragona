@@ -1335,15 +1335,34 @@ if (lipIdxs.includes(winnerIdx)) {
         marksForEpisode[q.name] = trackMark;
       }
 
-      // Ahora empujamos la marca de ESTE episodio para TODAS las reinas del cast,
-      // así mantenemos la longitud de los arrays sincronizada por columna (episodio).
-      cast.forEach(cq => {
-        if (!trackRecord[cq.name]) trackRecord[cq.name] = [];
-        trackRecord[cq.name].push(marksForEpisode[cq.name] || "");
-      });
-          // DEBUG temporales (quita cuando confirmes que funciona)
-      console.log("Episode", episodeNumber, "marksForEpisode:", marksForEpisode);
-      console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
+      // -----------------------------
+// Empujar marca de ESTE episodio para TODAS las reinas del cast
+// (versión más robusta: normaliza nombres y evita keys que no coinciden)
+// -----------------------------
+function norm(name) { return (name || "").toString().trim(); }
+
+const marksForEpisode = {};
+cast.forEach(cq => { marksForEpisode[norm(cq.name)] = ""; });
+
+// (aquí tu loop que rellena marksForEpisode ya lo tienes arriba)
+// ... asegurarse de que cuando asignaste marksForEpisode[q.name] lo hiciste así:
+ // marksForEpisode[norm(q.name)] = trackMark;
+
+// Ahora empujamos al trackRecord con cuidado
+cast.forEach(cq => {
+  const key = norm(cq.name);
+  if (!trackRecord[key]) trackRecord[key] = [];
+  const mark = Object.prototype.hasOwnProperty.call(marksForEpisode, key)
+    ? marksForEpisode[key]
+    : ""; // si por alguna razón no existe la key, dejamos vacía
+  trackRecord[key].push(mark);
+});
+
+// DEBUG: ver cómo quedaron las marcas del episodio y las filas afectadas
+console.log("DEBUG marksForEpisode:", marksForEpisode);
+console.log("DEBUG trackRecord snapshot (first 6):", Object.fromEntries(
+  Object.entries(trackRecord).slice(0, 6)
+));
 
       // Tops y bottoms
       const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
