@@ -1140,7 +1140,7 @@ let comebackEpisode = null;
 
 // 🌀 Elegimos en qué episodio puede pasar el retorno (si lo hay)
 (function prepararRetorno() {
-  if (returnMode === "none") return;
+  if (returnModeKey === "none") return;
 
   const total = cast.length;   // 👈 AQUÍ CAMBIAMOS storedQueens por cast
   const minEpisode = 2;
@@ -2251,7 +2251,7 @@ nextBtn.addEventListener("click", () => {
         comebackEpisode &&
         eliminatedQueens.length &&
         episodeNumber + 1 === comebackEpisode &&
-        returnMode !== "none"
+        returnModeKey !== "none"
       ) {
         comebackDone = true;
         // Modo retorno aleatorio / mega → inmediato
@@ -2272,7 +2272,7 @@ nextBtn.addEventListener("click", () => {
         }
 
         // Modo "decide" → abrimos panel glam abajo
-        if (returnMode === "decide") {
+        if (returnModeKey === "decide") {
           openComebackPanel();
           return; // esperamos a que pulses "Confirmar regreso"
         }
