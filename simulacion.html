@@ -1200,11 +1200,12 @@ comebackConfirmBtn.addEventListener("click", () => {
     const returning = eliminatedQueens.splice(index, 1)[0];
     aliveQueens.push(returning);
 
-    // Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
-    if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
-    const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
-    while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
-    trackRecord[returning.name][ridx] = "Retorno";
+   // Marcar el retorno en el trackRecord (columna comebackEpisode - 1) — usar clave normalizada
+const rkey = norm(returning.name);
+if (!trackRecord[rkey]) trackRecord[rkey] = [];
+const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
+while (trackRecord[rkey].length <= ridx) trackRecord[rkey].push("");
+trackRecord[rkey][ridx] = "Retorno";
 
     alert(`✨ ${returning.name} regresa a la competencia`);
   }
