@@ -1167,7 +1167,6 @@ function openComebackPanel() {
   nextBtn.disabled = true; // mientras decides, el botón principal se bloquea
 }
 
-// Cuando pulsas "Confirmar regreso"
 comebackConfirmBtn.addEventListener("click", () => {
   if (!selectedComebackQueen) return;
 
@@ -1177,6 +1176,13 @@ comebackConfirmBtn.addEventListener("click", () => {
   if (index !== -1) {
     const returning = eliminatedQueens.splice(index, 1)[0];
     aliveQueens.push(returning);
+
+    // Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
+    if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
+    const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
+    while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
+    trackRecord[returning.name][ridx] = "Retorno";
+
     alert(`✨ ${returning.name} regresa a la competencia`);
   }
 
@@ -1236,27 +1242,31 @@ function saveWinnerToHallOfFame(winner) {
         return indexes.splice(pos, 1)[0];
       }
 
-      const winnerIdx = drawIndex();
+      // ----------------------------------------------------------------
+// elegir winnerIdx y asegurarnos que no quede en lipIdxs
+// ----------------------------------------------------------------
+let winnerIdx = drawIndex();
 
-      const topIdxs = [];
-      if (n >= 4) topIdxs.push(drawIndex());
-      if (n >= 5) topIdxs.push(drawIndex());
+const topIdxs = [];
+if (n >= 4) topIdxs.push(drawIndex());
+if (n >= 5) topIdxs.push(drawIndex());
 
-      const lipIdxs = [];
-      if (n >= 3) lipIdxs.push(drawIndex());
-      if (n >= 4) lipIdxs.push(drawIndex());
+const lipIdxs = [];
+if (n >= 3) lipIdxs.push(drawIndex());
+if (n >= 4) lipIdxs.push(drawIndex());
 
-      let extraBottomIdx = null;
-      if (n >= 6 && indexes.length > 0) {
-        extraBottomIdx = drawIndex();
-      }
+let extraBottomIdx = null;
+if (n >= 6 && indexes.length > 0) {
+  extraBottomIdx = drawIndex();
+}
 
-      // Seguridad: que la ganadora no sea parte de los lipIdxs (por si algo fuera raro)
+// Seguridad: que la ganadora no sea parte de los lipIdxs
 if (lipIdxs.includes(winnerIdx)) {
-  const remaining = indexes.slice(); 
-  if (remaining.length > 0) {
-    const newPos = Math.floor(Math.random() * remaining.length);
-    winnerIdx = remaining[newPos];
+  // construir lista de índices válidos (todos menos los lipIdxs)
+  const valid = [...Array(n).keys()].filter(i => !lipIdxs.includes(i));
+  // si hay válidos, elegir uno aleatorio
+  if (valid.length > 0) {
+    winnerIdx = valid[Math.floor(Math.random() * valid.length)];
   }
 }
 
@@ -2224,24 +2234,14 @@ nextBtn.addEventListener("click", () => {
         comebackDone = true;
 
         // Modo retorno aleatorio / mega → inmediato
-        if (returnMode === "aleatorio" || returnMode === "mega") {
-  const idx = Math.floor(Math.random() * eliminatedQueens.length);
-  const returning = eliminatedQueens.splice(idx, 1)[0];
+if (returnMode === "aleatorio" || returnMode === "mega") {
+  const idxElim = Math.floor(Math.random() * eliminatedQueens.length);
+  const returning = eliminatedQueens.splice(idxElim, 1)[0];
   aliveQueens.push(returning);
 
-  // A) Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
+  // Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
   if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
-  const ridx = comebackEpisode - 1;
-  while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
-  trackRecord[returning.name][ridx] = "Retorno";
-
-  if (index !== -1) {
-  const returning = eliminatedQueens.splice(index, 1)[0];
-  aliveQueens.push(returning);
-
-  // B) Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
-  if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
-  const ridx = comebackEpisode - 1;
+  const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
   while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
   trackRecord[returning.name][ridx] = "Retorno";
 
