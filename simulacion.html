@@ -1251,37 +1251,14 @@ function saveWinnerToHallOfFame(winner) {
 
       const performances = [];
 
-      // Asignar desempeño y marcar track record
-      for (let i = 0; i < n; i++) {
-        const q = shuffled[i];
-        let perfType = "good";
-        let trackMark = "Salvada";
-
-                if (i === winnerIdx) {
-          perfType  = "excellent";
-          trackMark = "La +";
-        } else if (topIdxs.includes(i)) {
-          perfType  = "good";
-          trackMark = "La casi +";
-        } else if (lipIdxs.includes(i)) {
-          // Las dos del doblaje se marcan como "La -"
-          // y luego a la eliminada le cambiamos a "Eliminada"
-          perfType  = "awful";
-          trackMark = "La -";
-        } else if (i === extraBottomIdx) {
-          // Tercera peor (no va al doblaje): "La casi -"
-          perfType  = "bad";
-          trackMark = "La casi -";
-        } else {
-          // Todo lo demás es realmente "Salvada"
-          perfType  = "good";
-          trackMark = "Salvada";
-        }
-        
-              // ---------- NUEVO: construimos un mapa de marcas para ESTE episodio ----------
+            // ---------- NUEVO: construimos un mapa de marcas para ESTE episodio ----------
       // Inicializamos marksForEpisode con placeholder para todas las del cast
       const marksForEpisode = {};
       cast.forEach(cq => { marksForEpisode[cq.name] = ""; });
+
+            // DEBUG temporales (quita cuando confirmes que funciona)
+      console.log("Episode", episodeNumber, "marksForEpisode:", marksForEpisode);
+      console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
 
       // Asignar desempeño y marcas temporales usando shuffled
       for (let i = 0; i < n; i++) {
@@ -1624,9 +1601,6 @@ function saveWinnerToHallOfFame(winner) {
     }
   }, stepMs);
 }
-      // Después de empujar las marcas al trackRecord (al final del buildEpisode)
-console.log("Marks for this episode:", marksForEpisode);
-console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
 
 // Después de marcar la eliminada en showLipSyncResult:
 console.log("Eliminada:", elim ? elim.name : null, "trackRecord[elim]:", trackRecord[elim ? elim.name : ""]);
@@ -1666,25 +1640,25 @@ function showLipSyncResult(duel, winner, loser, msgEl) {
       msgEl.textContent = `${loser.name}, ahora vas al Dragaltar… 💐`;
       loserCard.classList.add("lipExitRight");
 
-      // 👉 aquí hacemos la eliminación REAL en los datos
+          // 👉 aquí hacemos la eliminación REAL en los datos (solo UNA vez)
       const elim = currentEpisode.eliminated;
       if (elim) {
+        // Guardado en eliminadas y quitar de alive
         eliminatedQueens.push(elim);
         aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
 
-        if (elim) {
-  eliminatedQueens.push(elim);
-  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+        // 1) Actualizar la lista de performances del episodio para reflejar "Eliminada"
+        const perf = currentEpisode.performances.find(p => p.queen.name === elim.name);
+        if (perf) perf.track = "Eliminada";
 
-  // Asegúrate de marcar la casilla correspondiente al episodio actual como "Eliminada"
-  if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
-  const idx = Math.max(0, episodeNumber - 1);
-  // Si la fila es más corta que idx, rellenamos con blanks hasta idx
-  while (trackRecord[elim.name].length <= idx) {
-    trackRecord[elim.name].push("");
-  }
-  trackRecord[elim.name][idx] = "Eliminada";
-}
+        // 2) Marcar la casilla correspondiente al episodio actual como "Eliminada"
+        if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
+        const idx = Math.max(0, episodeNumber - 1);
+        while (trackRecord[elim.name].length <= idx) {
+          trackRecord[elim.name].push("");
+        }
+        trackRecord[elim.name][idx] = "Eliminada";
+      }
 
       // Activamos el botón para ir directo al Track record
       nextBtn.textContent = "Track record";
