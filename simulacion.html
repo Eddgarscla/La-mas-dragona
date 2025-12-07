@@ -1713,19 +1713,15 @@ if (elim) {
   if (perf) perf.track = "Eliminada";
 
   // ⭐ Usamos el índice capturado en buildEpisode()
-  const idx = currentEpisode && typeof currentEpisode.episodeIndex === 'number'
-    ? currentEpisode.episodeIndex
-    : Math.max(0, episodeNumber - 1);
+const idx = currentEpisode && typeof currentEpisode.episodeIndex === 'number'
+  ? currentEpisode.episodeIndex
+  : Math.max(0, episodeNumber - 1);
 
-  // Asegurar longitud del track record
-  if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
-  while (trackRecord[elim.name].length <= idx) {
-    trackRecord[elim.name].push("");
-  }
-
-  // Marcar eliminación en la columna correcta
-  trackRecord[elim.name][idx] = "Eliminada";
-}
+// Marcar eliminación en la columna correcta (usar clave normalizada)
+const ekey = norm(elim.name);
+if (!trackRecord[ekey]) trackRecord[ekey] = [];
+while (trackRecord[ekey].length <= idx) trackRecord[ekey].push("");
+trackRecord[ekey][idx] = "Eliminada";
 
       // Activamos el botón para ir directo al Track record
       nextBtn.textContent = "Track record";
@@ -1797,7 +1793,7 @@ uniqueDisplay.forEach(q => {
   `;
   row.appendChild(nameCell);
 
-  const marks = trackRecord[q.name] || [];
+  const marks = trackRecord[norm(q.name)] || [];
 
   for (let ep = 0; ep < episodeNumber; ep++) {
     const mark = marks[ep] || "";
@@ -1830,7 +1826,7 @@ function getMarkClass(mark) {
 //   PUNTOS DE TRACK RECORD
 // =========================
 function getTrackScore(name) {
-  const marks = trackRecord[name] || [];
+  const marks = trackRecord[norm(name)] || [];
   let score = 0;
 
   for (const m of marks) {
