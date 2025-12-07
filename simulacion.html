@@ -1127,6 +1127,8 @@ let selectedFinalWinner = null;
     };
 
     let currentEpisode = null;
+    // normalizador de nombres (UNA sola definición y accesible para todo el script)
+function norm(name) { return (name || "").toString().trim(); }
 // -1 -> suspense ...
 let step = -1;
 let hasShownPerformance = false; // controla si ya mostramos el desempeño
@@ -1250,167 +1252,141 @@ function saveWinnerToHallOfFame(winner) {
     //   CONSTRUIR EPISODIO
     // =========================
     function buildEpisode() {
-      const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
+  const challenge = getRandomChallenge() || { id: "fallback", name: "La Gran Final" };
 
-      const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
-      const n = shuffled.length;
-      if (n === 0) return;
+  const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
+  const n = shuffled.length;
+  if (n === 0) return;
 
-      const indexes = [...Array(n).keys()];
-
-      function drawIndex() {
-        const pos = Math.floor(Math.random() * indexes.length);
-        return indexes.splice(pos, 1)[0];
-      }
-
-      // ----------------------------------------------------------------
-// elegir winnerIdx y asegurarnos que no quede en lipIdxs
-// ----------------------------------------------------------------
-let winnerIdx = drawIndex();
-
-const topIdxs = [];
-if (n >= 4) topIdxs.push(drawIndex());
-if (n >= 5) topIdxs.push(drawIndex());
-
-const lipIdxs = [];
-if (n >= 3) lipIdxs.push(drawIndex());
-if (n >= 4) lipIdxs.push(drawIndex());
-
-let extraBottomIdx = null;
-if (n >= 6 && indexes.length > 0) {
-  extraBottomIdx = drawIndex();
-}
-
-// Seguridad: que la ganadora no sea parte de los lipIdxs
-if (lipIdxs.includes(winnerIdx)) {
-  // construir lista de índices válidos (todos menos los lipIdxs)
-  const valid = [...Array(n).keys()].filter(i => !lipIdxs.includes(i));
-  // si hay válidos, elegir uno aleatorio
-  if (valid.length > 0) {
-    winnerIdx = valid[Math.floor(Math.random() * valid.length)];
-  }
-}
-
-            // Solo habrá una "La casi -": la tercera peor (extraBottomIdx)
-      const lowIdxs = []; // ya no la usamos
-
-      const performances = [];
-
-            // ---------- NUEVO: construimos un mapa de marcas para ESTE episodio ----------
-      // Inicializamos marksForEpisode con placeholder para todas las del cast
-      const marksForEpisode = {};
-      cast.forEach(cq => { marksForEpisode[cq.name] = ""; });
-
-      // Asignar desempeño y marcas temporales usando shuffled
-      for (let i = 0; i < n; i++) {
-        const q = shuffled[i];
-        let perfType = "good";
-        let trackMark = "Salvada";
-
-        if (i === winnerIdx) {
-          perfType  = "excellent";
-          trackMark = "La +";
-        } else if (topIdxs.includes(i)) {
-          perfType  = "good";
-          trackMark = "La casi +";
-        } else if (lipIdxs.includes(i)) {
-          perfType  = "awful";
-          trackMark = "La -";
-        } else if (i === extraBottomIdx) {
-          perfType  = "bad";
-          trackMark = "La casi -";
-        } else {
-          perfType  = "good";
-          trackMark = "Salvada";
-        }
-
-        performances.push({
-          queen: q,
-          type:  perfType,
-          text:  performanceLabels[perfType],
-          track: trackMark
-        });
-
-        // Guardamos la marca en el mapa (no hacemos push directo)
-        marksForEpisode[q.name] = trackMark;
-      }
-
-      // -----------------------------
-// Empujar marca de ESTE episodio para TODAS las reinas del cast
-// (versión más robusta: normaliza nombres y evita keys que no coinciden)
-// -----------------------------
-function norm(name) { return (name || "").toString().trim(); }
-
-const marksForEpisode = {};
-cast.forEach(cq => { marksForEpisode[norm(cq.name)] = ""; });
-
-// (aquí tu loop que rellena marksForEpisode ya lo tienes arriba)
-// ... asegurarse de que cuando asignaste marksForEpisode[q.name] lo hiciste así:
- // marksForEpisode[norm(q.name)] = trackMark;
-
-// Ahora empujamos al trackRecord con cuidado
-cast.forEach(cq => {
-  const key = norm(cq.name);
-  if (!trackRecord[key]) trackRecord[key] = [];
-  const mark = Object.prototype.hasOwnProperty.call(marksForEpisode, key)
-    ? marksForEpisode[key]
-    : ""; // si por alguna razón no existe la key, dejamos vacía
-  trackRecord[key].push(mark);
-});
-
-// DEBUG: ver cómo quedaron las marcas del episodio y las filas afectadas
-console.log("DEBUG marksForEpisode:", marksForEpisode);
-console.log("DEBUG trackRecord snapshot (first 6):", Object.fromEntries(
-  Object.entries(trackRecord).slice(0, 6)
-));
-
-      // Tops y bottoms
-      const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
-      const bottoms = [...lipIdxs.map(i => shuffled[i])];
-      if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
-
-      // Pareja de lipsync
-      const lipsyncPair = lipIdxs.map(i => shuffled[i]);
-      let eliminated = null;
-      let safeFromLipsync = null;
-
-      if (lipsyncPair.length === 2) {
-  const q1 = lipsyncPair[0];
-  const q2 = lipsyncPair[1];
-
-  const s1 = getTrackScore(q1.name);
-  const s2 = getTrackScore(q2.name);
-
-  if (s1 === s2) {
-    // Si están empatadas, que decida el destino 💅
-    eliminated = Math.random() < 0.5 ? q1 : q2;
-  } else if (s1 < s2) {
-    // Menos puntos de temporada = se va
-    eliminated = q1;
-  } else {
-    eliminated = q2;
+  const indexes = [...Array(n).keys()];
+  function drawIndex() {
+    const pos = Math.floor(Math.random() * indexes.length);
+    return indexes.splice(pos, 1)[0];
   }
 
-  safeFromLipsync = (eliminated === q1) ? q2 : q1;
+  // elegir winnerIdx y asegurarnos que no quede en lipIdxs
+  let winnerIdx = drawIndex();
 
-} else if (lipsyncPair.length === 1) {
-  // Caso raro: solo una en el lipsync
-  eliminated = lipsyncPair[0];
-  safeFromLipsync = null;
+  const topIdxs = [];
+  if (n >= 4) topIdxs.push(drawIndex());
+  if (n >= 5) topIdxs.push(drawIndex());
+
+  const lipIdxs = [];
+  if (n >= 3) lipIdxs.push(drawIndex());
+  if (n >= 4) lipIdxs.push(drawIndex());
+
+  let extraBottomIdx = null;
+  if (n >= 6 && indexes.length > 0) {
+    extraBottomIdx = drawIndex();
+  }
+
+  if (lipIdxs.includes(winnerIdx)) {
+    const valid = [...Array(n).keys()].filter(i => !lipIdxs.includes(i));
+    if (valid.length > 0) {
+      winnerIdx = valid[Math.floor(Math.random() * valid.length)];
+    }
+  }
+
+  const performances = [];
+
+  // ---------- marksForEpisode: UNA sola versión y con claves normalizadas ----------
+  const marksForEpisode = {};
+  cast.forEach(cq => { marksForEpisode[norm(cq.name)] = ""; });
+
+  // Asignar desempeño y marcas temporales usando shuffled
+  for (let i = 0; i < n; i++) {
+    const q = shuffled[i];
+    let perfType = "good";
+    let trackMark = "Salvada";
+
+    if (i === winnerIdx) {
+      perfType  = "excellent";
+      trackMark = "La +";
+    } else if (topIdxs.includes(i)) {
+      perfType  = "good";
+      trackMark = "La casi +";
+    } else if (lipIdxs.includes(i)) {
+      perfType  = "awful";
+      trackMark = "La -";
+    } else if (i === extraBottomIdx) {
+      perfType  = "bad";
+      trackMark = "La casi -";
+    } else {
+      perfType  = "good";
+      trackMark = "Salvada";
+    }
+
+    performances.push({
+      queen: q,
+      type:  perfType,
+      text:  performanceLabels[perfType],
+      track: trackMark
+    });
+
+    // Guardamos la marca en el mapa usando la clave normalizada
+    marksForEpisode[norm(q.name)] = trackMark;
+  }
+
+  // Empujar marca de ESTE episodio para TODAS las reinas del cast (clave normalizada)
+  cast.forEach(cq => {
+    const key = norm(cq.name);
+    if (!trackRecord[key]) trackRecord[key] = [];
+    const mark = Object.prototype.hasOwnProperty.call(marksForEpisode, key)
+      ? marksForEpisode[key]
+      : "";
+    trackRecord[key].push(mark);
+  });
+
+  // DEBUG opcional (puedes comentar si no quieres verlo)
+  console.log("DEBUG marksForEpisode:", marksForEpisode);
+  console.log("DEBUG trackRecord snapshot (first 6):", Object.fromEntries(
+    Object.entries(trackRecord).slice(0, 6)
+  ));
+
+  // Tops y bottoms
+  const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
+  const bottoms = [...lipIdxs.map(i => shuffled[i])];
+  if (extraBottomIdx !== null) bottoms.push(shuffled[extraBottomIdx]);
+
+  // Pareja de lipsync
+  const lipsyncPair = lipIdxs.map(i => shuffled[i]);
+  let eliminated = null;
+  let safeFromLipsync = null;
+
+  if (lipsyncPair.length === 2) {
+    const q1 = lipsyncPair[0];
+    const q2 = lipsyncPair[1];
+
+    const s1 = getTrackScore(q1.name);
+    const s2 = getTrackScore(q2.name);
+
+    if (s1 === s2) {
+      eliminated = Math.random() < 0.5 ? q1 : q2;
+    } else if (s1 < s2) {
+      eliminated = q1;
+    } else {
+      eliminated = q2;
+    }
+
+    safeFromLipsync = (eliminated === q1) ? q2 : q1;
+
+  } else if (lipsyncPair.length === 1) {
+    eliminated = lipsyncPair[0];
+    safeFromLipsync = null;
+  }
+
+  currentEpisode = {
+    challenge,
+    performances,
+    tops,
+    bottoms,
+    winner: shuffled[winnerIdx],
+    lipsyncPair,
+    eliminated,
+    safeFromLipsync,
+    episodeIndex: episodeNumber - 1
+  };
 }
-
-            currentEpisode = {
-  challenge,
-  performances,
-  tops,
-  bottoms,
-  winner: shuffled[winnerIdx],
-  lipsyncPair,
-  eliminated,
-  safeFromLipsync,
-  episodeIndex: episodeNumber - 1 // <- guardamos el índice real del episodio
-    };
-   }
 
      // // ✅ Ajustar el desempeño y el track record de la eliminada
 // if (eliminated) {
