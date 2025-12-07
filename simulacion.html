@@ -1278,6 +1278,34 @@ function saveWinnerToHallOfFame(winner) {
           trackMark = "Salvada";
         }
         
+              // ---------- NUEVO: construimos un mapa de marcas para ESTE episodio ----------
+      // Inicializamos marksForEpisode con placeholder para todas las del cast
+      const marksForEpisode = {};
+      cast.forEach(cq => { marksForEpisode[cq.name] = ""; });
+
+      // Asignar desempeño y marcas temporales usando shuffled
+      for (let i = 0; i < n; i++) {
+        const q = shuffled[i];
+        let perfType = "good";
+        let trackMark = "Salvada";
+
+        if (i === winnerIdx) {
+          perfType  = "excellent";
+          trackMark = "La +";
+        } else if (topIdxs.includes(i)) {
+          perfType  = "good";
+          trackMark = "La casi +";
+        } else if (lipIdxs.includes(i)) {
+          perfType  = "awful";
+          trackMark = "La -";
+        } else if (i === extraBottomIdx) {
+          perfType  = "bad";
+          trackMark = "La casi -";
+        } else {
+          perfType  = "good";
+          trackMark = "Salvada";
+        }
+
         performances.push({
           queen: q,
           type:  perfType,
@@ -1285,11 +1313,16 @@ function saveWinnerToHallOfFame(winner) {
           track: trackMark
         });
 
-        if (!trackRecord[q.name]) {
-          trackRecord[q.name] = [];
-        }
-        trackRecord[q.name].push(trackMark);
+        // Guardamos la marca en el mapa (no hacemos push directo)
+        marksForEpisode[q.name] = trackMark;
       }
+
+      // Ahora empujamos la marca de ESTE episodio para TODAS las reinas del cast,
+      // así mantenemos la longitud de los arrays sincronizada por columna (episodio).
+      cast.forEach(cq => {
+        if (!trackRecord[cq.name]) trackRecord[cq.name] = [];
+        trackRecord[cq.name].push(marksForEpisode[cq.name] || "");
+      });
 
       // Tops y bottoms
       const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
@@ -1591,6 +1624,12 @@ function saveWinnerToHallOfFame(winner) {
     }
   }, stepMs);
 }
+      // Después de empujar las marcas al trackRecord (al final del buildEpisode)
+console.log("Marks for this episode:", marksForEpisode);
+console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
+
+// Después de marcar la eliminada en showLipSyncResult:
+console.log("Eliminada:", elim ? elim.name : null, "trackRecord[elim]:", trackRecord[elim ? elim.name : ""]);
 
 function showLipSyncResult(duel, winner, loser, msgEl) {
   lipResultShown = true;
@@ -1633,11 +1672,19 @@ function showLipSyncResult(duel, winner, loser, msgEl) {
         eliminatedQueens.push(elim);
         aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
 
-        const marks = trackRecord[elim.name];
-        if (marks && marks.length > 0) {
-          marks[marks.length - 1] = "Eliminada";
-        }
-      }
+        if (elim) {
+  eliminatedQueens.push(elim);
+  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+
+  // Asegúrate de marcar la casilla correspondiente al episodio actual como "Eliminada"
+  if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
+  const idx = Math.max(0, episodeNumber - 1);
+  // Si la fila es más corta que idx, rellenamos con blanks hasta idx
+  while (trackRecord[elim.name].length <= idx) {
+    trackRecord[elim.name].push("");
+  }
+  trackRecord[elim.name][idx] = "Eliminada";
+}
 
       // Activamos el botón para ir directo al Track record
       nextBtn.textContent = "Track record";
