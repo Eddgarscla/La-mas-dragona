@@ -1048,6 +1048,27 @@ const seasonType = config.seasonType || "regular";
 
 // retorno: "none" (sin retorno) o "one_return" (un regreso)
 const returnMode = config.returnMode || "none";
+    
+// 🔧 Normalizar returnMode a claves internas
+let returnModeKey;
+switch (returnMode) {
+  case "one_return":
+  case "aleatorio":
+    returnModeKey = "aleatorio";
+    break;
+
+  case "mega":
+    returnModeKey = "mega";
+    break;
+
+  case "decide":
+  case "decidir":
+    returnModeKey = "decide";
+    break;
+
+  default:
+    returnModeKey = "none";
+}
 
 // número de finalistas: 4, 3, 2, etc.
 const finalistsNum = config.finalistsNum || 4;
@@ -2233,9 +2254,8 @@ nextBtn.addEventListener("click", () => {
         returnMode !== "none"
       ) {
         comebackDone = true;
-
         // Modo retorno aleatorio / mega → inmediato
-        if (returnMode === "aleatorio" || returnMode === "mega") {
+        if (returnModeKey === "aleatorio" || returnModeKey === "mega") {
           const idxElim = Math.floor(Math.random() * eliminatedQueens.length);
           const returning = eliminatedQueens.splice(idxElim, 1)[0];
           aliveQueens.push(returning);
