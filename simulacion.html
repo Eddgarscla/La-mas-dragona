@@ -722,6 +722,11 @@
   background: rgba(0,0,0,0.25);
   opacity: 0.7;
 }
+ /* añadir */
+.cell-return {
+  background: #9b59ff; /* morado - ajusta si quieres otro */
+  color: #fff;
+}   
     
     /* 🌈 Texto glam general */
 body, .episodeName, .savedQueensMessage, .safeText, .sectionTitle {
@@ -1246,6 +1251,15 @@ function saveWinnerToHallOfFame(winner) {
         extraBottomIdx = drawIndex();
       }
 
+      // Seguridad: que la ganadora no sea parte de los lipIdxs (por si algo fuera raro)
+if (lipIdxs.includes(winnerIdx)) {
+  const remaining = indexes.slice(); 
+  if (remaining.length > 0) {
+    const newPos = Math.floor(Math.random() * remaining.length);
+    winnerIdx = remaining[newPos];
+  }
+}
+
             // Solo habrá una "La casi -": la tercera peor (extraBottomIdx)
       const lowIdxs = []; // ya no la usamos
 
@@ -1336,16 +1350,17 @@ function saveWinnerToHallOfFame(winner) {
 }
 
             currentEpisode = {
-        challenge,
-        performances,
-        tops,
-        bottoms,
-        winner: shuffled[winnerIdx],
-        lipsyncPair,
-        eliminated,
-        safeFromLipsync
-      };
-    }
+  challenge,
+  performances,
+  tops,
+  bottoms,
+  winner: shuffled[winnerIdx],
+  lipsyncPair,
+  eliminated,
+  safeFromLipsync,
+  episodeIndex: episodeNumber - 1 // <- guardamos el índice real del episodio
+    };
+   }
 
      // // ✅ Ajustar el desempeño y el track record de la eliminada
 // if (eliminated) {
@@ -1636,25 +1651,31 @@ function showLipSyncResult(duel, winner, loser, msgEl) {
       msgEl.textContent = `${loser.name}, ahora vas al Dragaltar… 💐`;
       loserCard.classList.add("lipExitRight");
 
-          // 👉 aquí hacemos la eliminación REAL en los datos (solo UNA vez)
-      const elim = currentEpisode.eliminated;
-      if (elim) {
-        // Guardado en eliminadas y quitar de alive
-        eliminatedQueens.push(elim);
-        aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
+       // 👉 aquí hacemos la eliminación REAL en los datos (solo UNA vez)
+const elim = currentEpisode.eliminated;
+if (elim) {
+  // Guardar en eliminadas y quitar de la lista activa
+  eliminatedQueens.push(elim);
+  aliveQueens = aliveQueens.filter(q => q.name !== elim.name);
 
-        // 1) Actualizar la lista de performances del episodio para reflejar "Eliminada"
-        const perf = currentEpisode.performances.find(p => p.queen.name === elim.name);
-        if (perf) perf.track = "Eliminada";
+  // Actualizar el performance del episodio
+  const perf = currentEpisode.performances.find(p => p.queen.name === elim.name);
+  if (perf) perf.track = "Eliminada";
 
-        // 2) Marcar la casilla correspondiente al episodio actual como "Eliminada"
-        if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
-        const idx = Math.max(0, episodeNumber - 1);
-        while (trackRecord[elim.name].length <= idx) {
-          trackRecord[elim.name].push("");
-        }
-        trackRecord[elim.name][idx] = "Eliminada";
-      }
+  // ⭐ Usamos el índice capturado en buildEpisode()
+  const idx = currentEpisode && typeof currentEpisode.episodeIndex === 'number'
+    ? currentEpisode.episodeIndex
+    : Math.max(0, episodeNumber - 1);
+
+  // Asegurar longitud del track record
+  if (!trackRecord[elim.name]) trackRecord[elim.name] = [];
+  while (trackRecord[elim.name].length <= idx) {
+    trackRecord[elim.name].push("");
+  }
+
+  // Marcar eliminación en la columna correcta
+  trackRecord[elim.name][idx] = "Eliminada";
+}
 
       // Activamos el botón para ir directo al Track record
       nextBtn.textContent = "Track record";
@@ -1697,34 +1718,47 @@ function showLipSyncResult(duel, winner, loser, msgEl) {
 
   wrapper.appendChild(headerRow);
 
-  // ===== Filas por feminosa =====
-  cast.forEach(q => {
-    const row = document.createElement("div");
-    row.className = "trackRow";
-    row.style.gridTemplateColumns = gridTemplate;
+  // ===== Ordenar filas: activas arriba, eliminadas abajo =====
 
-    // Columna nombre + foto
-    const nameCell = document.createElement("div");
-    nameCell.className = "trackCell trackNameCell";
-    nameCell.innerHTML = `
-      <img src="${q.image}" alt="${q.name}">
-      <span>${q.name}</span>
-    `;
-    row.appendChild(nameCell);
+// Primero las que siguen vivas, luego las eliminadas
+const displayOrder = [...aliveQueens, ...eliminatedQueens];
 
-    const marks = trackRecord[q.name] || [];
+// Evitar duplicados inesperados
+const seenNames = new Set();
+const uniqueDisplay = [];
+displayOrder.forEach(q => {
+  if (!seenNames.has(q.name)) {
+    seenNames.add(q.name);
+    uniqueDisplay.push(q);
+  }
+});
 
-    // Celdas de episodios (hasta el episodio actual)
-    for (let ep = 0; ep < episodeNumber; ep++) {
-      const mark = marks[ep] || "";
-      const cell = document.createElement("div");
-      cell.className = "trackCell trackMarkCell " + getMarkClass(mark);
-      cell.textContent = mark || "";
-      row.appendChild(cell);
-    }
+// Ahora iteramos sobre uniqueDisplay en vez de cast
+uniqueDisplay.forEach(q => {
+  const row = document.createElement("div");
+  row.className = "trackRow";
+  row.style.gridTemplateColumns = gridTemplate;
 
-    wrapper.appendChild(row);
-  });
+  const nameCell = document.createElement("div");
+  nameCell.className = "trackCell trackNameCell";
+  nameCell.innerHTML = `
+    <img src="${q.image}" alt="${q.name}">
+    <span>${q.name}</span>
+  `;
+  row.appendChild(nameCell);
+
+  const marks = trackRecord[q.name] || [];
+
+  for (let ep = 0; ep < episodeNumber; ep++) {
+    const mark = marks[ep] || "";
+    const cell = document.createElement("div");
+    cell.className = "trackCell trackMarkCell " + getMarkClass(mark);
+    cell.textContent = mark || "";
+    row.appendChild(cell);
+  }
+
+  wrapper.appendChild(row);
+});
 
   episodeContentEl.appendChild(wrapper);
 }
@@ -1738,6 +1772,7 @@ function getMarkClass(mark) {
     case "La -":      return "cell-bottom";
     case "Salvada":   return "cell-safe";
     case "Eliminada": return "badge-elim";
+    case "Retorno": return "cell-return";
     default:          return "cell-blank";
   }
 }
@@ -2190,13 +2225,30 @@ nextBtn.addEventListener("click", () => {
 
         // Modo retorno aleatorio / mega → inmediato
         if (returnMode === "aleatorio" || returnMode === "mega") {
-          const idx = Math.floor(Math.random() * eliminatedQueens.length);
-          const returning = eliminatedQueens.splice(idx, 1)[0];
-          aliveQueens.push(returning);
-          alert(`✨ ${returning.name} regresa a la competencia`);
-          startNextEpisodeAfterTrack();
-          return;
-        }
+  const idx = Math.floor(Math.random() * eliminatedQueens.length);
+  const returning = eliminatedQueens.splice(idx, 1)[0];
+  aliveQueens.push(returning);
+
+  // A) Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
+  if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
+  const ridx = comebackEpisode - 1;
+  while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
+  trackRecord[returning.name][ridx] = "Retorno";
+
+  if (index !== -1) {
+  const returning = eliminatedQueens.splice(index, 1)[0];
+  aliveQueens.push(returning);
+
+  // B) Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
+  if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
+  const ridx = comebackEpisode - 1;
+  while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
+  trackRecord[returning.name][ridx] = "Retorno";
+
+  alert(`✨ ${returning.name} regresa a la competencia`);
+  startNextEpisodeAfterTrack();
+  return;
+}
 
         // Modo "decide" → abrimos panel glam abajo
         if (returnMode === "decide") {
@@ -2214,7 +2266,6 @@ nextBtn.addEventListener("click", () => {
       renderStep();
       return;
     }
-  }
 
     // Gran final: ya vimos las finalistas, ahora coronamos
     // Gran final: ya vimos las finalistas
