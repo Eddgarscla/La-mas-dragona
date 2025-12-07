@@ -1256,10 +1256,6 @@ function saveWinnerToHallOfFame(winner) {
       const marksForEpisode = {};
       cast.forEach(cq => { marksForEpisode[cq.name] = ""; });
 
-            // DEBUG temporales (quita cuando confirmes que funciona)
-      console.log("Episode", episodeNumber, "marksForEpisode:", marksForEpisode);
-      console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
-
       // Asignar desempeño y marcas temporales usando shuffled
       for (let i = 0; i < n; i++) {
         const q = shuffled[i];
@@ -1300,6 +1296,9 @@ function saveWinnerToHallOfFame(winner) {
         if (!trackRecord[cq.name]) trackRecord[cq.name] = [];
         trackRecord[cq.name].push(marksForEpisode[cq.name] || "");
       });
+          // DEBUG temporales (quita cuando confirmes que funciona)
+      console.log("Episode", episodeNumber, "marksForEpisode:", marksForEpisode);
+      console.log("Sample trackRecord (first 3):", Object.entries(trackRecord).slice(0,3));
 
       // Tops y bottoms
       const tops = [shuffled[winnerIdx], ...topIdxs.map(i => shuffled[i])];
@@ -1601,9 +1600,6 @@ function saveWinnerToHallOfFame(winner) {
     }
   }, stepMs);
 }
-
-// Después de marcar la eliminada en showLipSyncResult:
-console.log("Eliminada:", elim ? elim.name : null, "trackRecord[elim]:", trackRecord[elim ? elim.name : ""]);
 
 function showLipSyncResult(duel, winner, loser, msgEl) {
   lipResultShown = true;
