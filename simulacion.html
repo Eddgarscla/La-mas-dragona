@@ -2204,8 +2204,8 @@ nextBtn.addEventListener("click", () => {
   if (!cast.length) return;
   if (nextBtn.disabled) return;
 
-    // Fin de la simulación → volver al inicio
-    if (step === 9 && nextBtn.textContent === "Fin de la simulación") {
+  // Fin de la simulación → volver al inicio
+  if (step === 9 && nextBtn.textContent === "Fin de la simulación") {
     window.location.href = "index.html";
     return;
   }
@@ -2219,11 +2219,12 @@ nextBtn.addEventListener("click", () => {
     return;
   }
 
-     // Después del track record
+  // === Caso: después del Track Record (paso 5) ===
   if (step === 5) {
+    // Si aún quedan más episodios (no estamos en finalistas)
     if (aliveQueens.length > finalistsNum) {
 
-      // 🔁 ¿Toca retorno en el PRÓXIMO episodio?
+      // ¿Toca retorno en el PRÓXIMO episodio?
       if (
         !comebackDone &&
         comebackEpisode &&
@@ -2234,21 +2235,21 @@ nextBtn.addEventListener("click", () => {
         comebackDone = true;
 
         // Modo retorno aleatorio / mega → inmediato
-if (returnMode === "aleatorio" || returnMode === "mega") {
-  const idxElim = Math.floor(Math.random() * eliminatedQueens.length);
-  const returning = eliminatedQueens.splice(idxElim, 1)[0];
-  aliveQueens.push(returning);
+        if (returnMode === "aleatorio" || returnMode === "mega") {
+          const idxElim = Math.floor(Math.random() * eliminatedQueens.length);
+          const returning = eliminatedQueens.splice(idxElim, 1)[0];
+          aliveQueens.push(returning);
 
-  // Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
-  if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
-  const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
-  while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
-  trackRecord[returning.name][ridx] = "Retorno";
+          // Marcar el retorno en el trackRecord (columna comebackEpisode - 1)
+          if (!trackRecord[returning.name]) trackRecord[returning.name] = [];
+          const ridx = comebackEpisode ? (comebackEpisode - 1) : (episodeNumber - 1);
+          while (trackRecord[returning.name].length <= ridx) trackRecord[returning.name].push("");
+          trackRecord[returning.name][ridx] = "Retorno";
 
-  alert(`✨ ${returning.name} regresa a la competencia`);
-  startNextEpisodeAfterTrack();
-  return;
-}
+          alert(`✨ ${returning.name} regresa a la competencia`);
+          startNextEpisodeAfterTrack();
+          return;
+        }
 
         // Modo "decide" → abrimos panel glam abajo
         if (returnMode === "decide") {
@@ -2266,9 +2267,9 @@ if (returnMode === "aleatorio" || returnMode === "mega") {
       renderStep();
       return;
     }
+  } // <-- fin del if (step === 5)
 
-    // Gran final: ya vimos las finalistas, ahora coronamos
-    // Gran final: ya vimos las finalistas
+  // === Caso: en la pantalla de finalistas (step === 6) ===
   if (step === 6) {
     // Modo "Tú decides"
     if (crownMode === "user") {
@@ -2295,7 +2296,7 @@ if (returnMode === "aleatorio" || returnMode === "mega") {
     return;
   }
 
-  // Flujo normal (0 → 5)
+  // === Flujo normal (0 → 5): avanzamos pasos en episodios ===
   if (step >= 0 && step < 5) {
     // En el paso 0, primero mostramos SOLO el reto
     // y en el siguiente click mostramos el desempeño
@@ -2304,16 +2305,18 @@ if (returnMode === "aleatorio" || returnMode === "mega") {
       renderStep(); // actualiza la vista sin cambiar de paso
       return;
     }
-      // Desde el paso del doblaje (3), si ya se mostró el resultado,
-  // saltamos directamente al Track record (paso 5)
-  if (step === 3 && lipResultShown) {
-    step = 5;
-    renderStep();
-    return;
-  }
+
+    // Desde el paso del doblaje (3), si ya se mostró el resultado,
+    // saltamos directamente al Track record (paso 5)
+    if (step === 3 && lipResultShown) {
+      step = 5;
+      renderStep();
+      return;
+    }
 
     step++;
     renderStep();
+    return;
   }
 });
 
