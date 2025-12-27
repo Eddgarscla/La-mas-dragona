@@ -980,7 +980,7 @@ p, span, .episodePerf, .challengeText, #episodeSubtitle {
 
     <div id="episodeContent"></div>
 
-    <button id="nextBtn" onclick="alert('CLICK OK')">La más…</button>
+    <button id="nextBtn">La más…</button>
   </div>
     <!-- Panel de retorno -->
   <div id="comebackPanel" class="comebackPanel">
@@ -2097,14 +2097,6 @@ function renderStep() {
   
   // Pantalla inicial de suspense NO necesita currentEpisode
   // 🔒 Si NO hay episodio y NO estamos en la intro → error controlado
-if (step !== -1 && !currentEpisode) {
-  episodeTitleEl.textContent = "Error";
-  episodeSubtitleEl.textContent = "No se pudo cargar el episodio";
-  episodeContentEl.innerHTML = "";
-  nextBtn.textContent = "Reintentar";
-  step = -1;
-  return;
-}
 
 // 🎭 Pantalla inicial de suspense
 if (step === -1) {
