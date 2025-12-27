@@ -1257,7 +1257,11 @@ function saveWinnerToHallOfFame(winner) {
 
   const shuffled = aliveQueens.slice().sort(() => Math.random() - 0.5);
   const n = shuffled.length;
-  if (n === 0) return;
+  if (n === 0) {
+  console.error("No hay queens vivas para construir el episodio");
+  currentEpisode = null;
+  return;
+}
 
   const indexes = [...Array(n).keys()];
   function drawIndex() {
@@ -2099,7 +2103,14 @@ function renderStep() {
     return;
   }
 
-  if (!currentEpisode) return;
+  if (!currentEpisode) {
+  episodeTitleEl.textContent = "Error";
+  episodeSubtitleEl.textContent = "No se pudo cargar el episodio";
+  episodeContentEl.innerHTML = "";
+  nextBtn.textContent = "Reintentar";
+  step = -1;
+  return;
+}
 
   const retoNombre = currentEpisode.challenge.name;
 
@@ -2227,12 +2238,20 @@ nextBtn.addEventListener("click", () => {
 
   // Primer click: construir episodio
   if (step === -1) {
-    hasShownPerformance = false; // siempre empezar desde el reto
-    buildEpisode();
-    step = 0;
+  hasShownPerformance = false;
+  buildEpisode();
+
+  if (!currentEpisode) {
+    alert("Error al generar el episodio. No hay suficientes feminosas.");
+    step = -1;
     renderStep();
     return;
   }
+
+  step = 0;
+  renderStep();
+  return;
+}
 
   // === Caso: después del Track Record (paso 5) ===
   if (step === 5) {
