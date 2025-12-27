@@ -2093,6 +2093,7 @@ function renderFinalLipGrandFinal() {
 // =========================
 function renderStep() {
  nextBtn.disabled = false; // 👈 RESET DE SEGURIDAD
+  try {
   
   // Pantalla inicial de suspense NO necesita currentEpisode
   // 🔒 Si NO hay episodio y NO estamos en la intro → error controlado
@@ -2214,6 +2215,13 @@ if (step === -1) {
         renderFinalLipGrandFinal();
       }
       break;
+      } catch (e) {
+  episodeTitleEl.textContent = "❌ ERROR DE SCRIPT";
+  episodeSubtitleEl.textContent = e.message;
+  episodeContentEl.innerHTML =
+    "<p style='text-align:center'>El simulador se detuvo.<br>El error está arriba 👆</p>";
+  nextBtn.disabled = true;
+}
   }
 }
         
