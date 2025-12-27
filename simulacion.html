@@ -2333,6 +2333,18 @@ nextBtn.addEventListener("click", () => {
 
   // === Flujo normal (0 → 5): avanzamos pasos en episodios ===
   if (step >= 0 && step < 5) {
+
+    // 👇 SALTO CONTROLADO: no existe el paso 4
+  if (step === 3) {
+    step = 5;
+    renderStep();
+    return;
+  }
+
+  step++;
+  renderStep();
+  return;
+}
     // En el paso 0, primero mostramos SOLO el reto
     // y en el siguiente click mostramos el desempeño
     if (step === 0 && !hasShownPerformance) {
