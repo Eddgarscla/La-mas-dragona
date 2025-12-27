@@ -2088,6 +2088,8 @@ function renderFinalLipGrandFinal() {
 //   CONTROL DE PASOS
 // =========================
 function renderStep() {
+ nextBtn.disabled = false; // 👈 RESET DE SEGURIDAD
+  
   // Pantalla inicial de suspense NO necesita currentEpisode
   if (step === -1) {
     episodeTitleEl.textContent = "La más…";
