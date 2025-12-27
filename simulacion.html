@@ -2095,20 +2095,22 @@ function renderStep() {
  nextBtn.disabled = false; // 👈 RESET DE SEGURIDAD
   
   // Pantalla inicial de suspense NO necesita currentEpisode
-  if (step === -1) {
-    episodeTitleEl.textContent = "La más…";
-    episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
-    nextBtn.textContent = "Revelar reto";
-    episodeContentEl.innerHTML = "";
-    return;
-  }
-
-  if (!currentEpisode) {
+  // 🔒 Si NO hay episodio y NO estamos en la intro → error controlado
+if (step !== -1 && !currentEpisode) {
   episodeTitleEl.textContent = "Error";
   episodeSubtitleEl.textContent = "No se pudo cargar el episodio";
   episodeContentEl.innerHTML = "";
   nextBtn.textContent = "Reintentar";
   step = -1;
+  return;
+}
+
+// 🎭 Pantalla inicial de suspense
+if (step === -1) {
+  episodeTitleEl.textContent = "La más…";
+  episodeSubtitleEl.textContent = "Pulsa para revelar el reto del episodio";
+  nextBtn.textContent = "Revelar reto";
+  episodeContentEl.innerHTML = "";
   return;
 }
 
