@@ -2371,6 +2371,83 @@ nextBtn.addEventListener("click", () => {
 if (cast.length) {
   renderStep();
 }
+    <script>
+/* =========================
+   MOTOR DE PASOS
+========================= */
+
+function startEpisode() {
+  buildEpisode();
+  step = 0;
+  showStep();
+}
+
+function showStep() {
+  nextBtn.disabled = false;
+
+  switch (step) {
+    case 0:
+      episodeTitleEl.textContent = currentEpisode.challenge.name;
+      episodeSubtitleEl.textContent = "Categoría del episodio";
+      episodeContentEl.innerHTML = `
+        <div class="challengeText challengeName glowText">
+          ${currentEpisode.challenge.name}
+        </div>
+      `;
+      nextBtn.textContent = "Ver desempeño";
+      break;
+
+    case 1:
+      renderPerformanceList();
+      nextBtn.textContent = "Las más y las menos";
+      break;
+
+    case 2:
+      renderTopBottom();
+      nextBtn.textContent = "La más…";
+      break;
+
+    case 3:
+      renderWinner();
+      nextBtn.textContent = "Doblaje de eliminación";
+      break;
+
+    case 4:
+      renderLipsync();
+      nextBtn.textContent = "Continuar";
+      break;
+
+    default:
+      advanceAfterElimination();
+      break;
+  }
+}
+
+nextBtn.addEventListener("click", () => {
+  step++;
+  showStep();
+});
+
+/* =========================
+   POST-ELIMINACIÓN
+========================= */
+
+function advanceAfterElimination() {
+  const eliminated = currentEpisode.eliminated;
+  if (eliminated) {
+    aliveQueens = aliveQueens.filter(q => q.name !== eliminated.name);
+    eliminatedQueens.push(eliminated);
+  }
+
+  episodeNumber++;
+  startEpisode();
+}
+
+/* =========================
+   INICIO AUTOMÁTICO
+========================= */
+
+startEpisode();
   </script>
 </body>
 </html>
