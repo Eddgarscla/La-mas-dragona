@@ -1123,8 +1123,51 @@ let selectedFinalWinner = null;
 });
 
 function showNextEpisode() {
-  // Aquí va tu lógica existente para mostrar el episodio y actualizar step
-  // Por ejemplo, lo que ya tienes para elegir retos, mostrar desempeño, etc.
+  // Elegir un reto aleatorio
+  const reto = getRandomChallenge();
+  if (!reto) {
+    episodeTitleEl.textContent = "¡Todos los retos ya fueron mostrados!";
+    episodeSubtitleEl.textContent = "";
+    episodeContentEl.innerHTML = "<p>La temporada ha terminado ✨</p>";
+    nextBtn.disabled = true;
+    return;
+  }
+
+  episodeTitleEl.textContent = `Episodio ${episodeNumber}`;
+  episodeSubtitleEl.textContent = reto.name;
+
+  // Mostrar desempeño de cada reina viva
+  let html = '';
+  aliveQueens.forEach(q => {
+    const labels = Object.keys(performanceLabels);
+    const perf = labels[Math.floor(Math.random() * labels.length)];
+    html += `
+      <div class="perfCard perf-${perf}">
+        <img src="${q.image}" alt="${q.name}">
+        <div class="bigPerfName">${q.name}</div>
+        <div class="bigPerfText">${performanceLabels[perf]}</div>
+      </div>
+    `;
+  });
+
+  episodeContentEl.innerHTML = `<div class="perfGrid">${html}</div>`;
+
+  // Eliminar aleatoriamente una reina (solo si hay más de 1 viva)
+  if (aliveQueens.length > 1) {
+    const elimIndex = Math.floor(Math.random() * aliveQueens.length);
+    const eliminated = aliveQueens.splice(elimIndex, 1)[0];
+    eliminatedQueens.push(eliminated);
+    episodeContentEl.innerHTML += `
+      <div class="outQueen">
+        <img src="${eliminated.image}" alt="${eliminated.name}">
+        <div class="elimName">${eliminated.name}</div>
+        <div class="elimStatus">¡Eliminada!</div>
+      </div>
+    `;
+  }
+
+  episodeNumber++;
+  step++;
 }
     
     if (!cast.length) {
